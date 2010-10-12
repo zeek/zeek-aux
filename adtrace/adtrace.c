@@ -8,7 +8,6 @@
 #include <arpa/inet.h>
 #include <pcap.h>
 
-#include "../../config.h"
 #include "ip.h"
 #include "ether.h" 
 #include "ethertype.h"

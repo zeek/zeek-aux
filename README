@@ -12,16 +12,6 @@ adtrace/
 bdcat/
 	A utility for decrypting encrypted Bro log files.
 
-binpac/
-	A compiler for generating protocol analyzers from high-level,
-	declarative specifications.  Used extensively for constructing
-	Bro's protocol analyzers, but capable of stand-alone use for
-	building analyzers outside of the Bro system.
-
-broccoli/
-	A C client library for interfacing programs with the Bro system.
-	Enables sending and receiving of Bro values and events.
-
 cf/
 	Makefile and source for the "cf" utility.  cf reads lines from
 	stdin and if the line begins with a number, then it assumes that
