@@ -5,31 +5,31 @@ Bro-aux relies on the following libraries and tools, which need to be installed
 before you begin with the installation:
 
     * Libpcap
-	   Required to build the 'adtrace' program.
+       Required to build the 'adtrace' program.
 
     * Flex
-	   Flex is already installed on most systems, so with luck you can
-	   skip having to install it yourself.
+       Flex is already installed on most systems, so with luck you can
+       skip having to install it yourself.
 
     * BIND8 headers and libraries
-           These are usually already installed as well.
+       These are usually already installed as well.
 
     * CMake 2.8 or greater
-           CMake is a cross-platform, open-source build system, typically
-           not installed by default.  See http://www.cmake.org for more
-           information regarding CMake and the installation steps below for
-           how to use it to build this distribution.
+       CMake is a cross-platform, open-source build system, typically
+       not installed by default.  See http://www.cmake.org for more
+       information regarding CMake and the installation steps below for
+       how to use it to build this distribution.
 
 Installation
 ============
 
 To build and install into /usr/local:
 
-	> mkdir build
-        > cd build
-        > cmake ..
-	> make
-	> make install
+    > mkdir build
+    > cd build
+    > cmake ..
+    > make
+    > make install
 
 This will perform an out-of-source build into the build directory using the
 default build options and then install binaries into /usr/local/bin
@@ -38,10 +38,10 @@ To change the install prefix or other build options, copy the
 BuildOptions.cmake file from the top-level source directory into the
 build directory and then modify it using a preferred text editor:
 
-	> mkdir build
-        > cd build
-        > cp ../BuildOptions.cmake .
-        > <edit BuildOptions.cmake>
-        > cmake ..
-	> make
-	> make install
+    > mkdir build
+    > cd build
+    > cp ../BuildOptions.cmake .
+    > <edit BuildOptions.cmake>
+    > cmake ..
+    > make
+    > make install
