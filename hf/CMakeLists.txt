@@ -1,7 +1,5 @@
 find_package(FLEX REQUIRED)
 
-# TODO: DEBUG preprocessor definition
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -9,9 +7,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 
 include(CheckFunctionExists)
 
-check_function_exists(sigaction HAVE_SIGACTION)
 check_function_exists(sigset HAVE_SIGSET)
 check_function_exists(strerror HAVE_STRERROR)
+
+if (HAVE_SIGSET)
+    set(SIG_FUNC sigset)
+else ()
+    set(SIG_FUNC signal)
+    check_function_exists(sigaction HAVE_SIGACTION)
+endif ()
 
 include(CheckIncludeFiles)
 
