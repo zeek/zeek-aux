@@ -49,7 +49,7 @@ static const char rcsid[] =
 #include <string.h>
 #include <unistd.h>
 
-#include "../../config.h"
+#include "config.h"
 
 /* Forwards */
 void gripe(const char *, const char *);

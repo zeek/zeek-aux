@@ -2,7 +2,7 @@
 /* Written by Bernhard Ager (2007). */
 /* For now this only works with IPv4. */
 
-#include "../../config.h"
+/*#include "../../config.h"*/
 
 /* Enough for NFv5 - how about the others? */
 #define MAX_PKT_SIZE 8192

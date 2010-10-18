@@ -29,13 +29,20 @@ mark_as_advanced(build_config_file)
 
 include(${CMAKE_BINARY_DIR}/${build_config})
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules/)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/)
 
 ##
 ## Project Configuration
 ##
 
 project(BRO-AUX)
+
+include(BroAuxConfigChecks)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(adtrace)
 add_subdirectory(cf)
