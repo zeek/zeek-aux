@@ -1,5 +1,3 @@
-find_package(FLEX REQUIRED)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ########### hf target ###############

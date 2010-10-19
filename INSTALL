@@ -4,8 +4,8 @@ Prerequisites
 Bro-aux relies on the following libraries and tools, which need to be installed
 before you begin with the installation:
 
-    * Libpcap
-       Required to build the 'adtrace' program.
+    * Libpcap headers and libraries
+       Network traffic capture library
 
     * Flex
        Flex is already installed on most systems, so with luck you can
@@ -13,6 +13,10 @@ before you begin with the installation:
 
     * BIND8 headers and libraries
        These are usually already installed as well.
+
+    * OpenSSL headers and libraries
+        These are likely installed, though some platforms may require
+        installation of a 'devel' package for the headers.
 
     * CMake 2.8 or greater
        CMake is a cross-platform, open-source build system, typically

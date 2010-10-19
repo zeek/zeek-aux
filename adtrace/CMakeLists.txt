@@ -1,5 +1,3 @@
-find_package(PCAP REQUIRED)
-
 set(adtrace_SRCS
     adtrace.c
     ether.h

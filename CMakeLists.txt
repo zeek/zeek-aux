@@ -37,8 +37,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/)
 
 project(BRO-AUX)
 
+find_package(FLEX REQUIRED)
+find_package(PCAP REQUIRED)
 find_package(BIND REQUIRED)
-include_directories(${BIND_INCLUDE_DIR})
+find_package(OpenSSL REQUIRED)
+include_directories(BEFORE
+                    ${BIND_INCLUDE_DIR}
+                    ${PCAP_INCLUDE_DIR}
+                    ${OPENSSL_INCLUDE_DIR}
+                    )
 
 include(BroAuxConfigChecks)
 
@@ -48,6 +55,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(adtrace)
+add_subdirectory(bdcat)
 add_subdirectory(cf)
 add_subdirectory(hf)
 add_subdirectory(nftools)
