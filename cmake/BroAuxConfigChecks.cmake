@@ -33,27 +33,4 @@ if (DO_SOCK_DECL)
     message(STATUS "socket() and friends need explicit declaration")
 endif ()
 
-if (USE_NB_DNS)
-    check_c_source_compiles("
-        #include <arpa/nameser.h>
-        int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
-        HAVE_ASYNC_DNS)
-
-    if (NOT HAVE_ASYNC_DNS)
-        if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-            check_c_source_compiles("
-                #include <arpa/nameser.h>
-                #include <arpa/nameser_compat.h>
-                int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
-                NEED_NAMESER_COMPAT_H)
-            if (NEED_NAMESER_COMPAT_H)
-                set(HAVE_ASYNC_DNS true)
-            else ()
-                message(WARNING "Darwin compatibility check failed."
-                        "Non-blocking DNS support disabled.")
-                set(HAVE_ASYNC_DNS false)
-                set(USE_NB_DNS false)
-            endif ()
-        endif ()
-    endif ()
-endif ()
+include(CheckNameserCompat)

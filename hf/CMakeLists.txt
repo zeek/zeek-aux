@@ -6,10 +6,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 flex_target(hfScanner hf.l ${CMAKE_CURRENT_BINARY_DIR}/hf.c)
 
-if (USE_NB_DNS)
-    set(dns_SRCS nb_dns.c nb_dns.h)
-    set(hf_EXTRA_LIBS resolv)
-endif ()
+set(dns_SRCS nb_dns.c nb_dns.h)
 
 set(hf_SRCS
     ${FLEX_hfScanner_OUTPUTS}
@@ -22,7 +19,7 @@ set(hf_SRCS
 
 add_executable(hf ${hf_SRCS})
 
-target_link_libraries(hf ${hf_EXTRA_LIBS})
+target_link_libraries(hf ${BIND_LIBRARY})
 
 ########### nf target ###############
 

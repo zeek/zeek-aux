@@ -37,6 +37,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/)
 
 project(BRO-AUX)
 
+find_package(BIND REQUIRED)
+include_directories(${BIND_INCLUDE_DIR})
+
 include(BroAuxConfigChecks)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in

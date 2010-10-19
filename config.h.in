@@ -24,8 +24,5 @@
 /* have os-proto.h */
 #cmakedefine HAVE_OS_PROTO_H
 
-/* use non-blocking DNS support */
-#cmakedefine HAVE_ASYNC_DNS
-
 /* have sin_len field in sockaddr_in */
 #cmakedefine SIN_LEN

@@ -16,7 +16,3 @@ set(CMAKE_INSTALL_PREFIX /usr/local
 
 # Uncomment to specify a custom directory that contains the libpcap library.
 #set(PCAP_LIBRARYDIR path/to/your/pcap/lib)
-
-# Attempt to use non-blocking DNS support by default
-set(USE_NB_DNS true
-    CACHE BOOL "Use non-blocking DNS support" FORCE)

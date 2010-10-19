@@ -59,11 +59,9 @@ H              ({C}{1,4})
     int yylex(void);
     void convert(const char *, int);
 
-    #ifdef HAVE_ASYNC_DNS
     #define ECHO \
 	if (!lookup_pass) { (void) fwrite( yytext, yyleng, 1, yyout ); }
     int lookup_pass;		/* true if lookup only */
-    #endif
     int linemode;		/* convert at most one entry per line */
     int triedone;
 
@@ -150,11 +148,9 @@ int strip = 1;			/* strip local domain when possible */
 int lcase = 1;			/* force lowercase */
 int shortdomain;		/* strip entire domain */
 int printboth;			/* print both addr & name */
-#ifdef HAVE_ASYNC_DNS
 int asyncdns;			/* 2 pass async dns hack */
 int numasync;			/* number of outstanding async requests */
 int asyncfd;
-#endif
 int networknumber;		/* convert to network numbers */
 int check;			/* check PTR's against A records */
 #ifdef DEBUG
@@ -172,9 +168,7 @@ int domainlen;			/* length of domain name */
 
 char azero[NS_IN6ADDRSZ];
 
-#ifdef HAVE_ASYNC_DNS
 struct nb_dns_info *nd;
-#endif
 
 int targc;
 char **targv;
@@ -190,18 +184,14 @@ extern char *malloc();
 /* Forwards */
 char *a2h(const char *, int, int);
 char *addr2host(const char *, int, int);
-#ifdef HAVE_ASYNC_DNS
 void asyncreap(int);
-#endif
 struct htable *cacheaddr(const char *, int, int, int, const char *);
 #ifdef DEBUG
 void dump(void);
 #endif
 int getdomain(void);
 struct htable *hash(const char *, int, int);
-#ifdef HAVE_ASYNC_DNS
 int ispipe(FILE *);
-#endif
 struct htable *lookupaddr(const char *, int, int);
 int main(int, char **);
 void massagename(char *);
@@ -215,9 +205,7 @@ main(argc, argv)
 {
 	register char *cp;
 	register int op;
-#ifdef HAVE_ASYNC_DNS
 	char errstr[NB_DNS_ERRSIZE];
-#endif
 
 	if ((cp = strrchr(argv[0], '/')) != NULL)
 		prog = cp + 1;
@@ -233,12 +221,7 @@ main(argc, argv)
 			break;
 
 		case 'a':
-#ifdef HAVE_ASYNC_DNS
 			++asyncdns;
-#else
-			fprintf(stderr,
-			    "%s: warning: -a not supported; ignored\n", prog);
-#endif
 			break;
 
 		case 'b':
@@ -287,7 +270,6 @@ main(argc, argv)
 			usage();
 		}
 
-#ifdef HAVE_ASYNC_DNS
 	if (asyncdns) {
 		nd = nb_dns_init(errstr);
 		if (nd == NULL) {
@@ -299,7 +281,6 @@ main(argc, argv)
 		if (tmo == 0)
 			tmo = _res.retrans;
 	}
-#endif
 
 	/* Figure out our domain, if necessary */
 	if (!strip || shortdomain || !getdomain())
@@ -312,9 +293,7 @@ main(argc, argv)
 	_res.options &= ~RES_DNSRCH;
 
 	/* Setup alarm catcher if -t */
-#ifdef HAVE_ASYNC_DNS
 	if (!asyncdns)
-#endif
 		if (tmo > 0)
 			(void)setsignal(SIGALRM, timeout);
 
@@ -326,14 +305,12 @@ main(argc, argv)
 
 	/* Process file opened by yywrap() or stdin if no arguments */
 	if (yyin) {
-#ifdef HAVE_ASYNC_DNS
 		/* XXX depends on the type of stdin */
 		/* XXX can we do a test rewind? */
 #ifdef notdef
 		if (asyncdns && yyin == stdin)
 			fprintf(stderr,
 			    "%s: warning: can't use -a on stdin\n", prog);
-#endif
 #endif
 		yylex();
 	}
@@ -355,7 +332,6 @@ yywrap()
 
 	/* Close file, if necessary */
 	if (yyin) {
-#ifdef HAVE_ASYNC_DNS
 		if (asyncdns) {
 			if (lookup_pass) {
 				if (fseek(yyin, 0L, SEEK_SET) < 0) {
@@ -371,7 +347,6 @@ yywrap()
 			}
 			numasync = 0;
 		}
-#endif
 		if (yyin != stdin)
 			(void)fclose(yyin);
 		yyin = NULL;
@@ -384,17 +359,14 @@ yywrap()
 		++targv;
 		++didany;
 		if ((yyin = fopen(file, "r")) != NULL) {
-#ifdef HAVE_ASYNC_DNS
 			if (asyncdns)
 				lookup_pass = 1;
-#endif
 			return (0);
 		}
 		perror(file);
 	}
 	if (!didany) {
 		yyin = stdin;
-#ifdef HAVE_ASYNC_DNS
 		if (asyncdns) {
 			if (ispipe(yyin)) {
 				fprintf(stderr,
@@ -404,7 +376,6 @@ yywrap()
 			} else
 				lookup_pass = 1;
 		}
-#endif
 	}
 	return (1);
 }
@@ -695,7 +666,6 @@ dump()
 }
 #endif
 
-#ifdef HAVE_ASYNC_DNS
 void
 asyncreap(register int ateof)
 {
@@ -819,7 +789,6 @@ asyncreap(register int ateof)
 			p->name = strdup(host);
 	}
 }
-#endif
 
 void
 convert(register const char *str, register int isv6)
@@ -827,11 +796,9 @@ convert(register const char *str, register int isv6)
 	register char *host;
 	register int alen;
 	register int af;
-#ifdef HAVE_ASYNC_DNS
 	register struct htable *p;
 	char errstr[NB_DNS_ERRSIZE];
 	static int num = 0;
-#endif
 	char addr[NS_IN6ADDRSZ];
 
 	if (isv6) {
@@ -839,9 +806,7 @@ convert(register const char *str, register int isv6)
 		af = AF_INET6;
 		alen = NS_IN6ADDRSZ;
 #else
-#ifdef HAVE_ASYNC_DNS
 		if (!asyncdns || !lookup_pass)
-#endif
 			fputs(str, stdout);
 		return;
 #endif
@@ -850,7 +815,6 @@ convert(register const char *str, register int isv6)
 		alen = NS_INADDRSZ;
 	}
 
-#ifdef HAVE_ASYNC_DNS
 	if (asyncdns && lookup_pass) {
 		if (inet_pton(af, str, addr) != 1)
 			return;
@@ -878,7 +842,6 @@ convert(register const char *str, register int isv6)
 		}
 		return;
 	}
-#endif
 
 	if (linemode && triedone) {
 		fputs(str, stdout);
@@ -922,7 +885,6 @@ hash(register const char *ap, register int alen, register int af)
 	return (&htable[h & (HSIZE - 1)]);
 }
 
-#ifdef HAVE_ASYNC_DNS
 int
 ispipe(FILE *f)
 {
@@ -936,7 +898,6 @@ ispipe(FILE *f)
 		return (1);
 	return (0);
 }
-#endif
 
 void
 usage()
