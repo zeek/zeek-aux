@@ -37,6 +37,23 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/)
 
 project(BRO-AUX)
 
+set(CMAKE_C_FLAGS "-W -Wall -Wno-unused")
+set(CMAKE_CXX_FLAGS "-W -Wall -Wno-unused")
+
+if (ENABLE_DEBUG)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDEBUG -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG -g")
+endif ()
+
+if (ENABLE_RELEASE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+endif ()
+
+##
+## Dependency Configuration
+##
+
 find_package(FLEX REQUIRED)
 find_package(PCAP REQUIRED)
 find_package(BIND REQUIRED)
@@ -47,12 +64,20 @@ include_directories(BEFORE
                     ${OPENSSL_INCLUDE_DIR}
                     )
 
+##
+## Configuration Checks/Tests
+##
+
 include(BroAuxConfigChecks)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+##
+## Recurse on sub-directories
+##
 
 add_subdirectory(adtrace)
 add_subdirectory(bdcat)
@@ -61,3 +86,20 @@ add_subdirectory(hf)
 add_subdirectory(nftools)
 add_subdirectory(rst)
 add_subdirectory(scripts)
+
+##
+## Build Summary
+##
+
+message(
+    "\n==================|  Bro-Aux Build Summary  |==================="
+    "\n"
+    "\nInstall prefix:    ${CMAKE_INSTALL_PREFIX}"
+    "\nDebug mode:        ${ENABLE_DEBUG}"
+    "\nRelease mode:      ${ENABLE_RELEASE}"
+    "\n"
+    "\nCFLAGS:            ${CMAKE_C_FLAGS}"
+    "\nCXXFLAGS:          ${CMAKE_CXX_FLAGS}"
+    "\n"
+    "\n================================================================\n"
+)
