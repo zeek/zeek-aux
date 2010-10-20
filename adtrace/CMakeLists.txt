@@ -8,3 +8,5 @@ set(adtrace_SRCS
 add_executable(adtrace ${adtrace_SRCS})
 
 target_link_libraries(adtrace ${PCAP_LIBRARY})
+
+install(TARGETS adtrace DESTINATION bin)

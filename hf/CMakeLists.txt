@@ -19,6 +19,8 @@ add_executable(hf ${hf_SRCS})
 
 target_link_libraries(hf ${BIND_LIBRARY})
 
+install(TARGETS hf DESTINATION bin)
+
 ########### nf target ###############
 
 flex_target(nfScanner nf.l ${CMAKE_CURRENT_BINARY_DIR}/nf.c)
@@ -32,6 +34,8 @@ add_executable(nf ${nf_SRCS})
 
 target_link_libraries(nf)
 
+install(TARGETS nf DESTINATION bin)
+
 ########### pf target ###############
 
 flex_target(pfScanner pf.l ${CMAKE_CURRENT_BINARY_DIR}/pf.c)
@@ -44,3 +48,5 @@ set(pf_SRCS
 add_executable(pf ${pf_SRCS})
 
 target_link_libraries(pf)
+
+install(TARGETS pf DESTINATION bin)
