@@ -4,6 +4,6 @@ set(bdcat_SRCS
 
 add_executable(bdcat ${bdcat_SRCS})
 
-target_link_libraries(bdcat ${OPENSSL_LIBRARIES})
+target_link_libraries(bdcat ${OpenSSL_LIBRARIES})
 
 install(TARGETS bdcat DESTINATION bin)
