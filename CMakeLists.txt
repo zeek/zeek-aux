@@ -1,12 +1,10 @@
-##
+########################################################################
 ## CMake Configuration
-##
 
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # Prohibit in-source builds.
-string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" source_build)
-if (source_build)
+if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source builds are not allowed. Please use "
                         "./configure to choose a build directory and "
                         "initialize the build configuration.")
@@ -28,9 +26,8 @@ include(${build_options_file})
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/)
 
-##
-## Project Configuration
-##
+########################################################################
+## Project/Build Configuration
 
 project(BRO-AUX)
 
@@ -57,9 +54,8 @@ if (NOT EXTRA_COMPILE_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
 endif ()
 
-##
+########################################################################
 ## Dependency Configuration
-##
 
 find_package(FLEX REQUIRED)
 find_package(PCAP REQUIRED)
@@ -71,9 +67,8 @@ include_directories(BEFORE
                     ${OpenSSL_INCLUDE_DIR}
                     )
 
-##
-## Configuration Checks/Tests
-##
+########################################################################
+## System Introspection
 
 include(BroAuxConfigChecks)
 
@@ -82,9 +77,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-##
+########################################################################
 ## Recurse on sub-directories
-##
 
 add_subdirectory(adtrace)
 add_subdirectory(bdcat)
@@ -94,9 +88,8 @@ add_subdirectory(nftools)
 add_subdirectory(rst)
 add_subdirectory(scripts)
 
-##
+########################################################################
 ## Build Summary
-##
 
 if (CMAKE_BUILD_TYPE)
     string(TOUPPER ${CMAKE_BUILD_TYPE} BuildType)
