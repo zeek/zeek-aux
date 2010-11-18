@@ -43,10 +43,20 @@ endif ()
 ########################################################################
 ## Dependency Configuration
 
-find_package(FLEX REQUIRED)
-find_package(PCAP REQUIRED)
-find_package(BIND REQUIRED)
-find_package(OpenSSL REQUIRED)
+include(FindRequiredPackage)
+
+FindRequiredPackage(FLEX)
+FindRequiredPackage(PCAP)
+FindRequiredPackage(BIND)
+FindRequiredPackage(OpenSSL)
+
+if (MISSING_PREREQS)
+    foreach (prereq ${MISSING_PREREQ_DESCS})
+        message(SEND_ERROR ${prereq})
+    endforeach ()
+    message(FATAL_ERROR "Configuration aborted due to missing prerequisites")
+endif ()
+
 include_directories(BEFORE
                     ${BIND_INCLUDE_DIR}
                     ${PCAP_INCLUDE_DIR}
