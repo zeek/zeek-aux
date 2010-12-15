@@ -1,0 +1,8 @@
+
+Sat Nov 27 12:19:47 PST 2010
+
+- Merge with Subversion repository as of r7098. Incorporated change:
+
+    * The "cf" utility now ignores a leading "t=" prefix, for
+      compatibility with Bro's "tagged" logging format (Robin
+      Sommer).
