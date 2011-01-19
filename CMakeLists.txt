@@ -51,6 +51,7 @@ endif ()
 ########################################################################
 ## Dependency Configuration
 
+include(MacDependencyPaths)
 include(FindRequiredPackage)
 
 FindRequiredPackage(FLEX)
