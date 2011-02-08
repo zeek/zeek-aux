@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 ######################################################################
 # prompt for input for a variable
@@ -60,11 +60,12 @@ fi
 
 bro_config_input "dir" $dir "CA installation directory"
 
-
 if [ ! -r $dir/openssl.cfg ]; then
     echo "Could not find config file for root CA in $BRO_CA_DIR/openssl.cfg"
     exit 1
 fi
+
+BRO_CA_DIR=$dir
 
 prefix=bro
 bro_config_input "prefix" $prefix "Prefix for the generated certificate request and private key"
