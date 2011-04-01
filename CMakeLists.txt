@@ -95,8 +95,6 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(adtrace)
 add_subdirectory(bdcat)
-add_subdirectory(cf)
-add_subdirectory(hf)
 add_subdirectory(nftools)
 add_subdirectory(rst)
 add_subdirectory(scripts)

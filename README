@@ -12,20 +12,8 @@ adtrace/
 bdcat/
 	A utility for decrypting encrypted Bro log files.
 
-cf/
-	Makefile and source for the "cf" utility.  cf reads lines from
-	stdin and if the line begins with a number, then it assumes that
-	the number corresponds to a Unix timestamp and replaces it with
-	the corresponding local time in a readable format.  Useful for
-	running on log files.  See cf/cf.man.txt for documentation.
-
 contrib/
 	Unsupported contributions to Bro.
-
-hf/
-	The main utility in this subdirectory is hf, which translates
-	any dotted-quad (in text) appearing on stdin to the corresponding
-	DNS hostname (via a PTR lookup) on stdout.
 
 nftools/
 	Utilities for dealing with Bro's custom file format for storing
@@ -49,3 +37,28 @@ scripts/
 	ip-grep: returns a grep pattern for a given IP address
 	mon-report: summarizes a particular host's activity
 	mvlog: compresses and archives log files
+
+Some formerly included programs are now distributed separately:
+
+cf/
+    cf reads lines from stdin and if the line begins with a number,
+    then it assumes that the number corresponds to a Unix timestamp
+    and replaces it with the corresponding local time in a readable
+    format.  Useful for running on log files.  See cf/cf.man.txt for
+    documentation.
+
+    Available at ftp://ee.lbl.gov/cf.tar.gz
+
+hf/
+	The main utility in this subdirectory is hf, which translates
+	any dotted-quad (in text) appearing on stdin to the corresponding
+	DNS hostname (via a PTR lookup) on stdout.
+
+    Available at ftp://ee.lbl.gov/hf.tar.gz
+
+create-cert/
+    A tool to create SSL certificates for secure Bro/Broccoli
+    communication.
+
+    Available at ftp://ee.lbl.gov/create-cert.tar.gz
+
