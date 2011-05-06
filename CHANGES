@@ -1,8 +1,10 @@
+0.1 | 2011-04-01 16:28:22 -0700
 
-Sat Nov 27 12:19:47 PST 2010
+  * Converting build process to CMake. (Jon Siwek)
+    
+  * Removing cf/hf/ca-* from distribution. The README has a note where
+    to find them now. (Robin Sommer)
 
-- Merge with Subversion repository as of r7098. Incorporated change:
-
-    * The "cf" utility now ignores a leading "t=" prefix, for
-      compatibility with Bro's "tagged" logging format (Robin
-      Sommer).
+  * General cleanup. (Robin Sommer)
+    
+  * Initial import of bro/aux from SVN r7088. (Jon Siwek)
