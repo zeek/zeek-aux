@@ -1,8 +1,9 @@
-install(
-    PROGRAMS
-        host-to-addrs  lock_file
-        hot-report     mon-report
-        bro-logchk.pl  host-grep      ip-grep        mvlog
-    DESTINATION
-        scripts
-)
+include(InstallShellScript)
+InstallShellScript(scripts bro-logchk.pl)
+InstallShellScript(scripts host-grep)
+InstallShellScript(scripts host-to-addrs)
+InstallShellScript(scripts hot-report)
+InstallShellScript(scripts ip-grep)
+InstallShellScript(scripts lock_file)
+InstallShellScript(scripts mon-report)
+InstallShellScript(scripts mvlog)
