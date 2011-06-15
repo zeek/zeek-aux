@@ -28,7 +28,7 @@ rst/
 	RST tear-down packets.  See terminate_connection() in conn.bro.
 
 scripts/
-	A set of utility scripts for munching on Bro connection summaries.
+	A set of utility scripts for use with Bro.
 
 	bro_logchk: orders and scans through FTP and HTTP logs
 	host-grep: greps a summary file for a particular host's activities
@@ -37,6 +37,8 @@ scripts/
 	ip-grep: returns a grep pattern for a given IP address
 	mon-report: summarizes a particular host's activity
 	mvlog: compresses and archives log files
+    gen-mozilla-ca-list.rb: generate list of Mozilla SSL root
+        certificates in a format readable by Bro.
 
 Some formerly included programs are now distributed separately:
 
