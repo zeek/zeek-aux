@@ -101,7 +101,7 @@ function start_changes_entry
     fi
 }
 
-function make_changes_entry
+function add_to_changes_entry
 {
    rev=$1
    dst=$2
@@ -115,17 +115,6 @@ function make_changes_entry
 
    echo >>$dst
 
-   version=`version $rev`
-   if [ "$version" == "" ]; then
-       echo "Cannot determine version for $rev."
-       exit 1
-   fi
-
-
-   start_changes_entry $version $dst
-
-   echo >>$dst
-
    if [ "$bro_style" == "0" ]; then
            bullet="  *"
        else
@@ -134,8 +123,6 @@ function make_changes_entry
 
    ( echo -n "$msg"; printf " (%s)" "$author" ) \
        | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' >>$dst
-
-   echo >>$dst
 
    return 0;
 }
@@ -252,6 +239,16 @@ echo
 
 found=0
 
+echo >>$tmp
+
+version=`version $rev`
+if [ "$version" == "" ]; then
+    echo "Cannot determine version for $rev."
+    exit 1
+fi
+
+start_changes_entry $version $tmp
+
 for rev in `$git_rev_list ^$last_rev`; do
 
    version=`version $rev`
@@ -260,15 +257,17 @@ for rev in `$git_rev_list ^$last_rev`; do
         version="<no-version>"
    fi
 
-   printf "%15s |" $version
+   # printf "%15s |" $version
 
    eval "$git_rev_summary $rev | grep -v '^$' | cat" 
 
-   if make_changes_entry $rev $tmp; then
+   if add_to_changes_entry $rev $tmp; then
        found=1
    fi
 
 done
+
+echo >>$tmp
 
 if [ "$found" == "0" ]; then
     echo "  None."
