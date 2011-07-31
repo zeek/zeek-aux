@@ -1,183 +1,270 @@
 #! /usr/bin/env bash
 #
-# Assembles a draft CHANGES entry out of recent commits. The entry is prepended
-# to the current CHANGES file and the user then gets a chance to further edit
-# it in the editor before it gets committed. Also updates the VERSION file.
+# Assembles a draft CHANGES entry out of revisions committed since the last
+# entry was added. The entry is prepended to the current CHANGES file, and the user
+# then gets a chance to further edit it in the editor before it gets committed.
 #
-# If $1 is given, it's interpreted as a release version and a correspondign
+# The script also maintains and updates a VERSION file.
+#
+# If the script finds a file called .update-changes.cfg it sources it at beginning. That
+# script can define a function "new_version_hook" that will be called with the new
+# version number. It may use any of the replace_version_* function defined below
+# to update other files as necessary.
+#
+# If $1 is given, it's interpreted as a release version and a corresponding
 # tag is created.
-#
-# The script is not the fastest when there are many commits since the last update
-# so better run it regularly ...
-#
-# (This script needs a clean up ...)
 
-function my_describe
+file_changes="CHANGES"              # The CHANGES file.
+file_version="VERSION"              # The VERSION file.
+file_config=".update-changes.cfg"   # This will be sourced if available.
+new_version_hook="new_version_hook" # Function that will be called with new version number.
+
+# The command line used to generate a revision's version string.
+git_describe="git describe --always" # {rev} will be added.
+
+# The command line used to generate a revision's date. The revision will be appended.
+# Not used with Bro style.
+git_rev_date="git show -s --pretty=tformat:%ci"
+
+# The command line used to generate the list of revision between old and new state.
+git_rev_list="git rev-list --topo-order HEAD" # ^{past-rev} will be added.
+
+# The command line used to show the one-line summary of a revision before editing.
+git_rev_summary="git show -s '--pretty=tformat: %h | %aN | %s'"  # {rev} will be added.
+
+# The command line used to get a revision's author.
+git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
+
+# The command line used to get a revision's message.
+git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
+
+if [ -e $file_config ]; then
+    source $file_config
+fi
+
+function usage
 {
-    # "git describe" also counts commits on other than the main parent's path. This version doesn't.
-    rev=$1
-
-    if [ "$rev" == "" ]; then
-        rev=HEAD
-    fi
-
-    last_tag="<untagged>"
-    last_tag_rev="<norev>"
-
-    for i in `git rev-list --first-parent $rev`; do
-        tag=`git describe --exact-match $i 2>/dev/null`;
-        if [ "$tag" != "" ]; then
-            last_tag="$tag"
-            last_tag_rev="$i"
-            break;
-        fi
-    done
-
-    cnt=0
-
-    for i in `git rev-list --first-parent $rev`; do
-        if [ "$i" == "$last_tag_rev" ]; then
-            break
-        fi
-
-        cnt=`expr $cnt '+' 1`
-    done
-
-    if [ "$cnt" == "0" ]; then
-        cnt=""
-    else
-        abbr=`git show --abbrev-commit --pretty=oneline $rev | head -1 | cut -d ' ' -f 1`
-        cnt="-$cnt-$abbr"
-    fi
-
-    echo "$last_tag$cnt"
-}
-
-function normed_describe
-{
-    # $1 may be emty.
-    d=`my_describe $1 | sed 's/^v//g' | sed "s/-[^-]*$//g" | sed 's/ //g'`
-
-    if [ "$bro_style" == "1" ]; then
-        d=`echo $d | sed 's/-\([0-9]*\)$/.\\1/'`
-    fi
-
-    echo -n $d
-}
-
-if [ "$1" == "-I" ]; then
-    echo Initializing CHANGES file.
-    init=1
-    shift
-fi
-
-if [ "$1" != "" ]; then
-    NEWVERSION=$1
-    ( echo $NEWVERSION | egrep -vq '^[0-9]+\.[0-9]+' ) && echo "Version must be of the form X.Y[.Z]" && exit 1
-fi
-
-changes=CHANGES
-version=VERSION
-
-if grep -q -- '-+-+-+-+-+-+-+-+-+-' $changes; then
-    # With Bro's CHANGES file, we use a slightly different style.
-    bro_style=1
-else
-    bro_style=0
-fi
-
-tmp=${changes}.tmp
-trap "rm -f $tmp" EXIT
-
-version_short=`normed_describe`
-version_full=`git describe 2>/dev/null  | sed 's/^v//g'`
-
-if [ "$NEWVERSION" == "" ]; then
-    version_string=$version_short
-else
-    version_string=$NEWVERSION
-fi
-
-if [ "$version_short" == "" ]; then
-    echo "can't generate version_short string"
+    echo "usage: `basename $0` [options]"
+    echo
+    echo "    -p <rev>    Explicitly name the past revision to compare with."
+    echo "    -R <tag>    Tag the current revision as a release."
+    echo "    -I          Initialize a new, initially empty CHANGES file."
+    echo
     exit 1
-fi
+}
 
-if [ "$init" == "1" ]; then
-   echo >>$changes
-   printf '%s | ' $version_string >$changes
-   git show -s "--pretty=tformat:%ci" master >>$changes
-   echo >>$changes
-   echo "  * Starting $changes." >>$changes
-   exit 0
-fi
+### Functions that can be used to replace version strings in other files.
+### To use them, create a file $file_config and define a function "new_version_hook"
+### in there that does whatever is necessary, like calling any of thse.
 
-# Get the last entry for which we recorded entries.
-last=`cat $changes | awk '{print $1}' | egrep '[0-9]+\.[0-9]+' | head -1 | sed 's/ //g'`
+# Function that looks for lines of the form 'VERSION="1.2.3"' in $1. It will replace
+# the version number with $2 and then git-adds the change.
+function replace_version_in_script
+{
+    file=$1
+    version=$2
 
-# Get the corresponding revision.
-not_last_rev=""
-for i in `git rev-list --first-parent HEAD`; do
-    descr=`normed_describe $i`
-    #echo "### debug: $i $descr $last"
-    echo -n .
-    if [ "$descr" == "$last" ]; then
-        not_last_rev="^$i"
-        break;
+    cat $file | sed "s#^\\( *VERSION *= *\\)\"\\([0-9.-]\\{1,\\}\\)\"#\1\"$version\"#g" >$file.tmp && mv $file.tmp $file
+    git add $file
+}
+
+# Function that looks for lines of the form '.. |version| replace:: 0.3' in $1. It will replace
+# the version number with $2 and then git-adds the change.
+function replace_version_in_rst
+{
+    file=$1
+    version=$2
+
+    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9.-]\\{1,\\}\\)#\1\"$version\"#g" >$file.tmp && mv $file.tmp $file
+    git add $file
+}
+
+###
+
+function version
+{
+    rev=$1
+    $git_describe $rev 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g'
+}
+
+function start_changes_entry
+{
+    version=$1
+    dst=$2
+
+    if [ "$bro_style" == "0" ]; then
+        date=`$git_rev_date HEAD`
+        printf '%s | %s\n' "$version" "$date" >>$dst
+    else
+        date=`date`
+        printf '%s %s\n' "$version" "$date" >>$dst
     fi
-done
+}
 
-echo
+function make_changes_entry
+{
+   rev=$1
+   dst=$2
 
-if [ "$last" = "" -o "$not_last_rev" = "" ]; then
-    echo "Warning: cannot locate previous entry, assuming all is new ... ($last/$not_last_rev)"
-else
-    echo "New revisions since" $last
-fi
+   author=`$git_author $rev`
+   msg=`$git_msg $rev`
 
-echo
+   if [ "$msg" == "" ]; then
+       return 1
+   fi
 
-rm -f $tmp
+   echo >>$dst
 
-if [ "$bro_style" != "1" ]; then
-    printf '%s | ' $version_short >$tmp
-    git show -s "--pretty=tformat:%ci" master >>$tmp
-else
-    printf '%s %s' $version_short "`date`" >$tmp
-fi
+   version=`version $rev`
+   if [ "$version" == "" ]; then
+       echo "Cannot determine version for $rev."
+       exit 1
+   fi
 
-echo >>$tmp
-# echo >>$tmp
 
-found=0
+   start_changes_entry $version $dst
 
-# echo "### debug: git rev-list --topo-order $not_last_rev HEAD"
+   echo >>$dst
 
-for rev in `git rev-list --topo-order $not_last_rev HEAD`; do
-
-   rev_describe=`normed_describe $rev`
-
-   # echo "### debug: $rev $rev_describe $last"
-
-   #if [ "$rev_describe" == "$last" ]; then
-   #    break;
-   #fi
-
-   git show -s "--pretty=tformat:  %h | %aN | %s" $rev | cat
-
-   author=`git show -s "--pretty=format:%aN" $rev`
-   msg=`git show -s "--pretty=format:%B" $rev`
-
-   if [ "$msg" != "" ]; then
-
-       if [ "$bro_style" != "1" ]; then
+   if [ "$bro_style" == "0" ]; then
            bullet="  *"
        else
            bullet="-"
-       fi
+   fi
 
-       ( echo -n "$msg"; printf " (%s)" "$author" ) | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' >>$tmp
-       echo >>$tmp
+   ( echo -n "$msg"; printf " (%s)" "$author" ) \
+       | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' >>$dst
+
+   echo >>$dst
+
+   return 0;
+}
+
+function init_changes
+{
+   echo >>$file_changes
+   start_changes_entry `version HEAD` $file_changes
+   echo >>$file_changes
+   echo "  * Starting $file_changes." >>$file_changes
+}
+
+function get_last_rev
+{
+    version=`cat $file_changes | egrep '^[0-9a-zA-Z.-]+  *\|' | head -1 | awk '{print $1}'`
+
+    if echo $version | grep -q -- '-'; then
+        # v1.0.4-14
+        # Find the revision with that number.
+        for rev in `git rev-list HEAD`; do
+            v=`version $rev`
+
+            if [ "$v" == "$version" ]; then
+                echo $rev
+                return
+            fi
+        done
+
+        echo "Cannot determine revision for version $version." >/dev/stderr
+        exit 1
+
+    else
+        # A tag.
+        echo "v$version"
+    fi
+}
+
+function check_release_tag
+{
+    if [ "$release" != "" ]; then
+        git tag -d $release 2>/dev/null
+        git tag -a $release -m "Version $$NEWVERSION"
+        echo "Tagged with new tag $release. Don't forget to 'git push --tags'."
+    fi
+}
+
+last_rev=""
+release=""
+init=0
+
+while getopts "hp:R:I" opt; do
+    case "$opt" in
+        p) last_rev="$OPTARG";;
+        R) release="$OPTARG";;
+        I) init=1;;
+        *) usage;;
+
+        h) iusaprintHelpAndExit 0;;
+    esac
+done
+
+bro_style=0        # If 1, we use a slightly different format. 
+
+if [ "$init" != "0" ]; then
+    if [ -e $file_changes ]; then
+        echo "$file_changes already exists, remove it first."
+        exit 1
+    else
+        echo "Initializing $file_changes ..."
+        init_changes
+        exit 0
+    fi
+else
+    if [ ! -e $file_changes ]; then
+        echo "$file_changes does not exist, initialize it with '-I'."
+        exit 1
+    else
+        # If we find this marker, it's Bro-style CHANGES file.
+        grep -vq -- '-+-+-+-+-+-+-+-+-+-' $file_changes;
+        bro_style=$?
+    fi
+fi
+
+if [ "$release" != "" ]; then
+    if ! echo $release | egrep -q '^v[0-9]+\.[0-9]+'; then
+        echo "Release tag must be of the form vX.Y[.Z]"
+        exit 1
+    fi
+fi
+
+if [ "$last_rev" == "" ]; then
+    last_rev=`get_last_rev`
+fi
+
+if [ "$last_rev" == "" ]; then
+    echo 'Cannot determine previous revision to compare with, specify with "-p <rev>"'.
+    exit 1
+fi
+
+new_version=`version HEAD`
+
+if [ "$new_version" == "" ]; then
+    echo "cannto determine version for HEAD did not return anything."
+    exit 1
+fi
+
+tmp=${changes}.$$.tmp
+trap "rm -f $tmp" EXIT
+rm -f $tmp
+
+echo "New version is $new_version."
+echo "Listing revisions commited since `version $last_rev` ($last_rev) ... "
+echo
+
+found=0
+
+for rev in `$git_rev_list ^$last_rev`; do
+
+   version=`version $rev`
+
+   if [ "$version" == "" ]; then
+        version="<no-version>"
+   fi
+
+   printf "%15s |" $version
+
+   eval "$git_rev_summary $rev | grep -v '^$' | cat" 
+
+   if make_changes_entry $rev $tmp; then
        found=1
    fi
 
@@ -186,36 +273,61 @@ done
 if [ "$found" == "0" ]; then
     echo "  None."
     echo
+    check_release_tag
 
-    if [ "$NEWVERSION" == "" ]; then
-        exit 0
+    if [ "$release" != "" ]; then
+        echo
+        echo "Note: you need to manually adapt the most recent entry in $file_changes"
+        echo "to match the new version. This script will fail next time if not."""
     fi
+
+    exit 0
 fi
 
-# echo >>$tmp
-cat $changes >>$tmp
-
-echo
+cat $file_changes >>$tmp
 
 # If we are ahead of origin, we can amend. If not, we need to create a new commit.
-if git status | grep -q "is ahead of 'origin/master'"; then
-    echo CHANGES modifications will be amended to last commit.
-    amend=1
+amend=0
+if git remote | grep -q origin; then
+    if git rev-list origin..HEAD | grep -q .; then
+        amend=1
+    fi
 else
-    echo CHANGES modifications will become a new commit.
-    amend=0
+    amend=1
 fi
 
 echo
-echo Type Enter to edit new $changes, or CTRL-C to abort without changes.
+
+if [ "$amend" == "0" ]; then
+    echo Update to $file_changes will become a new commit.
+else
+    echo Update to $file_changes will be amended to last commit.
+fi
+
+
+echo
+echo Type Enter to edit new $file_changes, or CTRL-C to abort without any modifications.
 read
+
+# Run editor.
 eval $EDITOR $tmp
 
-rm -f $changes.bak
-mv $tmp $changes
-echo $version_string >$version
+# Put changes in place.
+mv $tmp $file_changes
+echo "Updated $file_changes."
 
-git add $changes $version
+if [ "$file_version" != "" ]; then
+    echo $new_version >$file_version
+    echo "Updated $version to $new_version."
+fi
+
+# Call hook function if it exists.
+if type $1 $new_version_hook 2>/dev/null; then
+    $new_version_hook $new_version
+fi
+
+# Commit changes.
+git add $file_changes $version
 
 if [ "$amend" == "1" ]; then
     git commit --amend
@@ -223,12 +335,6 @@ else
     git commit
 fi
 
-echo "Old $tmp in saved in ${changes}.bak."
-echo "Set $version to $version_string."
+echo "Updates committed."
 
-if [ "$NEWVERSION" != "" ]; then
-    git tag -d v$NEWVERSION 2>/dev/null
-    git tag -a v$NEWVERSION -m "Version $$NEWVERSION"
-    echo Created new tag v$NEWVERSION.
-fi
-
+check_release_tag
