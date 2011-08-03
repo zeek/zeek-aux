@@ -75,7 +75,7 @@ function replace_version_in_rst
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9.-]\\{1,\\}\\)#\1\"$version\"#g" >$file.tmp && mv $file.tmp $file
+    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9.-]\\{1,\\}\\)#\1$version#g" >$file.tmp && mv $file.tmp $file
     git add $file
 }
 
@@ -184,7 +184,7 @@ while getopts "hp:R:I" opt; do
     esac
 done
 
-bro_style=0        # If 1, we use a slightly different format. 
+bro_style=0        # If 1, we use a slightly different format.
 
 if [ "$init" != "0" ]; then
     if [ -e $file_changes ]; then
@@ -259,7 +259,7 @@ for rev in `$git_rev_list ^$last_rev`; do
 
    # printf "%15s |" $version
 
-   eval "$git_rev_summary $rev | grep -v '^$' | cat" 
+   eval "$git_rev_summary $rev | grep -v '^$' | cat"
 
    if add_to_changes_entry $rev $tmp; then
        found=1
@@ -321,12 +321,12 @@ if [ "$file_version" != "" ]; then
 fi
 
 # Call hook function if it exists.
-if type $1 $new_version_hook 2>/dev/null; then
+if type $1 $new_version_hook >/dev/null 2>&1; then
     $new_version_hook $new_version
 fi
 
 # Commit changes.
-git add $file_changes $version
+git add $file_changes $file_version
 
 if [ "$amend" == "1" ]; then
     git commit --amend
