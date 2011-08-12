@@ -122,7 +122,8 @@ function add_to_changes_entry
    fi
 
    ( echo -n "$msg"; printf " (%s)" "$author" ) \
-       | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' >>$dst
+       | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' \
+       | sed 's/[\t ]*$//' >>$dst
 
    return 0;
 }
