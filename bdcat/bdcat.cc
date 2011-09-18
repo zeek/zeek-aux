@@ -1,5 +1,3 @@
-// $Id: bdcat.cc 6 2004-04-30 00:31:26Z jason $
-//
 // Decrypts Bro's log files.
 //
 // Usage: bdcat [-k file-with-secret-rsa-key] [files...]

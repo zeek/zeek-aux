@@ -1,4 +1,3 @@
-/* $Id;$ */
 /* Written by Bernhard Ager (2007). */
 
 #include <unistd.h>

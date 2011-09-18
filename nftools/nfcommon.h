@@ -1,4 +1,3 @@
-/* $Id:$ */
 /* Written by Bernhard Ager (2007). */
 /* For now this only works with IPv4. */
 

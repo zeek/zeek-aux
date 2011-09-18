@@ -1,5 +1,3 @@
-/* $Id: rst.c 7073 2010-09-13 00:45:02Z vern $ */
-
 /* Derived from traceroute, which has the following copyright:
  *
  * Copyright (c) 1999, 2002
@@ -24,8 +22,6 @@
 #ifndef lint
 static const char copyright[] =
     "@(#) Copyright (c) 1999, 2002\nThe Regents of the University of California.  All rights reserved.\n";
-static const char rcsid[] =
-    "@(#) $Id: rst.c 7073 2010-09-13 00:45:02Z vern $ (LBL)";
 #endif
 
 /* need this due to linux's funny idea of a tcphdr */

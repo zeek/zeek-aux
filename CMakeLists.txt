@@ -106,7 +106,6 @@ add_subdirectory(adtrace)
 add_subdirectory(bdcat)
 add_subdirectory(nftools)
 add_subdirectory(rst)
-add_subdirectory(scripts)
 
 ########################################################################
 ## Build Summary
