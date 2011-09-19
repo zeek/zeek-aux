@@ -6,4 +6,4 @@ add_executable(rst ${rst_SRCS})
 
 target_link_libraries(rst)
 
-install(TARGETS rst DESTINATION bin)
+AddAuxInstallTarget(rst)

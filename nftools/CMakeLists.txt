@@ -9,7 +9,7 @@ add_executable(ftwire2bro ${ftwire2bro_SRCS})
 
 target_link_libraries(ftwire2bro)
 
-install(TARGETS ftwire2bro DESTINATION bin)
+AddAuxInstallTarget(ftwire2bro)
 
 ########### nfcollector target ###############
 
@@ -22,4 +22,4 @@ add_executable(nfcollector ${nfcollector_SRCS})
 
 target_link_libraries(nfcollector)
 
-install(TARGETS nfcollector DESTINATION bin)
+AddAuxInstallTarget(nfcollector)

@@ -102,10 +102,37 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 ########################################################################
 ## Recurse on sub-directories
 
+# For binary packaging or if this is the main CMake project, go through
+# the regular install target, else use a custom target so programs
+# have to be explicitly installed by the user via "make install-aux"
+macro(AddAuxInstallTarget _target)
+    if (BINARY_PACKAGING_MODE OR
+        "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+        install(TARGETS ${_target} DESTINATION bin)
+    else ()
+        get_property(_target_loc TARGET ${_target} PROPERTY LOCATION)
+        add_custom_target(install-${_target}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                    ${CMAKE_INSTALL_PREFIX}/bin
+            COMMAND ${CMAKE_COMMAND} -E copy ${_target_loc}
+                    ${CMAKE_INSTALL_PREFIX}/bin)
+        add_dependencies(install-${_target} ${_target})
+        set(AUX_TARGETS install-${_target};${AUX_TARGETS})
+        set(AUX_TARGETS ${AUX_TARGETS} PARENT_SCOPE)
+    endif ()
+endmacro(AddAuxInstallTarget)
+
 add_subdirectory(adtrace)
 add_subdirectory(bdcat)
 add_subdirectory(nftools)
 add_subdirectory(rst)
+
+if (NOT (BINARY_PACKAGING_MODE OR
+         "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}") )
+    add_custom_target(install-aux
+        COMMENT "Bro auxiliary tools installed to ${CMAKE_INSTALL_PREFIX}/bin")
+    add_dependencies(install-aux ${AUX_TARGETS})
+endif ()
 
 ########################################################################
 ## Build Summary
