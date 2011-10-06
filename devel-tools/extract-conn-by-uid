@@ -30,8 +30,13 @@ fi
 
 echo filter: $filter
 
-out=$trace.$uid
+out=`basename $trace`.$uid
 
-tcpdump -r $trace -w $out "$filter"
+if echo $trace | grep -q '\.gz$'; then
+    cat $trace | gunzip | tcpdump -r - -w $out "$filter"
+else
+    tcpdump -r $trace -w $out "$filter"
+fi
 
 echo connection in $out
+ls -al $out
