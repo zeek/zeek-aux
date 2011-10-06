@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+#
+# This runs a number of Bro configurations on trace $2. It
+# starts with the bare config and then
+# kept adding the scripts load from init-default.bro and local.bro one
+# by one, measuring user time for each run (i.e., the measurements are
+# cumulative).
+
+if [ "$2" == "" ]; then
+    echo "usage: `basename $0` <brodir> <trace>"
+    exit 1
+fi
+
+bro=$1
+trace=$2
+tmp=/tmp/bench.$$.bro
+
+export BROPATH=`$bro/build/bro-path-dev`
+
+cat </dev/null >$tmp
+
+cat $bro/scripts/base/init-default.bro $bro/scripts/site/local.bro | grep '^ *@load' | while read line; do
+    echo $line >>$tmp
+    script=`echo $line | awk '{print $2}' | sed 's#/#.#g'`
+    output="bench.output.$script.log"
+
+    ( time -p $bro/build/src/bro -b -r $trace $tmp )  >$output 2>&1
+    user=`cat $output | grep user | awk '{print $2}'`
+    printf "%40s %s\n" $script $user
+done
+
+rm -f $tmp
+
+
+
