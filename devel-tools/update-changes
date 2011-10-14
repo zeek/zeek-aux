@@ -18,6 +18,8 @@ file_changes="CHANGES"              # The CHANGES file.
 file_version="VERSION"              # The VERSION file.
 file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
+release_tag="release"               # We mark the current release with this tag.
+beta_tag="beta"               # We mark the current beta with this tag.
 
 # The command line used to generate a revision's version string.
 git_describe="git describe --always" # {rev} will be added.
@@ -39,6 +41,7 @@ git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
 git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
 
 if [ -e $file_config ]; then
+    echo Reading $file_config ...
     source $file_config
 fi
 
@@ -48,6 +51,7 @@ function usage
     echo
     echo "    -p <rev>    Explicitly name the past revision to compare with."
     echo "    -R <tag>    Tag the current revision as a release."
+    echo "    -B <tag>    Tag the current revision as a beta release."
     echo "    -I          Initialize a new, initially empty CHANGES file."
     echo
     exit 1
@@ -105,9 +109,15 @@ function add_to_changes_entry
 {
    rev=$1
    dst=$2
+   msg=$3
 
-   author=`$git_author $rev`
-   msg=`$git_msg $rev`
+   whoami=`whoami`
+   author=`cat /etc/passwd | grep '$whoami:'`
+
+   if [ "$msg" == "" ]; then
+       author=`$git_author $rev`
+       msg=`$git_msg $rev`
+   fi
 
    if [ "$msg" == "" ]; then
        return 1
@@ -121,7 +131,7 @@ function add_to_changes_entry
            bullet="-"
    fi
 
-   ( echo -n "$msg"; printf " (%s)" "$author" ) \
+   ( echo -n "$msg"; test "$author" != "" && printf " (%s)" "$author" ) \
        | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' \
        | sed 's/[\t ]*$//' >>$dst
 
@@ -164,26 +174,72 @@ function get_last_rev
 function check_release_tag
 {
     if [ "$release" != "" ]; then
+        git tag -d $release_tag 2>/dev/null
+        git tag -a $release_tag -m "Current stable release $$NEWVERSION."
+        sleep 2 # Make sure git describe picks the next one.
         git tag -d $release 2>/dev/null
         git tag -a $release -m "Version $$NEWVERSION"
-        echo "Tagged with new tag $release. Don't forget to 'git push --tags'."
+        echo "Tagged with new tag $release and moved tag 'release' to here."
+        echo
+        echo "IMPORTANT: Don't forget to 'git push --tags'."
     fi
 }
 
+function check_beta_tag
+{
+    if [ "$beta" != "" ]; then
+        git tag -d $beta_tag 2>/dev/null
+        git tag -a $beta_tag -m "Current stable beta $$NEWVERSION."
+        sleep 2 # Make sure git describe picks the next one.
+        git tag -d $beta 2>/dev/null
+        git tag -a $beta -m "Version $$NEWVERSION"
+        echo "Tagged with new tag $beta and moved tag 'beta' to here."
+        echo
+        echo "IMPORTANT: Don't forget to 'git push --tags'."
+    fi
+}
+
+function check_submodules
+{
+   if git submodule status --recursive | grep ^+; then
+       cat <<EOF
+
+The revision recorded for the module(s) above does not
+match the one currently checked out in the respective
+subdirs.
+
+Please either update or checkout the recorded revision(s).
+
+Aborting.
+EOF
+
+       exit 1
+   fi
+}
+
+######
+
 last_rev=""
 release=""
+beta=""
 init=0
 
 while getopts "hp:R:I" opt; do
     case "$opt" in
         p) last_rev="$OPTARG";;
         R) release="$OPTARG";;
+        B) beta="$OPTARG";;
         I) init=1;;
         *) usage;;
 
         h) iusaprintHelpAndExit 0;;
     esac
 done
+
+if [ "$release" != "" -a "$beta" != "" ]; then
+    echo "Cannot tag as both beta and release."
+    exit 1
+fi
 
 bro_style=0        # If 1, we use a slightly different format.
 
@@ -212,6 +268,17 @@ if [ "$release" != "" ]; then
         echo "Release tag must be of the form vX.Y[.Z]"
         exit 1
     fi
+
+    check_submodules
+fi
+
+if [ "$beta" != "" ]; then
+    if ! echo beta | egrep -q '^v[0-9]+\.[0-9]+-beta'; then
+        echo "Release tag must be of the form vX.Y[.Z]-beta*"
+        exit 1
+    fi
+
+    check_submodules
 fi
 
 if [ "$last_rev" == "" ]; then
@@ -243,12 +310,21 @@ found=0
 echo >>$tmp
 
 version=`version $rev`
+
 if [ "$version" == "" ]; then
     echo "Cannot determine version for $rev."
     exit 1
 fi
 
-start_changes_entry $version $tmp
+if [ "$release" != "" ]; then
+    new_version=`echo $release | sed 's/v//g'`
+fi
+
+if [ "$beta" != "" ]; then
+    new_version=`echo $beta | sed 's/v//g'`
+fi
+
+start_changes_entry $new_version $tmp
 
 for rev in `$git_rev_list ^$last_rev`; do
 
@@ -268,21 +344,18 @@ for rev in `$git_rev_list ^$last_rev`; do
 
 done
 
-echo >>$tmp
-
 if [ "$found" == "0" ]; then
     echo "  None."
     echo
-    check_release_tag
 
-    if [ "$release" != "" ]; then
-        echo
-        echo "Note: you need to manually adapt the most recent entry in $file_changes"
-        echo "to match the new version. This script will fail next time if not."""
+    if [ "$release" != "" -o "$beta" != "" ]; then
+        add_to_changes_entry head $tmp "Release $new_version."
+    else
+        exit 0
     fi
-
-    exit 0
 fi
+
+echo >>$tmp
 
 cat $file_changes >>$tmp
 
@@ -322,7 +395,7 @@ if [ "$file_version" != "" ]; then
 fi
 
 # Call hook function if it exists.
-if type $1 $new_version_hook >/dev/null 2>&1; then
+if type $new_version_hook >/dev/null 2>&1; then
     $new_version_hook $new_version
 fi
 
@@ -338,3 +411,4 @@ fi
 echo "Updates committed."
 
 check_release_tag
+check_beta_tag

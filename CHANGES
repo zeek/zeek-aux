@@ -1,3 +1,42 @@
+
+0.2 | 2011-10-18 11:14:13 -0700
+
+  * devel-tools/update-changes now looks for a 'release' tag to
+    idenfify the stable version, and 'beta' for the beta versions.
+    (Robin Sommer).
+
+  * Distribution cleanup. (Robin Sommer)
+
+  * New script devel-tools/make-release to create source tar balls.
+    (Robin Sommer)
+
+  * Removing bdcat. With the new log format, this isn't very useful
+    anymore. (Robin Sommer)
+
+  * Adding script that shows all pending git fastpath commits. (Robin
+    Sommer)
+
+  * Script to measure CPU time by loading an increasing set of
+    scripts. (Robin Sommer)
+
+  * extract-conn script now deals wit *.gz files. (Robin Sommer)
+
+  * Tiny update to output a valid CA list file for SSL cert
+    validation. (Seth Hall)
+
+  * Adding "install-aux" target. Addresses #622. (Jon Siwek)
+
+  * Distribution cleanup. (Jon Siwek and Robin Sommer)
+
+  * FindPCAP now links against thread library when necessary (e.g.
+    PF_RING's libpcap) (Jon Siwek)
+
+  * Install binaries with an RPATH (Jon Siwek)
+
+  * Workaround for FreeBSD CMake port missing debug flags (Jon Siwek)
+
+  * Rewrite of the update-changes script. (Robin Sommer)
+
 0.1-1 | 2011-06-14 21:12:41 -0700
 
   * Add a script for generating Mozilla's CA list for the SSL analyzer.
@@ -6,10 +45,10 @@
 0.1 | 2011-04-01 16:28:22 -0700
 
   * Converting build process to CMake. (Jon Siwek)
-    
+
   * Removing cf/hf/ca-* from distribution. The README has a note where
     to find them now. (Robin Sommer)
 
   * General cleanup. (Robin Sommer)
-    
+
   * Initial import of bro/aux from SVN r7088. (Jon Siwek)

@@ -1,0 +1,97 @@
+#! /usr/bin/env bash
+#
+# Makes release tarballs for the repository in the current directory;
+# and if --recursive is given, also for all submodules.
+
+DEST="`pwd`/build/dist" # Where to put the TGZs.
+LOGS="$DEST/.log" # Where to put build logs.
+
+dists=""
+
+function usage()
+{
+    echo "Usage: `basename $0` [--recursive]"
+}
+
+function release()
+{
+    mod=$1
+    tmp="$LOGS/make-release.`basename $mod`.log"
+
+    cat </dev/null >$tmp
+
+    echo "--- Building distribution for $mod" >&2
+    echo "Log in $tmp."  >&2
+
+    if [ -e ./configure ]; then
+         ./configure >$tmp 2>&1
+    fi
+
+    make dist >$tmp 2>&1
+
+    cat $tmp | awk '/CPack:.*generated/ {print $4} /^Package: / {print $2}' | while read tgz; do
+        if echo $tgz | grep -qv ^/; then
+            tgz="`pwd`/$tgz"
+        fi
+
+        version=`git tag --contains HEAD | egrep 'release|beta'`
+
+        if [ "$version" == "" ]; then
+            version="git"
+        fi
+
+        echo "Distribution in $tgz ($version)"  >&2
+        ls -al $tgz | awk '{print "    ", $0; }' >&2
+
+        echo "$tgz#$version"
+    done
+}
+
+if [ "$1" == "--recursive" ]; then
+    submodules=1
+    shift
+fi
+
+if [ "$submodules" == "1" ]; then
+    mods=`git submodule foreach -q --recursive pwd | grep -v /cmake`
+fi
+
+install -d $DEST
+install -d $LOGS
+
+mods="$mods ."
+
+build=
+
+for mod in $mods; do
+    cwd=`pwd`
+    cd $mod
+
+    if [ "$mod" = "." ]; then
+        mod=`pwd`
+        mod=`basename $mod`
+    fi
+
+    dist=`release $mod`
+    ( echo $dist | grep -qv "^ *$" ) || echo "No distribution found for $mod."
+
+    dists="$dists $dist"
+    echo
+
+    cd $cwd
+done
+
+for dist in $dists; do
+    tgz=`echo $dist | cut -d '#' -f 1`
+    version=`echo $dist | cut -d '#' -f 2`
+
+    install -d $DEST/$version
+    cp $tgz $DEST/$version
+done
+
+echo "--- All distributions in $DEST:"
+
+all=`find $DEST -path '*gz'`
+test "$all" != "" && ls -rl $all || echo "None."
+echo
+
