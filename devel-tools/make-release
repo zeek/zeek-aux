@@ -52,11 +52,6 @@ if [ "$submodules" == "1" ]; then
     mods=`git submodule foreach -q --recursive pwd | grep -v /cmake`
 fi
 
-# restore all git repos to pristine condition by removing any changes
-# to tracked files and also deleting any untracked files
-git submodule foreach -q --recursive git reset -q --hard HEAD
-git submodule foreach -q --recursive git clean -xdf
-
 install -d $DEST
 install -d $LOGS
 
