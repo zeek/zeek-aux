@@ -23,10 +23,6 @@ function release()
     echo "--- Building distribution for $mod" >&2
     echo "Log in $tmp."  >&2
 
-    if [ -e ./configure ]; then
-         ./configure >$tmp 2>&1
-    fi
-
     make dist >$tmp 2>&1
 
     cat $tmp | awk '/CPack:.*generated/ {print $4} /^Package: / {print $2}' | while read tgz; do
@@ -55,6 +51,11 @@ fi
 if [ "$submodules" == "1" ]; then
     mods=`git submodule foreach -q --recursive pwd | grep -v /cmake`
 fi
+
+# restore all git repos to pristine condition by removing any changes
+# to tracked files and also deleting any untracked files
+git submodule foreach -q --recursive git reset -q --hard HEAD
+git submodule foreach -q --recursive git clean -xd
 
 install -d $DEST
 install -d $LOGS
