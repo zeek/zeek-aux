@@ -11,30 +11,40 @@ default, bro-cut does not include format header blocks into the output.
 
 Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
 
-    -c   Include the first format header block into the output.
-    -C   Include all format header blocks into the output.
-    -d   Convert time values into humand-readable format (needs gawk)
+    -c       Include the first format header block into the output.
+    -C       Include all format header blocks into the output.
+    -d       Convert time values into humand-readable format (needs gawk).
+    -D <fmt> Like -d, but specify format for time (see strtime(3) for syntax).
+
+For time conversion, the def
 
 EOF
     exit 1
 }
 
+if [ "$BRO_CUT_TIMEFMT" != "" ]; then
+    timefmt=$BRO_CUT_TIMEFMT
+else
+    timefmt="%Y-%m-%dT%H:%M:%S%z"
+fi
+
 headers=0
-fmttime=0
+substtime=0
 awk=awk
 
 which gawk >/dev/null && awk=gawk
 
-while getopts "cCd" opt; do
+while getopts "cCdD:" opt; do
     case "$opt" in
         c) headers=1;;
         C) headers=2;;
-        d) fmttime=1;;
+        d) substtime=1;;
+        D) substtime=1; timefmt=$OPTARG;;
         *) usage;;
     esac
 done
 
-if [ "$fmttime" == 1 -a "$awk" != "gawk" ]; then
+if [ "$substtime" == 1 -a "$awk" != "gawk" ]; then
     echo "option -d only supported with gawk" >&2
     exit 1
 fi
@@ -42,7 +52,7 @@ fi
 shift $(($OPTIND - 1))
 fields=`echo $@ | sed 's/[ ,] */:/g'`
 
-$awk -v fields=$fields -v headers=$headers -v fmttime=$fmttime '
+$awk -v fields=$fields -v headers=$headers -v substtime=$substtime -v "timefmt=$timefmt" '
 
 function error(msg) {
     print "bro-cut error: " msg >"/dev/stderr";
@@ -109,7 +119,7 @@ BEGIN {
     for ( i = 1; i <= length(columns); ++i ) {
         val = $(int(columns[i]) + 1);
 
-        if ( $1 == "#types" && fmttime && times[i] == "1" )
+        if ( $1 == "#types" && substtime && times[i] == "1" )
             val = "string";
 
         printf("\t%s", val);
@@ -133,8 +143,8 @@ BEGIN {
         j = int(columns[i])
         val = $j
 
-        if ( fmttime && times[j] == "1" )
-            val = strftime(PROCINFO["strftime"], val);
+        if ( substtime && times[j] == "1" )
+            val = strftime(timefmt, val);
 
         if ( i > 1 )
             printf("\t%s", val);
