@@ -6,14 +6,13 @@ cat <<EOF
 
 `basename $0` [options] <columns>
 
-Extracts the given columns from an ASCII Bro log on standard input.
-Currently, only tab-separated logs are supported. By default,
-the format header is not included into the output.
+Extracts the given columns from an ASCII Bro log on standard input. By
+default, bro-cut does not include format header blocks into the output.
 
 Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
 
-    -h   Include the first format header into the output.
-    -H   Include all format headers into the output.
+    -c   Include the first format header block into the output.
+    -C   Include all format header blocks into the output.
     -d   Convert time values into humand-readable format (needs gawk)
 
 EOF
@@ -26,10 +25,10 @@ awk=awk
 
 which gawk >/dev/null && awk=gawk
 
-while getopts "hHd" opt; do
+while getopts "cCd" opt; do
     case "$opt" in
-        h) headers=1;;
-        H) headers=2;;
+        c) headers=1;;
+        C) headers=2;;
         d) fmttime=1;;
         *) usage;;
     esac
@@ -45,30 +44,47 @@ fields=`echo $@ | sed 's/[ ,] */:/g'`
 
 $awk -v fields=$fields -v headers=$headers -v fmttime=$fmttime '
 
-function print_header() {
-    return headers == 2 || (headers == 1 && first_header);
-}
-
 function error(msg) {
-    print msg >"/dev/stderr";
+    print "bro-cut error: " msg >"/dev/stderr";
     exit(1);
 }
 
+function asc(c) {
+    return sprintf("%c", c);
+}
+
+function hexdigit(d) {
+    digits="0123456789abcdef";
+    return index(digits, tolower(d)) - 1;
+}
+
+function parseSep(s) {
+    # s must be sequence of "\xXX"
+    if ( s == "" )
+        return "";
+
+    a = substr(s, 3, 1);
+    b = substr(s, 4, 1);
+    tail = substr(s, s + 5);
+
+    return asc(hexdigit(a) * 16 + hexdigit(b)) parseSep(tail);
+}
+
+function printHeader() {
+    return headers == 2 || (headers == 1 && first_header);
+}
+
 BEGIN {
-    FS="\t";
-    OFS="\t";
     first_header = 1;
-    split(fields, f, /:/);
-    for ( i = 1; i <= length(f); ++i )
+    n = split(fields, f, /:/);
+    for ( i = 1; i <= n; ++i )
         idx[f[i]] = i;
 }
 
-/^#separator \\x09/ {
-    next;
-}
-
 /^#separator/ {
-    error("bro-cut supports only tab-separated logs currently.");
+    split($0, s, / /);
+    FS = OFS = parseSep(s[2]);
+    next;
 }
 
 /^#fields/ {
@@ -79,7 +95,7 @@ BEGIN {
 
     for ( i = 1; i <= length(f); ++i ) {
         if ( columns[idx[f[i]]] == "" )
-            error("unknown field "  f[i]);
+            error("unknown field '" f[i] "'");
     }
 }
 
@@ -88,7 +104,7 @@ BEGIN {
         times[i-1] = ($i == "time");
 }
 
-/^#(fields|types)/ && print_header() {
+/^#(fields|types)/ && printHeader() {
     printf("%s", $1);
     for ( i = 1; i <= length(columns); ++i ) {
         val = $(int(columns[i]) + 1);
@@ -104,7 +120,7 @@ BEGIN {
 }
 
 /^#/ {
-    if ( print_header() )
+    if ( printHeader() )
         print;
 
     next;
