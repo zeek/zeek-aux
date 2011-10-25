@@ -3,14 +3,10 @@
 # Checks the current repository and all if its submodules for being
 # in "release shape".
 
-check_cmd='
-test -e CHANGES && (
-    printf "%20s: " " `basename \`git config --get remote.origin.url\``";
-    printf "%-25s " " `update-changes -c`"; 
-    printf "VERSION: %-10s  " `cat VERSION`;
-    printf "tags: %s" "`git tag -l --contains HEAD | sort -r | paste -sd \" \"`";
-    echo;
-    )'
+repo_status="`dirname $0`/repo-status"
+check_cmd="test -e CHANGES && $repo_status"
 
-eval $check_cmd
-git submodule foreach -q --recursive "$check_cmd; true"
+printf '    %20s    %-10s %-8s %-8s %-7s %-5s %-15s %s\n'  "" "Branch" "CHANGES" "Pending" "Modif" "Sub" "VERSION" "Tags"
+
+( eval $check_cmd; git submodule foreach -q --recursive "$check_cmd; true" ) \
+    | awk '/!/{print "-  ", $0; next;} {print "+  ", $0; next;}'

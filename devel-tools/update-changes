@@ -40,11 +40,6 @@ git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
 # The command line used to get a revision's message.
 git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
 
-if [ -e $file_config ]; then
-    echo Reading $file_config ...
-    source $file_config
-fi
-
 function usage
 {
     echo "usage: `basename $0` [options]"
@@ -231,21 +226,25 @@ beta=""
 init=0
 check=0
 quiet=0
-amend=0
 
-while getopts "hp:R:Ica" opt; do
+while getopts "hp:R:Ic" opt; do
     case "$opt" in
         p) last_rev="$OPTARG";;
         R) release="$OPTARG";;
         B) beta="$OPTARG";;
         I) init=1;;
         c) check=1; quiet=1;;
-        a) amend=1;;
         *) usage;;
-
-        h) iusaprintHelpAndExit 0;;
     esac
 done
+
+if [ -e $file_config ]; then
+    if [ "$quiet" != "1" ]; then
+        echo Reading $file_config ...
+    fi
+    source $file_config
+fi
+
 
 if [ "$release" != "" -a "$beta" != "" ]; then
     echo "Cannot tag as both beta and release."
@@ -324,7 +323,7 @@ found=0
 
 echo >>$tmp
 
-new_version=auto_version
+new_version=$auto_version
 version=`version $rev`
 
 if [ "$version" == "" ]; then
@@ -358,7 +357,9 @@ for rev in `$git_rev_list ^$last_rev`; do
 
    # printf "%15s |" $version
 
-   eval "$git_rev_summary $rev | grep -v '^$' | cat"
+   if [ "$quiet" != "1" ]; then
+       eval "$git_rev_summary $rev | grep -v '^$' | cat"
+   fi
 
    if add_to_changes_entry $rev $tmp; then
        found=1
@@ -367,6 +368,11 @@ for rev in `$git_rev_list ^$last_rev`; do
 done
 
 if [ "$found" == "0" ]; then
+    if [ "$check" == "1" ]; then
+        echo "CHANGES is up to date."
+        exit 0
+    fi
+
     echo "  None."
     echo
 
@@ -377,12 +383,18 @@ if [ "$found" == "0" ]; then
     fi
 fi
 
+if [ "$check" == "1" ]; then
+    echo "CHANGES is NOT to date."
+    exit 0
+fi
+
 echo >>$tmp
 
 cat $file_changes >>$tmp
 
 # If we are ahead of origin, we can amend. If not, we need to create a new commit even
 # if the users wants otherwise.
+amend=1
 if git remote | grep -q origin; then
      if git rev-list origin..HEAD | grep -vq .; then
          amend=0

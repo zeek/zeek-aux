@@ -52,6 +52,17 @@ if [ "$submodules" == "1" ]; then
     mods=`git submodule foreach -q --recursive pwd | grep -v /cmake`
 fi
 
+if [ -e $DEST ]; then
+    echo
+    echo "$DEST exists already, proceeding will delete it."
+    echo ">> Continue? (y/n)"
+    read line
+    if [ "$line" != "y" ]; then
+        exit 1
+    fi
+fi
+
+rm -rf $DEST
 install -d $DEST
 install -d $LOGS
 
@@ -82,7 +93,7 @@ for dist in $dists; do
     version=`echo $dist | cut -d '#' -f 2`
 
     install -d $DEST/$version
-    cp $tgz $DEST/$version
+    mv $tgz $DEST/$version
 done
 
 echo "--- All distributions in $DEST:"
