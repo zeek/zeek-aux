@@ -1,4 +1,26 @@
 
+0.2-6 | 2011-10-24 18:17:04 -0700
+
+  * New tool check-release to run before making releases. (Robin
+    Sommer)
+
+  * update-changes gets a new option -a to amend to previous commit if
+    possible. Default is now not to (used to be the opposite). (Robin
+    Sommer)
+
+  * Change Mozilla trust root generation to index certs by subject DN. (Jon Siwek)
+
+0.2-5 | 2011-10-21 15:14:53 -0500
+
+  * Change distclean to only remove build dir. (Jon Siwek)
+
+  * Make dist now cleans the copied source (Jon Siwek)
+
+  * Small tweak to make-release for forced git-clean. (Jon Siwek)
+
+  * Fix to not let updates scripts loose their executable permissions.
+    (Robin Sommer)
+
 0.2 | 2011-10-18 11:14:13 -0700
 
   * devel-tools/update-changes now looks for a 'release' tag to
