@@ -41,7 +41,7 @@ if [ "$fmttime" == 1 -a "$awk" != "gawk" ]; then
 fi
 
 shift $(($OPTIND - 1))
-fields=`echo $@ | sed 's/  */:/g'`
+fields=`echo $@ | sed 's/[ ,] */:/g'`
 
 $awk -v fields=$fields -v headers=$headers -v fmttime=$fmttime '
 
