@@ -50,8 +50,8 @@ function usage
     echo "usage: `basename $0` [options]"
     echo
     echo "    -p <rev>    Explicitly name the past revision to compare with."
-    echo "    -R <tag>    Tag the current revision as a release."
-    echo "    -B <tag>    Tag the current revision as a beta release."
+    echo "    -R <tag>    Tag the current revision as a release. Use VERSION to use that."
+    echo "    -B <tag>    Tag the current revision as a beta release. Use VERSION to use that."
     echo "    -I          Initialize a new, initially empty CHANGES file."
     echo "    -c          Check whether CHANGES is up to date."
     echo "    -a          Amend to previous commit if not yet pushed upstream."
@@ -252,6 +252,14 @@ if [ "$release" != "" -a "$beta" != "" ]; then
     exit 1
 fi
 
+if [ "$release" == "VERSION" ]; then
+    release="v`cat VERSION`"
+fi
+
+if [ "$beta" == "VERSION" ]; then
+    beta="v`cat VERSION`"
+fi
+
 bro_style=0        # If 1, we use a slightly different format.
 
 if [ "$init" != "0" ]; then
@@ -301,9 +309,9 @@ if [ "$last_rev" == "" ]; then
     exit 1
 fi
 
-new_version=`version HEAD`
+auto_version=`version HEAD`
 
-if [ "$new_version" == "" ]; then
+if [ "$auto_version" == "" ]; then
     echo "cannto determine version for HEAD did not return anything."
     exit 1
 fi
@@ -312,14 +320,11 @@ tmp=${changes}.$$.tmp
 trap "rm -f $tmp" EXIT
 rm -f $tmp
 
-echo "New version is $new_version."
-echo "Listing revisions commited since `version $last_rev` ($last_rev) ... "
-echo
-
 found=0
 
 echo >>$tmp
 
+new_version=auto_version
 version=`version $rev`
 
 if [ "$version" == "" ]; then
@@ -333,6 +338,12 @@ fi
 
 if [ "$beta" != "" ]; then
     new_version=`echo $beta | sed 's/v//g'`
+fi
+
+if [ "$quiet" != "1" ]; then
+    echo "New version is $new_version."
+    echo "Listing revisions commited since `version $last_rev` ($last_rev) ... "
+    echo
 fi
 
 start_changes_entry $new_version $tmp
