@@ -2,6 +2,7 @@
 
 cvsroot = ':pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot';
 certdata = 'mozilla/security/nss/lib/ckfw/builtins/certdata.txt';
+tmpcert = "/tmp/tmpcert.der"
 
 incert=false
 intrust=false
@@ -14,6 +15,7 @@ puts "module SSL;";
 puts "redef root_certs += {";
 
 all_certs = []
+all_subjects = []
 
 cert_name = ""
 cert = ""
@@ -22,7 +24,23 @@ io.each do |line|
   if intrust
     if line =~ /^CKA_TRUST_SERVER_AUTH/
       if line =~ /CKT_NSS_TRUSTED_DELEGATOR/
-        puts "	[\"#{cert_name}\"] = \"#{cert}\","
+        File.open(tmpcert, "wb") do |f|
+            byteArray = cert.split("\\x")
+            max = byteArray.length() - 1
+            byteArray[1..max].each do | byte |
+                f.print byte.hex.chr
+            end
+        end
+
+        cert_subj = `openssl x509 -in #{tmpcert} -inform DER -noout -subject`
+        cert_subj["subject= "]= ""
+        cert_subj.chomp!
+        File.delete(tmpcert)
+
+        if not all_subjects.include?(cert_subj)
+            puts "	[\"#{cert_subj}\"] = \"#{cert}\","
+            all_subjects << cert_subj
+        end
       end
       intrust=false
     end
