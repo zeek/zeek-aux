@@ -1,5 +1,8 @@
 
-0.2 | 2011-10-25 18:12:56 -0700
+0.2 | 2011-10-25 19:53:57 -0700
+
+  * Adding support for replacing version string in a setup.py. (Robin
+    Sommer)
 
   * Change generated root cert DN indices format for RFC2253
     compliance. (Jon Siwek)

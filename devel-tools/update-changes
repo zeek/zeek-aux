@@ -83,6 +83,19 @@ function replace_version_in_rst
     rm -f $file.tmp
     git add $file
 }
+# Function that looks for lines of the form '.. |version| replace:: 0.3' in $1. It will replace
+# the version number with $2 and then git-adds the change.
+
+function replace_version_in_setup_py
+{
+    file=$1
+    version=$2
+
+    cat $file | sed "s#\\([\\t ]*version[\\t ]*=[\\t ]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
+    cat $file.tmp >$file
+    rm -f $file.tmp
+    git add $file
+}
 
 ###
 
