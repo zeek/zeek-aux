@@ -91,9 +91,11 @@ done
 for dist in $dists; do
     tgz=`echo $dist | cut -d '#' -f 1`
     version=`echo $dist | cut -d '#' -f 2`
+    dst=`basename $tgz`
+    dst="$DEST/$version/`echo $dst | sed 's/\.tgz/.tar.gz/g'`"
 
     install -d $DEST/$version
-    mv $tgz $DEST/$version
+    mv $tgz $dst
 done
 
 echo "--- All distributions in $DEST:"

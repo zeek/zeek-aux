@@ -1,5 +1,5 @@
 
-0.2 | 2011-10-25 16:29:45 -0700
+0.2 | 2011-10-25 18:12:56 -0700
 
   * Change generated root cert DN indices format for RFC2253
     compliance. (Jon Siwek)
