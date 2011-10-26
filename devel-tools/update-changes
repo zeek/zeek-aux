@@ -20,6 +20,7 @@ file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
 release_tag="release"               # We mark the current release with this tag.
 beta_tag="beta"               # We mark the current beta with this tag.
+new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
 
 # The command line used to generate a revision's version string.
 git_describe="git describe --always" # {rev} will be added.
@@ -135,6 +136,11 @@ function add_to_changes_entry
 
    if [ "$msg" == "" ]; then
        return 1
+   fi
+
+   if echo $msg | grep -q "^$new_commit_msg\$"; then
+       # Ignore our own automated commits.
+       return 1;
    fi
 
    echo >>$dst
@@ -370,12 +376,12 @@ for rev in `$git_rev_list ^$last_rev`; do
 
    # printf "%15s |" $version
 
-   if [ "$quiet" != "1" ]; then
-       eval "$git_rev_summary $rev | grep -v '^$' | cat"
-   fi
-
    if add_to_changes_entry $rev $tmp; then
        found=1
+
+       if [ "$quiet" != "1" ]; then
+           eval "$git_rev_summary $rev | grep -v '^$' | cat"
+       fi
    fi
 
 done
@@ -450,7 +456,7 @@ git add $file_changes $file_version
 if [ "$amend" == "1" ]; then
     git commit --amend
 else
-    git commit -m "Updating CHANGES and VERSION".
+    git commit -m "$new_commit_msg"
 fi
 
 echo "Updates committed."
