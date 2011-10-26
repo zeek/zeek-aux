@@ -407,10 +407,10 @@ cat $file_changes >>$tmp
 
 # If we are ahead of origin, we can amend. If not, we need to create a new commit even
 # if the users wants otherwise.
-amend=1
+amend=0
 if git remote | grep -q origin; then
-     if git rev-list origin..HEAD | grep -vq .; then
-         amend=0
+     if git rev-list origin..HEAD | grep -q .; then
+         amend=1
      fi
 fi
 
