@@ -13,10 +13,11 @@ Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
 
     -c       Include the first format header block into the output.
     -C       Include all format header blocks into the output.
-    -d       Convert time values into humand-readable format (needs gawk).
+    -d       Convert time values into human-readable format (needs gawk).
     -D <fmt> Like -d, but specify format for time (see strtime(3) for syntax).
 
-For time conversion, the def
+For the time conversion, the format string can also be specified by setting
+an environment variable BRO_CUT_TIMEFMT.
 
 EOF
     exit 1
@@ -34,7 +35,7 @@ awk=awk
 
 which gawk >/dev/null && awk=gawk
 
-while getopts "cCdD:" opt; do
+while getopts "cCdD:h" opt; do
     case "$opt" in
         c) headers=1;;
         C) headers=2;;
@@ -51,6 +52,10 @@ fi
 
 shift $(($OPTIND - 1))
 fields=`echo $@ | sed 's/[ ,] */:/g'`
+
+if [ "$fields" == "" ]; then
+    usage
+fi
 
 $awk -v fields=$fields -v headers=$headers -v substtime=$substtime -v "timefmt=$timefmt" '
 
