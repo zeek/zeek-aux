@@ -1,28 +1,26 @@
 
-0.2-7 | 2011-10-26 17:23:50 -0700
+0.21 | 2011-10-27 17:40:45 -0700
+
+  * Fixing bro-cut's usage message and argument error handling. (Robin Sommer)
 
   * Bugfix in update-changes script. (Robin Sommer)
 
-0.2-6 | 2011-10-26 14:00:30 -0700
-
   * update-changes now ignores commits it did itself. (Robin Sommer)
-
-0.2-5 | 2011-10-26 13:49:19 -0700
 
   * Fix a bug in the update-changes script. (Robin Sommer)
 
   * bro-cut now always installs to $prefix/bin by `make install`. (Jon Siwek)
 
-  * Options to adjust time format for bro-cut.
+  * Options to adjust time format for bro-cut. (Robin Sommer)
 
     The default with -d is now ISO format. The new option "-D <fmt>"
     specifies a custom strftime()-style format string. Alternatively,
     the environment variable BRO_CUT_TIMEFMT can set the format as
-    well. (Robin Sommer)
+    well.
 
-  * bro-cut now understands the field separator header.
+  * bro-cut now understands the field separator header. (Robin Sommer)
 
-    Also renaming options -h/-H -> -c/-C, and doing some general cleanup. (Robin Sommer)
+  * Renaming options -h/-H -> -c/-C, and doing some general cleanup.
 
 0.2 | 2011-10-25 19:53:57 -0700
 
