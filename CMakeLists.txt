@@ -72,6 +72,8 @@ if (NOT (BINARY_PACKAGING_MODE OR
     add_dependencies(install-aux ${AUX_TARGETS})
 endif ()
 
+install(PROGRAMS bro-cut/bro-cut DESTINATION bin)
+
 ########################################################################
 ## Build Summary
 

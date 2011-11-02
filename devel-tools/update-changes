@@ -20,6 +20,7 @@ file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
 release_tag="release"               # We mark the current release with this tag.
 beta_tag="beta"               # We mark the current beta with this tag.
+new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
 
 # The command line used to generate a revision's version string.
 git_describe="git describe --always" # {rev} will be added.
@@ -40,19 +41,16 @@ git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
 # The command line used to get a revision's message.
 git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
 
-if [ -e $file_config ]; then
-    echo Reading $file_config ...
-    source $file_config
-fi
-
 function usage
 {
     echo "usage: `basename $0` [options]"
     echo
     echo "    -p <rev>    Explicitly name the past revision to compare with."
-    echo "    -R <tag>    Tag the current revision as a release."
-    echo "    -B <tag>    Tag the current revision as a beta release."
+    echo "    -R <tag>    Tag the current revision as a release. Use VERSION to use that."
+    echo "    -B <tag>    Tag the current revision as a beta release. Use VERSION to use that."
     echo "    -I          Initialize a new, initially empty CHANGES file."
+    echo "    -c          Check whether CHANGES is up to date."
+    echo "    -a          Amend to previous commit if not yet pushed upstream."
     echo
     exit 1
 }
@@ -82,6 +80,19 @@ function replace_version_in_rst
     version=$2
 
     cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9.-]\\{1,\\}\\)#\1$version#g" >$file.tmp
+    cat $file.tmp >$file
+    rm -f $file.tmp
+    git add $file
+}
+# Function that looks for lines of the form '.. |version| replace:: 0.3' in $1. It will replace
+# the version number with $2 and then git-adds the change.
+
+function replace_version_in_setup_py
+{
+    file=$1
+    version=$2
+
+    cat $file | sed "s#\\([\\t ]*version[\\t ]*=[\\t ]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -125,6 +136,11 @@ function add_to_changes_entry
 
    if [ "$msg" == "" ]; then
        return 1
+   fi
+
+   if echo $msg | grep -q "^$new_commit_msg\$"; then
+       # Ignore our own automated commits.
+       return 1;
    fi
 
    echo >>$dst
@@ -227,22 +243,39 @@ last_rev=""
 release=""
 beta=""
 init=0
+check=0
+quiet=0
 
-while getopts "hp:R:I" opt; do
+while getopts "hp:R:B:Ic" opt; do
     case "$opt" in
         p) last_rev="$OPTARG";;
         R) release="$OPTARG";;
         B) beta="$OPTARG";;
         I) init=1;;
+        c) check=1; quiet=1;;
         *) usage;;
-
-        h) iusaprintHelpAndExit 0;;
     esac
 done
+
+if [ -e $file_config ]; then
+    if [ "$quiet" != "1" ]; then
+        echo Reading $file_config ...
+    fi
+    source $file_config
+fi
+
 
 if [ "$release" != "" -a "$beta" != "" ]; then
     echo "Cannot tag as both beta and release."
     exit 1
+fi
+
+if [ "$release" == "VERSION" ]; then
+    release="v`cat VERSION`"
+fi
+
+if [ "$beta" == "VERSION" ]; then
+    beta="v`cat VERSION`"
 fi
 
 bro_style=0        # If 1, we use a slightly different format.
@@ -277,7 +310,7 @@ if [ "$release" != "" ]; then
 fi
 
 if [ "$beta" != "" ]; then
-    if ! echo beta | egrep -q '^v[0-9]+\.[0-9]+-beta'; then
+    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+-beta'; then
         echo "Release tag must be of the form vX.Y[.Z]-beta*"
         exit 1
     fi
@@ -294,9 +327,9 @@ if [ "$last_rev" == "" ]; then
     exit 1
 fi
 
-new_version=`version HEAD`
+auto_version=`version HEAD`
 
-if [ "$new_version" == "" ]; then
+if [ "$auto_version" == "" ]; then
     echo "cannto determine version for HEAD did not return anything."
     exit 1
 fi
@@ -305,14 +338,11 @@ tmp=${changes}.$$.tmp
 trap "rm -f $tmp" EXIT
 rm -f $tmp
 
-echo "New version is $new_version."
-echo "Listing revisions commited since `version $last_rev` ($last_rev) ... "
-echo
-
 found=0
 
 echo >>$tmp
 
+new_version=$auto_version
 version=`version $rev`
 
 if [ "$version" == "" ]; then
@@ -328,6 +358,12 @@ if [ "$beta" != "" ]; then
     new_version=`echo $beta | sed 's/v//g'`
 fi
 
+if [ "$quiet" != "1" ]; then
+    echo "New version is $new_version."
+    echo "Listing revisions commited since `version $last_rev` ($last_rev) ... "
+    echo
+fi
+
 start_changes_entry $new_version $tmp
 
 for rev in `$git_rev_list ^$last_rev`; do
@@ -340,15 +376,22 @@ for rev in `$git_rev_list ^$last_rev`; do
 
    # printf "%15s |" $version
 
-   eval "$git_rev_summary $rev | grep -v '^$' | cat"
-
    if add_to_changes_entry $rev $tmp; then
        found=1
+
+       if [ "$quiet" != "1" ]; then
+           eval "$git_rev_summary $rev | grep -v '^$' | cat"
+       fi
    fi
 
 done
 
 if [ "$found" == "0" ]; then
+    if [ "$check" == "1" ]; then
+        echo "CHANGES is up to date."
+        exit 0
+    fi
+
     echo "  None."
     echo
 
@@ -359,18 +402,22 @@ if [ "$found" == "0" ]; then
     fi
 fi
 
+if [ "$check" == "1" ]; then
+    echo "CHANGES is NOT to date."
+    exit 0
+fi
+
 echo >>$tmp
 
 cat $file_changes >>$tmp
 
-# If we are ahead of origin, we can amend. If not, we need to create a new commit.
+# If we are ahead of origin, we can amend. If not, we need to create a new commit even
+# if the users wants otherwise.
 amend=0
 if git remote | grep -q origin; then
-    if git rev-list origin..HEAD | grep -q .; then
-        amend=1
-    fi
-else
-    amend=1
+     if git rev-list origin..HEAD | grep -q .; then
+         amend=1
+     fi
 fi
 
 echo
@@ -409,7 +456,7 @@ git add $file_changes $file_version
 if [ "$amend" == "1" ]; then
     git commit --amend
 else
-    git commit
+    git commit -m "$new_commit_msg"
 fi
 
 echo "Updates committed."
