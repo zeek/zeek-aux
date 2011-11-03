@@ -1,4 +1,8 @@
 
+0.21-2 | 2011-11-02 18:12:13 -0700
+
+  * Fix for misnaming temp file in update-changes script. (Robin Sommer)
+
 0.21-1 | 2011-11-02 18:10:39 -0700
 
   * Little fix for make-release script, which could pick out the wrong

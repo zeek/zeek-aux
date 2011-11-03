@@ -334,7 +334,7 @@ if [ "$auto_version" == "" ]; then
     exit 1
 fi
 
-tmp=${changes}.$$.tmp
+tmp=${file_changes}.$$.tmp
 trap "rm -f $tmp" EXIT
 rm -f $tmp
 
