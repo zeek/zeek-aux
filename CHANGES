@@ -1,4 +1,9 @@
 
+0.21-1 | 2011-11-02 18:10:39 -0700
+
+  * Little fix for make-release script, which could pick out the wrong
+    tag. (Robin Sommer)
+
 0.21 | 2011-10-27 17:40:45 -0700
 
   * Fixing bro-cut's usage message and argument error handling. (Robin Sommer)
