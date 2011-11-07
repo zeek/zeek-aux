@@ -75,7 +75,8 @@ int main (int argc, char** argv) {
     }
 
     ffp.header.ipaddr = from.sin_addr.s_addr;
-    write (outfd, &ffp, ffp.header.pdu_length + sizeof (FlowFileSrcPDUHeader));
+    if (write (outfd, &ffp, ffp.header.pdu_length + sizeof (FlowFileSrcPDUHeader)) == -1)
+        pleave (1, "write");
   }
 
   return 0;

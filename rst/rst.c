@@ -240,7 +240,7 @@ void terminate(int s, const char *from_addr, int from_port, u_int32_t from_seq,
 		int num, int redundancy, int stride, int delay,
 		const char *inject)
 {
-	struct sockaddr where_from, where_to;
+	struct sockaddr_in where_from, where_to;
 	struct sockaddr_in *from = (struct sockaddr_in *) &where_from;
 	struct sockaddr_in *to = (struct sockaddr_in *) &where_to;
 
@@ -256,7 +256,7 @@ void terminate(int s, const char *from_addr, int from_port, u_int32_t from_seq,
 	if ( inet_aton(to_addr, (struct in_addr *) &to->sin_addr) == 0 )
 		gripe("bad to address %s", to_addr);
 
-	if ( connect(s, &where_to, sizeof(where_to)) < 0 )
+	if ( connect(s, (struct sockaddr *) &where_to, sizeof(where_to)) < 0 )
 		pgripe("can't connect");
 
 	while ( num-- > 0 )
