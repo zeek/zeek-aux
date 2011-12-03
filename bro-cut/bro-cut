@@ -4,10 +4,11 @@ function usage
 {
 cat <<EOF
 
-`basename $0` [options] <columns>
+`basename $0` [options] [<columns>]
 
-Extracts the given columns from an ASCII Bro log on standard input. By
-default, bro-cut does not include format header blocks into the output.
+Extracts the given columns from an ASCII Bro log on standard input.
+If no columns are given, all are selected. By default, bro-cut does
+not include format header blocks into the output.
 
 Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
 
@@ -15,6 +16,9 @@ Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
     -C       Include all format header blocks into the output.
     -d       Convert time values into human-readable format (needs gawk).
     -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).
+    -F <ofs> Sets a different output field seperator.
+    -u       Like -d, but print timestamps in UTC instead of local time (needs gawk).
+    -U <fmt> Like -D, but print timestamps in UTC instead of local time (needs gawk).
 
 For the time conversion, the format string can also be specified by setting
 an environment variable BRO_CUT_TIMEFMT.
@@ -31,33 +35,37 @@ fi
 
 headers=0
 substtime=0
+utc=0
+ofs=""
+gnu=0
 awk=awk
 
+# Prefer GNU awk if found so that we can do time conversion.
 which gawk >/dev/null && awk=gawk
+($awk --version 2>&1 | head -1 | grep -q ^GNU) && gnu=1
 
-while getopts "cCdD:h" opt; do
+while getopts "cCdD:F:uU:h" opt; do
     case "$opt" in
         c) headers=1;;
         C) headers=2;;
         d) substtime=1;;
         D) substtime=1; timefmt=$OPTARG;;
+        F) ofs=$OPTARG;;
+        u) substtime=1; utc=1;;
+        U) substtime=1; utc=1; timefmt=$OPTARG;;
         *) usage;;
     esac
 done
 
-if [ "$substtime" == 1 -a "$awk" != "gawk" ]; then
-    echo "option -d only supported with gawk" >&2
+if [ "$substtime" == 1 -a "$gnu" != "1" ]; then
+    echo "Options -d/-D/-u only supported with gawk" >&2
     exit 1
 fi
 
 shift $(($OPTIND - 1))
 fields=`echo $@ | sed 's/[ ,] */:/g'`
 
-if [ "$fields" == "" ]; then
-    usage
-fi
-
-$awk -v fields=$fields -v headers=$headers -v substtime=$substtime -v "timefmt=$timefmt" '
+script='
 
 function error(msg) {
     print "bro-cut error: " msg >"/dev/stderr";
@@ -91,24 +99,40 @@ function printHeader() {
 
 BEGIN {
     first_header = 1;
-    n = split(fields, f, /:/);
-    for ( i = 1; i <= n; ++i )
+    len_f = split(fields, f, /:/);
+    for ( i = 1; i <= len_f; ++i )
         idx[f[i]] = i;
 }
 
 /^#separator/ {
     split($0, s, / /);
-    FS = OFS = parseSep(s[2]);
+    FS = parseSep(s[2]);
+
+    if ( custom_ofs != "" )
+        OFS = custom_ofs;
+    else
+        OFS = FS;
     next;
 }
 
 /^#fields/ {
+    if ( fields == "" ) {
+        # Select all fields.
+        for ( i = 2; i <= NF; ++i ) {
+            columns[i-1] = i-1;
+            len_columns = NF-1;
+            }
+        next;
+    }
+
+    len_columns = len_f;
+
     for ( i = 2; i <= NF; ++i ) {
         if ( $i in idx )
             columns[idx[$i]] = i-1;
         }
 
-    for ( i = 1; i <= length(f); ++i ) {
+    for ( i = 1; i <= len_f; ++i ) {
         if ( columns[idx[f[i]]] == "" )
             error("unknown field '" f[i] "'");
     }
@@ -121,13 +145,13 @@ BEGIN {
 
 /^#(fields|types)/ && printHeader() {
     printf("%s", $1);
-    for ( i = 1; i <= length(columns); ++i ) {
+    for ( i = 1; i <= len_columns; ++i ) {
         val = $(int(columns[i]) + 1);
 
         if ( $1 == "#types" && substtime && times[i] == "1" )
             val = "string";
 
-        printf("\t%s", val);
+        printf("%s%s", OFS, val);
         }
 
     print "";
@@ -144,15 +168,15 @@ BEGIN {
 {
     first_header = 0;
 
-    for ( i = 1; i <= length(columns); ++i ) {
+    for ( i = 1; i <= len_columns; ++i ) {
         j = int(columns[i])
         val = $j
 
         if ( substtime && times[j] == "1" )
-            val = strftime(timefmt, val);
+            val = strftime(timefmt, val, utc);
 
         if ( i > 1 )
-            printf("\t%s", val);
+            printf("%s%s", OFS, val);
         else
             printf("%s", val);
         }
@@ -160,3 +184,10 @@ BEGIN {
     print "";
 }
 '
+
+if [ "$gnu" != "1" ]; then
+   # Add a dummy function for awks that don't have it. This will never be called.
+   dummy_strftime="function strftime(a,b,c) {}"
+fi
+
+$awk -v fields=$fields -v headers=$headers -v "custom_ofs=$ofs" -v substtime=$substtime -v utc=$utc -v "timefmt=$timefmt" "$script $dummy_strftime"
