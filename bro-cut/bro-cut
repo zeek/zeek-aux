@@ -112,6 +112,10 @@ BEGIN {
         OFS = custom_ofs;
     else
         OFS = FS;
+
+    if ( printHeader() )
+        print;
+
     next;
 }
 
@@ -122,19 +126,20 @@ BEGIN {
             columns[i-1] = i-1;
             len_columns = NF-1;
             }
-        next;
     }
 
-    len_columns = len_f;
-
-    for ( i = 2; i <= NF; ++i ) {
-        if ( $i in idx )
-            columns[idx[$i]] = i-1;
+    else {
+        len_columns = len_f;
+    
+        for ( i = 2; i <= NF; ++i ) {
+            if ( $i in idx )
+                columns[idx[$i]] = i-1;
+            }
+    
+        for ( i = 1; i <= len_f; ++i ) {
+            if ( columns[idx[f[i]]] == "" )
+                error("unknown field '" f[i] "'");
         }
-
-    for ( i = 1; i <= len_f; ++i ) {
-        if ( columns[idx[f[i]]] == "" )
-            error("unknown field '" f[i] "'");
     }
 }
 
