@@ -7,7 +7,7 @@ set(ftwire2bro_SRCS
 
 add_executable(ftwire2bro ${ftwire2bro_SRCS})
 
-target_link_libraries(ftwire2bro)
+target_link_libraries(ftwire2bro ${BIND_LIBRARY})
 
 AddAuxInstallTarget(ftwire2bro)
 
