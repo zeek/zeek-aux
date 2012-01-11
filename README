@@ -1,7 +1,7 @@
 .. -*- mode: rst; -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 0.21-9
+.. |version| replace:: 0.22
 
 ======================
 Bro Auxiliary Programs
@@ -13,8 +13,6 @@ Bro Auxiliary Programs
 
 Handy auxiliary programs related to the use of the Bro Network Security
 Monitor (http://www.bro-ids.org).
-
-Please see the INSTALL file for installation instructions.
 
 Note that some files that were formerly distributed with Bro as part
 of the aux/ tree are now maintained separately. See the

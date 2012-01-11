@@ -1,4 +1,24 @@
 
+0.22 | 2012-01-10 16:45:19 -0800
+
+  * Tweaks for OpenBSD support. (Jon Siwek)
+
+  * bro-cut extensions and fixes.  (Robin Sommer)
+    
+    - If no field names are given on the command line, we now pass through
+      all fields. Adresses #657.
+
+    - Removing some GNUism from awk script. Addresses #653.
+
+    - Added option for time output in UTC. Addresses #668.
+
+    - Added output field separator option -F. Addresses #649.
+
+    - Fixing option -c: only some header lines were passed through
+      rather than all. (Robin Sommer)
+
+  * Fix parallel make portability. (Jon Siwek)
+
 0.21-9 | 2011-11-07 05:44:14 -0800
 
   * Fixing compiler warnings. Addresses #388. (Jon Siwek)
