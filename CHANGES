@@ -1,4 +1,9 @@
 
+0.23 | 2012-01-11 12:16:11 -0800
+
+  * Tweaks to release scripts, plus a new one for signing files.
+    (Robin Sommer)
+
 0.22 | 2012-01-10 16:45:19 -0800
 
   * Tweaks for OpenBSD support. (Jon Siwek)

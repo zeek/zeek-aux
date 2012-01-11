@@ -96,11 +96,16 @@ for dist in $dists; do
 
     install -d $DEST/$version
     mv $tgz $dst
+
+    echo Signing $dst ...
+    t=`readlink $0`
+    `dirname $t`/sign-file $dst
+
 done
 
 echo "--- All distributions in $DEST:"
 
-all=`find $DEST -path '*gz'`
+all=`find $DEST -path '*gz*'`
 test "$all" != "" && ls -rl $all || echo "None."
 echo
 

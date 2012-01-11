@@ -195,10 +195,10 @@ function check_release_tag
 {
     if [ "$release" != "" ]; then
         git tag -d $release_tag 2>/dev/null
-        git tag -a $release_tag -m "Current stable release $$NEWVERSION."
+        git tag -a $release_tag -m "Current stable release."
         sleep 2 # Make sure git describe picks the next one.
         git tag -d $release 2>/dev/null
-        git tag -a $release -m "Version $$NEWVERSION"
+        git tag -a $release -m "Version tag"
         echo "Tagged with new tag $release and moved tag 'release' to here."
         echo
         echo "IMPORTANT: Don't forget to 'git push --tags'."
@@ -209,10 +209,10 @@ function check_beta_tag
 {
     if [ "$beta" != "" ]; then
         git tag -d $beta_tag 2>/dev/null
-        git tag -a $beta_tag -m "Current stable beta $$NEWVERSION."
+        git tag -a $beta_tag -m "Current stable beta."
         sleep 2 # Make sure git describe picks the next one.
         git tag -d $beta 2>/dev/null
-        git tag -a $beta -m "Version $$NEWVERSION"
+        git tag -a $beta -m "Beta version tag"
         echo "Tagged with new tag $beta and moved tag 'beta' to here."
         echo
         echo "IMPORTANT: Don't forget to 'git push --tags'."
