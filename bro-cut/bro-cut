@@ -16,7 +16,7 @@ Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
     -C       Include all format header blocks into the output.
     -d       Convert time values into human-readable format (needs gawk).
     -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).
-    -F <ofs> Sets a different output field seperator.
+    -F <ofs> Sets a different output field separator.
     -u       Like -d, but print timestamps in UTC instead of local time (needs gawk).
     -U <fmt> Like -D, but print timestamps in UTC instead of local time (needs gawk).
 
@@ -58,7 +58,7 @@ while getopts "cCdD:F:uU:h" opt; do
 done
 
 if [ "$substtime" == 1 -a "$gnu" != "1" ]; then
-    echo "Options -d/-D/-u only supported with gawk" >&2
+    echo "Options -d/-D/-u/-U only supported with gawk" >&2
     exit 1
 fi
 
@@ -138,7 +138,7 @@ BEGIN {
     
         for ( i = 1; i <= len_f; ++i ) {
             if ( columns[idx[f[i]]] == "" )
-                error("unknown field '" f[i] "'");
+                error("unknown field \"" f[i] "\"");
         }
     }
 }
