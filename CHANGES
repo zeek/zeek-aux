@@ -1,4 +1,8 @@
 
+0.23-2 | 2012-01-25 13:24:01 -0800
+
+  * Fix a bro-cut error message. (Daniel Thayer)
+
 0.23 | 2012-01-11 12:16:11 -0800
 
   * Tweaks to release scripts, plus a new one for signing files.

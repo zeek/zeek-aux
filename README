@@ -1,7 +1,7 @@
 .. -*- mode: rst; -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 0.23
+.. |version| replace:: 0.23-2
 
 ======================
 Bro Auxiliary Programs
@@ -25,7 +25,7 @@ Makefile and source for the adtrace utility. This program is used
 in conjunction with the localnetMAC.pl perl script to compute the
 network address that compose the internal and extern nets that bro
 is monitoring. This program when run by itself just reads a pcap
-(tcpcump) file and writes out the src MAC, dst MAC, src IP, dst
+(tcpdump) file and writes out the src MAC, dst MAC, src IP, dst
 IP for each packet seen in the file. This output is processed by
 the localnetMAC.pl script during 'make install'.
 
