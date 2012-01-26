@@ -130,12 +130,12 @@ BEGIN {
 
     else {
         len_columns = len_f;
-    
+
         for ( i = 2; i <= NF; ++i ) {
             if ( $i in idx )
                 columns[idx[$i]] = i-1;
             }
-    
+
         for ( i = 1; i <= len_f; ++i ) {
             if ( columns[idx[f[i]]] == "" )
                 error("unknown field \"" f[i] "\"");
