@@ -1,4 +1,10 @@
 
+0.24 | 2012-07-05 12:50:43 -0700
+
+  * Raise minimum required CMake version to 2.6.3 (Jon Siwek)
+
+  * Adding script to delete old fully-merged branches. (Robin Sommer)
+
 0.23-2 | 2012-01-25 13:24:01 -0800
 
   * Fix a bro-cut error message. (Daniel Thayer)
