@@ -1,4 +1,10 @@
 
+0.26 | 2012-08-24 15:10:04 -0700
+
+  * Fixing update-changes, which could pick the wrong control file. (Robin Sommer)
+
+  * Fixing GPG signing script. (Robin Sommer)
+
 0.25 | 2012-08-01 13:55:46 -0500
 
   * Fix configure script to exit with non-zero status on error (Jon Siwek)

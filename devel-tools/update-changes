@@ -261,7 +261,7 @@ if [ -e $file_config ]; then
     if [ "$quiet" != "1" ]; then
         echo Reading $file_config ...
     fi
-    source $file_config
+    source ./$file_config
 fi
 
 
