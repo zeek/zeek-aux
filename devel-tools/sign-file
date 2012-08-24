@@ -26,6 +26,6 @@ fi
 
 FILE=$1
 
-$GPG --sign -a -u $KEY --openpgp -o $FILE.asc $FILE
+$GPG --detach-sign -a -u $KEY --openpgp -o $FILE.asc $FILE
 
 
