@@ -322,8 +322,9 @@ int main(int argc, char **argv)
 			}
 			}
 			break;
+
 		case 'i':
-		        interface = optarg;
+			interface = optarg;
 			break;
 
 		case 'd':
@@ -358,12 +359,11 @@ int main(int argc, char **argv)
 
 	if (setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0)
 		pgripe("can't turn on IP_HDRINCL");
-	
+
 	if (interface){
-	  if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, interface, sizeof(interface)) < 0)
-	    pgripe("can't set interface");
+		if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0)
+			pgripe("can't set interface");
 	}
-	  
 
 	from_addr = argv[optind++];
 	from_port = atoi(argv[optind++]);
