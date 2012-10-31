@@ -276,7 +276,7 @@ void terminate(int s, const char *from_addr, int from_port, u_int32_t from_seq,
 
 void usage()
 {
-	fprintf(stderr, "%s [-R] [-I text-to-inject] [-d delay-msec] [-n num] [-r redundancy] [-s stride] from_addr from_port from_seq to_addr to_port to_seq\n", prog_name);
+	fprintf(stderr, "%s [-R] [-I text-to-inject] [-i interface] [-d delay-msec] [-n num] [-r redundancy] [-s stride] from_addr from_port from_seq to_addr to_port to_seq\n", prog_name);
 	exit(0);
 }
 
@@ -285,6 +285,7 @@ int main(int argc, char **argv)
 	extern char* optarg;
 	extern int optind, opterr;
 	const char *from_addr, *to_addr;
+	char *interface = NULL;
 	char inject[8192];
 	int from_port, to_port;
 	u_int32_t from_seq, to_seq;
@@ -303,7 +304,7 @@ int main(int argc, char **argv)
 
 	inject[0] = 0;
 
-	while ( (op = getopt(argc, argv, "RI:d:n:r:s:")) != EOF )
+	while ( (op = getopt(argc, argv, "RI:i:d:n:r:s:")) != EOF )
 		switch ( op ) {
 		case 'R':
 			reverse = 1;
@@ -320,6 +321,10 @@ int main(int argc, char **argv)
 					*ip = *ap;
 			}
 			}
+			break;
+
+		case 'i':
+			interface = optarg;
 			break;
 
 		case 'd':
@@ -352,8 +357,13 @@ int main(int argc, char **argv)
 
 	setuid(getuid());
 
-	if (setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0)
+	if ( setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0 )
 		pgripe("can't turn on IP_HDRINCL");
+
+	if ( interface ){
+		if ( setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0 )
+			pgripe("can't set interface");
+	}
 
 	from_addr = argv[optind++];
 	from_port = atoi(argv[optind++]);

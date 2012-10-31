@@ -1,4 +1,9 @@
 
+0.26-4 | 2012-10-31 14:39:03 -0700
+
+  * rst learns a new option "-i <if>" to set the interface to use.
+    (Vlad Grigorescu).
+
 0.26 | 2012-08-24 15:10:04 -0700
 
   * Fixing update-changes, which could pick the wrong control file. (Robin Sommer)
