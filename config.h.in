@@ -3,6 +3,9 @@
 #define RETSIGTYPE void
 #define RETSIGVAL 
 
+/* We are on a Linux system */
+#cmakedefine HAVE_LINUX
+
 /* Define if you have the `sigaction' function. */
 #cmakedefine HAVE_SIGACTION
 
