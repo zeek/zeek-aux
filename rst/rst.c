@@ -276,7 +276,11 @@ void terminate(int s, const char *from_addr, int from_port, u_int32_t from_seq,
 
 void usage()
 {
+#if defined(__linux__)
 	fprintf(stderr, "%s [-R] [-I text-to-inject] [-i interface] [-d delay-msec] [-n num] [-r redundancy] [-s stride] from_addr from_port from_seq to_addr to_port to_seq\n", prog_name);
+#else
+	fprintf(stderr, "%s [-R] [-I text-to-inject] [-d delay-msec] [-n num] [-r redundancy] [-s stride] from_addr from_port from_seq to_addr to_port to_seq\n", prog_name);
+#endif
 	exit(0);
 }
 
@@ -285,7 +289,6 @@ int main(int argc, char **argv)
 	extern char* optarg;
 	extern int optind, opterr;
 	const char *from_addr, *to_addr;
-	char *interface = NULL;
 	char inject[8192];
 	int from_port, to_port;
 	u_int32_t from_seq, to_seq;
@@ -304,7 +307,13 @@ int main(int argc, char **argv)
 
 	inject[0] = 0;
 
+#if defined(__linux__)
+	char *interface = NULL;
+
 	while ( (op = getopt(argc, argv, "RI:i:d:n:r:s:")) != EOF )
+#else
+	while ( (op = getopt(argc, argv, "RI:d:n:r:s:")) != EOF )
+#endif
 		switch ( op ) {
 		case 'R':
 			reverse = 1;
@@ -323,9 +332,11 @@ int main(int argc, char **argv)
 			}
 			break;
 
+#if defined(__linux__)
 		case 'i':
 			interface = optarg;
 			break;
+#endif
 
 		case 'd':
 			delay = atoi(optarg);
@@ -360,10 +371,12 @@ int main(int argc, char **argv)
 	if ( setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0 )
 		pgripe("can't turn on IP_HDRINCL");
 
+#if defined(__linux__)
 	if ( interface ){
 		if ( setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0 )
 			pgripe("can't set interface");
 	}
+#endif
 
 	from_addr = argv[optind++];
 	from_port = atoi(argv[optind++]);

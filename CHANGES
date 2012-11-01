@@ -1,4 +1,8 @@
 
+0.26-5 | 2012-11-01 14:24:25 -0700
+
+  * Portability fix: removing interface option on non-Linux. (Robin Sommer)
+
 0.26-4 | 2012-10-31 14:39:03 -0700
 
   * rst learns a new option "-i <if>" to set the interface to use.
