@@ -324,10 +324,6 @@ int main(int argc, char **argv)
 			break;
 
 		case 'i':
-#ifndef HAVE_LINUX
-			fprintf(stderr, "the '-i' option works on Linux only\n");
-			exit(1);
-#endif
 			interface = optarg;
 			break;
 
@@ -363,12 +359,11 @@ int main(int argc, char **argv)
 
 	if ( setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0 )
 		pgripe("can't turn on IP_HDRINCL");
-#ifdef HAVE_LINUX
+
 	if ( interface ){
 		if ( setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0 )
 			pgripe("can't set interface");
 	}
-#endif
 
 	from_addr = argv[optind++];
 	from_port = atoi(argv[optind++]);
