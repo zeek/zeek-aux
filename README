@@ -12,11 +12,11 @@ Bro Auxiliary Programs
 :Version: |version|
 
 Handy auxiliary programs related to the use of the Bro Network Security
-Monitor (http://www.bro-ids.org).
+Monitor (http://www.bro.org).
 
 Note that some files that were formerly distributed with Bro as part
 of the aux/ tree are now maintained separately. See the
-http://www.bro-ids.org/download for their download locations.
+http://www.bro.org/download for their download locations.
 
 adtrace
 =======
