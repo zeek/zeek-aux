@@ -1,4 +1,10 @@
 
+0.26-14 | 2013-03-22 12:17:54 -0700
+
+  * Fixing bro-cut to work with older gawk versions. (Chris Kanich)
+    
+  * s/bro-ids.org/bro.org/g (Robin Sommer)
+
 0.26-5 | 2012-11-01 14:24:25 -0700
 
   * Portability fix: removing interface option on non-Linux. (Robin Sommer)

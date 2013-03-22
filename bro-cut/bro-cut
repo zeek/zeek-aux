@@ -38,11 +38,17 @@ substtime=0
 utc=0
 ofs=""
 gnu=0
+utc_capable=0
 awk=awk
 
 # Prefer GNU awk if found so that we can do time conversion.
 which gawk >/dev/null && awk=gawk
+
+# Check if awk is GNU awk (even for gawk).
 ($awk --version 2>&1 | head -1 | grep -q ^GNU) && gnu=1
+
+# Probe for three-arg strftime introduced in gawk 3.1.6
+($awk '{print strftime("%Y",1,1)}' /dev/null > /dev/null 2>&1) && utc_capable=1
 
 while getopts "cCdD:F:uU:h" opt; do
     case "$opt" in
@@ -59,6 +65,11 @@ done
 
 if [ "$substtime" == 1 -a "$gnu" != "1" ]; then
     echo "Options -d/-D/-u/-U only supported with gawk" >&2
+    exit 1
+fi
+
+if [ "$utc" == 1 -a "$utc_capable" != "1" ]; then
+    echo "Options -u/-U require gawk >= 3.1.6" >&2
     exit 1
 fi
 
@@ -178,7 +189,7 @@ BEGIN {
         val = $j
 
         if ( substtime && times[j] == "1" )
-            val = strftime(timefmt, val, utc);
+            val = strftime_safe(timefmt, val, utc);
 
         if ( i > 1 )
             printf("%s%s", OFS, val);
@@ -192,7 +203,14 @@ BEGIN {
 
 if [ "$gnu" != "1" ]; then
    # Add a dummy function for awks that don't have it. This will never be called.
-   dummy_strftime="function strftime(a,b,c) {}"
+   dummy_strftime="function strftime_safe(a,b,c) {}"
+else
+   # Patch up strftime for the optional UTC argument.
+   if [ "$utc_capable" == "1" ]; then
+       dummy_strftime="function strftime_safe(a,b,c) {return strftime(a,b,c);}"
+   else
+       dummy_strftime="function strftime_safe(a,b,c) {return strftime(a,b);}"
+   fi
 fi
 
 $awk -v fields=$fields -v headers=$headers -v "custom_ofs=$ofs" -v substtime=$substtime -v utc=$utc -v "timefmt=$timefmt" "$script $dummy_strftime"
