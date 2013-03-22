@@ -205,7 +205,7 @@ if [ "$gnu" != "1" ]; then
    dummy_strftime="function strftime_safe(a,b,c) {}"
 else
    # Patch up strftime for the optional UTC argument.
-   if [ "$utc_capable" == "1"]; then
+   if [ "$utc_capable" == "1" ]; then
        dummy_strftime="function strftime_safe(a,b,c) {return strftime(a,b,c);}"
    else
        dummy_strftime="function strftime_safe(a,b,c) {return strftime(a,b);}"
