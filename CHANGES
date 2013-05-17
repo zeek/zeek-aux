@@ -1,4 +1,9 @@
 
+0.26-16 | 2013-05-17 07:45:24 -0700
+
+  * A negate option -n for bro-cut printing all fields *except* those
+    listed on the command-line. (Robin Sommer)
+
 0.26-14 | 2013-03-22 12:17:54 -0700
 
   * Fixing bro-cut to work with older gawk versions. (Chris Kanich)
