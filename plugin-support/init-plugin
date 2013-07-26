@@ -10,6 +10,11 @@ function relpath
     echo "$1" | sed "s#`pwd`/\{0,1\}##g"
 }
 
+function lower
+{
+    echo "$1" | tr A-Z a-z
+}
+
 function cmakeCache
 {
    key=$1
@@ -62,8 +67,8 @@ function init-skeleton
     for i in `cd ${skeleton} && find * -type f -not -name '.*'`; do
         src=${skeleton}/$i
         dst=`echo ${plugin_src}/$i`
-        dst=`echo $dst | sed "s#%NS\\.#${plugin_ns}/#g"`
-        dst=`echo $dst | sed "s#%NAME\\.#${plugin_name}/#g"`
+        dst=`echo $dst | sed "s#%NS\\.#${plugin_ns_lower}/#g"`
+        dst=`echo $dst | sed "s#%NAME\\.#${plugin_name_lower}/#g"`
 
         tmp=$dst.$$.tmp
 
@@ -101,6 +106,8 @@ fi
 skeleton=`dirname $0`/skeleton
 plugin_ns=$1
 plugin_name=$2
+plugin_ns_lower=`lower $1`
+plugin_name_lower=`lower $2`
 bro_src=`abspath $3`
 bro_build=`abspath $4`
 plugin_src=`pwd`
