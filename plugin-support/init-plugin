@@ -15,49 +15,6 @@ function lower
     echo "$1" | tr A-Z a-z
 }
 
-function cmakeCache
-{
-   key=$1
-   val=$2
-
-   touch ${plugin_cmake_cache}
-   cat ${plugin_cmake_cache} | grep -v "^set(${key} " >${plugin_cmake_cache}.$$.tmp
-   mv ${plugin_cmake_cache}.$$.tmp ${plugin_cmake_cache}
-   echo "set($key \"$val\" CACHE INTERNAL \"\")" >>${plugin_cmake_cache}
-}
-
-function check
-{
-    if [ ! -e ${bro_src}/bro-path-dev.in ]; then
-        echo "${bro_src} does not point to a Bro source directory"
-        exit 1
-    fi
-
-    # if [ ! -e ${plugin_src}/CMakeLists.txt ]; then
-    #     echo "${plugin_src} does not contain a CMakeLists.txt"
-    #     exit 1
-    # fi
-
-    if [ ! -e ${bro_build}/bro-path-dev ]; then
-        echo "${bro_build} does not point to a Bro build directory"
-        exit 1
-    fi
-
-    if [ ! -e ${bro_build}/CMakeCache.txt ]; then
-        echo "${bro_build} does not contain a CMakeCache.txt"
-        exit 1
-    fi
-
-    bro_prefix=`cat ${bro_build}/CMakeCache.txt | grep CMAKE_INSTALL_PREFIX | cut -d '=' -f 2`
-
-    if [ "${bro_prefix}" == "" ]; then
-        echo "Cannot determine Bro installation prefix from ${bro_build}/CMakeCache.txt"
-        exit;
-    fi
-
-    # echo "Bro installation prefix: ${bro_prefix}"
-}
-
 function init-skeleton
 {
     for i in `cd ${skeleton} && find * -type d`; do
@@ -88,18 +45,10 @@ function init-skeleton
         mv ${tmp} ${dst}
 
     done
-
-    cmakeCache CMAKE_MODULE_PATH             ${bro_src}/cmake
-    cmakeCache BRO_PLUGIN_SRC                ${plugin_src}
-    cmakeCache BRO_PLUGIN_BUILD              ${plugin_build}
-    cmakeCache BRO_PLUGIN_BRO_INSTALL_PREFIX ${bro_src}
-    cmakeCache BRO_PLUGIN_BRO_SRC            ${bro_src}
-    cmakeCache BRO_PLUGIN_BRO_BUILD          ${bro_build}
-    cmakeCache BRO_PLUGIN_EXTERNAL_BUILD     true
 }
 
-if [ $# -lt 3 -o $# -gt 5 ]; then
-    echo "Usage: `basename $0` <namespace> <plugin name> <bro source> [<bro build>]"
+if [ $# != 2 ]; then
+    echo "Usage: `basename $0` <namespace> <plugin name>"
     exit 1
 fi
 
@@ -108,15 +57,7 @@ plugin_ns=$1
 plugin_name=$2
 plugin_ns_lower=`lower $1`
 plugin_name_lower=`lower $2`
-bro_src=`abspath $3`
-bro_build=`abspath $4`
 plugin_src=`pwd`
 plugin_build=`pwd`/dylib
-plugin_cmake_cache=${plugin_src}/CMakeCachePreload.txt
 
-if [ "$4" == "" ]; then
-    bro_build=${bro_src}/build
-fi
-
-check
 init-skeleton

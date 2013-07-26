@@ -1,14 +1,16 @@
 
 CMAKE_BUILD_DIR=dylib
-CMAKE_PRE_CACHE=../CMakeCachePreload.txt
-
-# @test -e $(CMAKE_BUILD_DIR) || ( echo "Build directory already exists; do 'make clean' first if you want to re-init" )
 
 all: build
 
-configure:
+check:
+	@test -n "$$BRO" || (echo 'BRO not set; use "make BRO=<path-to-bro-source-tree>"'; exit 1)
+	@test -e $$BRO/bro-path-dev.in || (echo "$$BRO is not a Bro source tree"; exit 1)
+	@test -e $$BRO/build/bro-path-dev || (echo "$$BRO/build is not a Bro build tree; did you build Bro?"; exit 1)
+
+configure: check
 	@mkdir -p $(CMAKE_BUILD_DIR)
-	( cd $(CMAKE_BUILD_DIR) && cmake -C $(CMAKE_PRE_CACHE) .. )
+	( cd $(CMAKE_BUILD_DIR) && cmake -DBRO_DIST=$$BRO .. )
 
 build:
 	@test -e $(CMAKE_BUILD_DIR) || make configure
@@ -19,5 +21,3 @@ clean:
 
 distclean:
 	rm -rf $(CMAKE_BUILD_DIR)
-
-
