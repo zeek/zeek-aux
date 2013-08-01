@@ -1,4 +1,9 @@
 
+0.26-19 | 2013-07-31 20:09:52 -0700
+
+  * Making git-show-fastpath save against repositories that don't have
+    a fastpath. (Robin Sommer)
+
 0.26-16 | 2013-05-17 07:45:24 -0700
 
   * A negate option -n for bro-cut printing all fields *except* those
