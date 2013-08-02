@@ -2,7 +2,7 @@
 #
 # Shows pending fastpath commits for all modules.
 
-show="git --no-pager log --format=oneline origin/fastpath ^master"
+show="git --no-pager log --format=oneline origin/fastpath ^master; exit 1"
 
 ( echo "Entering <top-level>" && eval $show && git submodule foreach --recursive $show ) | awk '
 
