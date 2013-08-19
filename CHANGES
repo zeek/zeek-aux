@@ -1,4 +1,9 @@
 
+0.26-21 | 2013-08-19 11:21:11 -0700
+
+  * Fixing git-show-fastpath handling of non-existing fastpath
+    branches. (Robin Sommer)
+
 0.26-19 | 2013-07-31 20:09:52 -0700
 
   * Making git-show-fastpath save against repositories that don't have
