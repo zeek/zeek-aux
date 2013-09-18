@@ -1,4 +1,11 @@
 
+0.26-25 | 2013-09-18 14:44:35 -0700
+
+  * A set of README updates, including installation instructions and
+    description of bro-cut. (Daniel Thayer)
+
+  * Switching to relative submodule paths. (Robin Sommer)
+    
 0.26-21 | 2013-08-19 11:21:11 -0700
 
   * Fixing git-show-fastpath handling of non-existing fastpath
