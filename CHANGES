@@ -1,4 +1,9 @@
 
+0.26-27 | 2013-09-19 15:14:24 -0700
+
+  * Update gen-mozilla-ca-list.rb to retrieve the Mozilla
+    root CA list from a current url. (Bernhard Amann)
+
 0.26-25 | 2013-09-18 14:44:35 -0700
 
   * A set of README updates, including installation instructions and
