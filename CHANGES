@@ -1,5 +1,7 @@
 
-0.3 | 2013-09-19 15:14:43 -0700
+0.3 | 2013-09-20 14:54:34 -0700
+
+  * Prettyfing check-release output. (Robin Sommer)
 
   * Update gen-mozilla-ca-list.rb to retrieve the Mozilla
     root CA list from a current url. (Bernhard Amann)

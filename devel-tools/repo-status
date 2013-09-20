@@ -2,7 +2,7 @@
 #
 # Helper for check-release.
 
-repo=`basename \`git config --get remote.origin.url\``
+repo=`basename \`git config --get remote.origin.url\` | sed 's/^[^:]*://'`
 head=`basename \`git symbolic-ref -q HEAD\``
 
 update_changes="`dirname $0`/update-changes"
