@@ -1,5 +1,8 @@
 
-0.3 | 2013-09-20 14:54:34 -0700
+0.3 | 2013-09-20 15:36:37 -0700
+
+  * make-release nows ignores modules that aren't tagged for release
+    or beta. (Robin Sommer)
 
   * Prettyfing check-release output. (Robin Sommer)
 
