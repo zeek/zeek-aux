@@ -79,6 +79,12 @@ for mod in $mods; do
         mod=`basename $mod`
     fi
 
+    if [ ! -e Makefile ]; then
+        echo "No Makefile in $mod, skipping."
+        cd $cwd
+        continue
+    fi
+
     ignore=1
 
     if [ "`git describe HEAD`" = "`git describe release 2>/dev/null`" ]; then
@@ -91,6 +97,7 @@ for mod in $mods; do
 
     if [ "$ignore" = "1" ]; then
         echo "Module $mod is not tagged for release or beta, skipping."
+        cd $cwd
         continue
     fi
 
