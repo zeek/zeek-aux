@@ -44,7 +44,7 @@ negate=0
 awk=awk
 
 # Prefer GNU awk if found so that we can do time conversion.
-which gawk >/dev/null && awk=gawk
+which gawk >/dev/null 2>&1 && awk=gawk
 
 # Check if awk is GNU awk (even for gawk).
 ($awk --version 2>&1 | head -1 | grep -q ^GNU) && gnu=1

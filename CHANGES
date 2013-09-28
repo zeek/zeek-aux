@@ -1,4 +1,9 @@
 
+0.3-3 | 2013-09-28 11:17:42 -0700
+
+  * Don't show error message in bro-cut when gawk not found, which
+    could appear on some systems. (Daniel Thayer)
+
 0.3-1 | 2013-09-24 13:41:02 -0700
 
   * Fix for setting REPO in Makefile, and some tweaks to release
