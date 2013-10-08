@@ -1,4 +1,10 @@
 
+0.3-5 | 2013-10-07 17:19:14 -0700
+
+  * Fix for release script. (Robin Sommer)
+
+  * Updating copyright notice. (Robin Sommer)
+
 0.3-3 | 2013-09-28 11:17:42 -0700
 
   * Don't show error message in bro-cut when gawk not found, which

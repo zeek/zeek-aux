@@ -79,8 +79,8 @@ for mod in $mods; do
         mod=`basename $mod`
     fi
 
-    if [ ! -e Makefile ]; then
-        echo "No Makefile in $mod, skipping."
+    if [ ! '(' -e CMakeLists.txt -o -e Makefile ')' ]; then
+        echo "No CMakeLists.txt or Makefile in $mod, skipping."
         cd $cwd
         continue
     fi
