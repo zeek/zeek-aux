@@ -1,4 +1,9 @@
 
+0.32 | 2013-11-01 05:24:56 -0700
+
+  * Extending Mozialla cert script to include source URL and copyright
+    in output. (Robin Sommer)
+
 0.31 | 2013-10-14 09:24:54 -0700
 
   * Release.
