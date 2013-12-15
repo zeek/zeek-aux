@@ -1,13 +1,7 @@
 
-project(Bro-Plugin-@PLUGIN_NAMESPACE@-@PLUGIN_NAME@)
-
 cmake_minimum_required(VERSION 2.6.3)
 
-if ( NOT BRO_DIST )
-    message(FATAL_ERROR "BRO_DIST not set")
-endif ()
-
-set(CMAKE_MODULE_PATH ${BRO_DIST}/cmake)
+project(Plugin)
 
 include(BroPlugin)
 
