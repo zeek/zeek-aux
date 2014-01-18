@@ -1,10 +1,22 @@
 
 #include <plugin/Plugin.h>
 
-BRO_PLUGIN_BEGIN(@PLUGIN_NAMESPACE@, @PLUGIN_NAME@)
-	BRO_PLUGIN_VERSION(1);
-	BRO_PLUGIN_DESCRIPTION("<Insert brief description of plugin>");
-	BRO_PLUGIN_BIF_FILE(consts);
-	BRO_PLUGIN_BIF_FILE(events);
-	BRO_PLUGIN_BIF_FILE(functions);
-BRO_PLUGIN_END
+namespace plugin {
+namespace @PLUGIN_NAMESPACE@_@PLUGIN_NAME@ {
+
+class Plugin : public plugin::Plugin
+{
+protected:
+	plugin::Configuration Configure()
+		{
+		plugin::Configuration config;
+		config.name = "@PLUGIN_NAMESPACE@::@PLUGIN_NAME@";
+		config.description = "Caesar cipher rotating a string's characters by 13 places.";
+		config.version.major = 1;
+		config.version.minor = 0;
+		return config;
+		}
+} plugin;
+
+}
+}

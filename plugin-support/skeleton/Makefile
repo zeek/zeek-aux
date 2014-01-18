@@ -24,7 +24,7 @@ clean:
 	( cd $(cmake_build_dir) && make clean )
 
 distclean:
-	rm -rf $(cmake_build_dir) lib
+	rm -rf $(cmake_build_dir) lib __bro_plugin__
 
 sdist: build-it
 	@cd build && \
