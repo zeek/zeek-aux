@@ -1,4 +1,9 @@
 
+0.32-4 | 2014-04-22 21:34:23 -0700
+
+  * A git hook script to prevent pushs when the external test suite has
+    new commits pending. (Robin Sommer)
+
 0.32 | 2013-11-01 05:24:56 -0700
 
   * Extending Mozialla cert script to include source URL and copyright
