@@ -1,4 +1,10 @@
 
+0.32-5 | 2014-05-08 16:25:55 -0700
+
+  * Adding git-move-submodules scriptm, which moves all submodules to
+    the head of a given branch and adapts parent modules
+    correspondingly. (Robin Sommer)
+
 0.32-4 | 2014-04-22 21:34:23 -0700
 
   * A git hook script to prevent pushs when the external test suite has

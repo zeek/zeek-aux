@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+#
+# Recursively check outs the most recent version of all submodules on a given
+# branch, and commits the updates to the parents.
+
+branch=$1
+
+if [ "$branch" == "" ]; then
+    echo "usage: `basename $0` <branch>"
+    exit 1
+fi
+
+function update_module {
+    local cwd=$1
+    local i
+    local modules=""
+
+    cd $cwd
+
+    # Note we don't use --recursive here, as we want to do a depth-first
+    # search so that we update childrens first.
+    for i in `git submodule foreach -q 'echo $path'`; do
+        # See if repository has a branch of the given name. Otherwise leave it alone.
+        ( cd $i && git show-ref --verify --quiet refs/heads/$branch ) || continue
+
+        modules="$modules $i"
+
+        echo "--- Checking out $branch of `basename $i`"
+        cd $i
+        git checkout -q $branch || exit 1
+
+        update_module $cwd/$i
+
+        cd $cwd
+    done
+
+    if [ "$modules" != "" ]; then
+        echo "+++ Commiting updates to `basename $cwd`"
+        git commit -m 'Updating submodule(s).
+
+ [nomail]' --only $modules
+    fi
+
+}
+
+update_module `pwd`
+
+
+
+
+
+
