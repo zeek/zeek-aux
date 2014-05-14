@@ -79,6 +79,28 @@ for mod in $mods; do
         mod=`basename $mod`
     fi
 
+    if [ ! '(' -e CMakeLists.txt -o -e Makefile ')' ]; then
+        echo "No CMakeLists.txt or Makefile in $mod, skipping."
+        cd $cwd
+        continue
+    fi
+
+    ignore=1
+
+    if [ "`git describe HEAD`" = "`git describe release 2>/dev/null`" ]; then
+       ignore=0
+    fi
+
+    if [ "`git describe HEAD`" = "`git describe beta 2>/dev/null`" ]; then
+       ignore=0
+    fi
+
+    if [ "$ignore" = "1" ]; then
+        echo "Module $mod is not tagged for release or beta, skipping."
+        cd $cwd
+        continue
+    fi
+
     dist=`release $mod`
     ( echo $dist | grep -qv "^ *$" ) || echo "No distribution found for $mod."
 
