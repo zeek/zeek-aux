@@ -26,6 +26,9 @@ clean:
 distclean:
 	rm -rf $(cmake_build_dir) lib __bro_plugin__
 
+test:
+	make -C tests
+
 sdist: build-it
 	@cd build && \
 	rm -rf sdist && \

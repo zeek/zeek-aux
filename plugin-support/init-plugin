@@ -30,6 +30,7 @@ function init-skeleton
         tmp=$dst.$$.tmp
 
         mkdir -p `dirname ${dst}`
+        cp -p ${src} ${tmp} # Copy first to preserve permissions.
         cat ${src} \
             | sed "s/@PLUGIN_NAME@/${plugin_name}/g" \
             | sed "s/@PLUGIN_NAMESPACE@/${plugin_ns}/g" \
