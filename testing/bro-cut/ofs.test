@@ -1,0 +1,14 @@
+# Test bro-cut with -F option.
+#
+
+# Use a different field separator on two columns.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -F , uid ts > some-columns
+# @TEST-EXEC: btest-diff some-columns
+
+# Field separator is not relevant because log has only one column.
+# @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -F , > only-column
+# @TEST-EXEC: btest-diff only-column
+
+# Show header and use a different field separator.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -F . -c > show-header
+# @TEST-EXEC: btest-diff show-header

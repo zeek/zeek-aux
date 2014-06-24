@@ -1,0 +1,26 @@
+# Test bro-cut with the -n option.
+#
+
+# Show all columns but one.
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -n uid > not-one
+# @TEST-EXEC: btest-diff not-one
+
+# Show all columns but two (and specify them in swapped order).
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -n id.resp_h uid > not-two-swapped
+# @TEST-EXEC: btest-diff not-two-swapped
+
+# Don't show any columns.
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -n ts uid id.orig_h id.orig_p id.resp_h > not-all
+# @TEST-EXEC: btest-diff not-all
+
+# Don't show the only column in the log.
+# @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -n id.orig_h > not-only
+# @TEST-EXEC: btest-diff not-only
+
+# Don't show no columns (i.e., show all).
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -n > not-none
+# @TEST-EXEC: btest-diff not-none
+
+# Show header and not one column.
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -c -n uid > not-one-show-header
+# @TEST-EXEC: btest-diff not-one-show-header

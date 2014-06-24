@@ -1,0 +1,26 @@
+# Test bro-cut with -c and -C options.
+#
+
+# Show first header for one log file.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -c > one-1st-nocols
+# @TEST-EXEC: btest-diff one-1st-nocols
+
+# Show all headers for one log file.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -C > one-all-nocols
+# @TEST-EXEC: btest-diff one-all-nocols
+
+# Show first header for two log files.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut -c uid ts > two-1st-withcols
+# @TEST-EXEC: btest-diff two-1st-withcols
+
+# Show all headers for two log files.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut -C uid ts > two-all-withcols
+# @TEST-EXEC: btest-diff two-all-withcols
+
+# Show all headers for two logs (-C overrides -c).
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut -c -C uid ts > both-c-opts-all
+# @TEST-EXEC: btest-diff both-c-opts-all
+
+# Show first header for two logs (-c overrides -C).
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut -C -c uid ts > both-c-opts-one
+# @TEST-EXEC: btest-diff both-c-opts-one
