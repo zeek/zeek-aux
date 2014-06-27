@@ -34,6 +34,10 @@ dist:
 distclean:
 	rm -rf $(BUILD)
 
+.PHONY : test
+test:
+	@make -C testing
+
 .PHONY : configured
 configured:
 	@test -d $(BUILD) || ( echo "Error: No build/ directory found. Did you run configure?" && exit 1 )
