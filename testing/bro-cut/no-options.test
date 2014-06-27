@@ -1,0 +1,4 @@
+# Test bro-cut without any command-line options.
+#
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut > no-opts
+# @TEST-EXEC: btest-diff no-opts

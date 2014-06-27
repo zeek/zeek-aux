@@ -1,4 +1,8 @@
 
+0.33-4 | 2014-06-26 17:31:25 -0700
+
+  * Test-suite for bro-cut. (Daniel Thayer)
+    
 0.33-2 | 2014-06-26 17:27:09 -0700
 
   * Change bro-cut UTC options to not always override local time.

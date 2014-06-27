@@ -1,0 +1,18 @@
+# Test bro-cut with column names, but no other options.
+#
+
+# One column.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut uid > one
+# @TEST-EXEC: btest-diff one
+
+# Log file has only one column.
+# @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut id.orig_h > only
+# @TEST-EXEC: btest-diff only
+
+# Swap the order of two columns.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut proto uid > swap-order
+# @TEST-EXEC: btest-diff swap-order
+
+# Specify all columns in the log file.
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut ts uid id.orig_h id.orig_p id.resp_h > all
+# @TEST-EXEC: btest-diff all

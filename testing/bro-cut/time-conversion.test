@@ -1,0 +1,64 @@
+# Test bro-cut with time conversion options (-d/-D/-u/-U).
+#
+# @TEST-REQUIRES: which gawk
+#
+
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d > local
+# @TEST-EXEC: btest-diff local
+
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u > utc
+# @TEST-EXEC: btest-diff utc
+
+# Test that -u overrides -d. 
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -u > both-1
+# @TEST-EXEC: btest-diff both-1
+
+# Test that -d overrides -u. 
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -d > both-2
+# @TEST-EXEC: btest-diff both-2
+
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" > local-fmt
+# @TEST-EXEC: btest-diff local-fmt
+
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" > utc-fmt
+# @TEST-EXEC: btest-diff utc-fmt
+
+# Test that -u is ignored.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -D "%H %M %y %m %d" > utc-local-fmt
+# @TEST-EXEC: btest-diff utc-local-fmt
+
+# Test that UTC time is output, but with format string from -D.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" -u > local-fmt-utc
+# @TEST-EXEC: btest-diff local-fmt-utc
+
+# Test that -d is ignored.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -U "%H %M %y %m %d" > local-utc-fmt
+# @TEST-EXEC: btest-diff local-utc-fmt
+
+# Test that local time is output, but with format string from -U.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" -d > utc-fmt-local
+# @TEST-EXEC: btest-diff utc-fmt-local
+
+# Test that -U does not affect the header.
+# @TEST-EXEC: cat $LOGS/test.log | bro-cut -U "%H %M %y %m %d" -c > utc-fmt-show-header
+# @TEST-EXEC: btest-diff utc-fmt-show-header
+
+# Output local time with format from environment.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -d > env-local
+# @TEST-EXEC: btest-diff env-local
+
+# Output UTC with format from environment.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -u > env-utc
+# @TEST-EXEC: btest-diff env-utc
+
+# Test that command-line format string overrides environment variable.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -D "%H %M %y %m %d" > env-local-fmt
+# @TEST-EXEC: btest-diff env-local-fmt
+
+# Test that command-line format string overrides environment variable.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -U "%H %M %y %m %d" > env-utc-fmt
+# @TEST-EXEC: btest-diff env-utc-fmt
+
+# Test with a file that has no timestamps.
+# @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -d > no-timestamps
+# @TEST-EXEC: btest-diff no-timestamps

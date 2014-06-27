@@ -1,0 +1,4 @@
+# Test bro-cut with -h option.
+#
+# @TEST-EXEC-FAIL: bro-cut -h > show-help
+# @TEST-EXEC: btest-diff show-help
