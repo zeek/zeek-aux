@@ -1,4 +1,13 @@
 
+0.33-2 | 2014-06-26 17:27:09 -0700
+
+  * Change bro-cut UTC options to not always override local time.
+    (Daniel Thayer).
+
+  * Updated the bro-cut usage message to make it more clear that the
+    BRO_CUT_TIMEFMT environment variable affects only the -u and -d
+    options. (Daniel Thayer).
+
 0.33 | 2014-05-08 16:27:10 -0700
 
   * Release 0.33.

@@ -21,8 +21,8 @@ Example: cat conn.log | `basename $0` -d ts id.orig_h id.orig_p
     -u       Like -d, but print timestamps in UTC instead of local time (needs gawk).
     -U <fmt> Like -D, but print timestamps in UTC instead of local time (needs gawk).
 
-For the time conversion, the format string can also be specified by setting
-an environment variable BRO_CUT_TIMEFMT.
+For time conversion option -d or -u, the format string can be specified by
+setting an environment variable BRO_CUT_TIMEFMT.
 
 EOF
     exit 1
@@ -56,8 +56,8 @@ while getopts "cCdD:F:uU:nh" opt; do
     case "$opt" in
         c) headers=1;;
         C) headers=2;;
-        d) substtime=1;;
-        D) substtime=1; timefmt=$OPTARG;;
+        d) substtime=1; utc=0;;
+        D) substtime=1; utc=0; timefmt=$OPTARG;;
         F) ofs=$OPTARG;;
         u) substtime=1; utc=1;;
         U) substtime=1; utc=1; timefmt=$OPTARG;;
