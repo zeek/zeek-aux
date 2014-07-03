@@ -178,9 +178,10 @@ BEGIN {
 /^#(fields|types)/ && printHeader() {
     printf("%s", $1);
     for ( i = 1; i <= len_columns; ++i ) {
-        val = $(int(columns[i]) + 1);
+        j = int(columns[i]);
+        val = $(j + 1);
 
-        if ( $1 == "#types" && substtime && times[i] == "1" )
+        if ( $1 == "#types" && substtime && times[j] == "1" )
             val = "string";
 
         printf("%s%s", OFS, val);
