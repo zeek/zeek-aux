@@ -115,8 +115,11 @@ function printHeader() {
 BEGIN {
     first_header = 1;
     len_f = split(fields, f, /:/);
-    for ( i = 1; i <= len_f; ++i )
+    for ( i = 1; i <= len_f; ++i ) {
+        if ( !negate && f[i] in idx )
+            error("duplicate field \"" f[i] "\"");
         idx[f[i]] = i;
+    }
 }
 
 /^#separator/ {
