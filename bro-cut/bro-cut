@@ -144,12 +144,14 @@ BEGIN {
     }
 
     else if ( ! negate ) {
-        len_columns = len_f;
+        split("", columns);   # delete all elements of the array
 
         for ( i = 2; i <= NF; ++i ) {
             if ( $i in idx )
                 columns[idx[$i]] = i-1;
             }
+
+        len_columns = len_f;
 
         for ( i = 1; i <= len_f; ++i ) {
             if ( columns[idx[f[i]]] == "" )
