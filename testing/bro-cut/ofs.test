@@ -5,6 +5,10 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -F , uid ts > some-columns
 # @TEST-EXEC: btest-diff some-columns
 
+# Show that -F option is used even when field separator in log files changes.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conncomma.log | bro-cut -F : proto uid > nondefault-separator
+# @TEST-EXEC: btest-diff nondefault-separator
+
 # Field separator is not relevant because log has only one column.
 # @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -F , > only-column
 # @TEST-EXEC: btest-diff only-column
