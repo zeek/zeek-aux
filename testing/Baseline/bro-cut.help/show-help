@@ -9,12 +9,12 @@ Example: cat conn.log | bro-cut -d ts id.orig_h id.orig_p
 
     -c       Include the first format header block into the output.
     -C       Include all format header blocks into the output.
-    -d       Convert time values into human-readable format (needs gawk).
+    -d       Convert time values into human-readable format.
     -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).
     -F <ofs> Sets a different output field separator.
     -n       Print all fields *except* those specified.
-    -u       Like -d, but print timestamps in UTC instead of local time (needs gawk).
-    -U <fmt> Like -D, but print timestamps in UTC instead of local time (needs gawk).
+    -u       Like -d, but print timestamps in UTC instead of local time.
+    -U <fmt> Like -D, but print timestamps in UTC instead of local time.
 
 For time conversion option -d or -u, the format string can be specified by
 setting an environment variable BRO_CUT_TIMEFMT.

@@ -20,10 +20,10 @@
 # @TEST-EXEC: btest-diff different-col-order
 
 # Test with one file that has timestamps and one file that does not.
-# @TEST-EXEC-FAIL: cat $LOGS/conn.log $LOGS/onecolumn.log | bro-cut -C -u ts id.orig_h > missing-ts-one-file
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/onecolumn.log | bro-cut -C -u ts id.orig_h > missing-ts-one-file
 # @TEST-EXEC: btest-diff missing-ts-one-file
 
 # Specify ts twice.
-# @TEST-EXEC-FAIL: cat $LOGS/conn.log | bro-cut -C -u ts id.orig_h ts > ts-twice
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -C -u ts id.orig_h ts > ts-twice
 # @TEST-EXEC: btest-diff ts-twice
 

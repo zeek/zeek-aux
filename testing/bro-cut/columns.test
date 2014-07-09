@@ -26,11 +26,11 @@
 # @TEST-EXEC: btest-diff different-col-order
 
 # Specify a column name that exists only in the first log file.
-# @TEST-EXEC-FAIL: cat $LOGS/conn.log $LOGS/test.log | bro-cut uid proto > one-nonexistent-1
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut uid proto > one-nonexistent-1
 # @TEST-EXEC: btest-diff one-nonexistent-1
 
 # Specify a column name that exists only in the second log file.
-# @TEST-EXEC-FAIL: cat $LOGS/test.log $LOGS/conn.log | bro-cut uid proto > one-nonexistent-2
+# @TEST-EXEC: cat $LOGS/test.log $LOGS/conn.log | bro-cut uid proto > one-nonexistent-2
 # @TEST-EXEC: btest-diff one-nonexistent-2
 
 # Test what happens when input is missing the "#separator" log header line.
