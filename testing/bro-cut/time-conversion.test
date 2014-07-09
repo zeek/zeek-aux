@@ -1,7 +1,5 @@
 # Test bro-cut with time conversion options (-d/-D/-u/-U).
 #
-# @TEST-REQUIRES: which gawk
-#
 
 # Test -d option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d > local

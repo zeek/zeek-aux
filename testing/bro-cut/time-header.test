@@ -1,7 +1,5 @@
 # Test bro-cut with both time conversion and show header options.
 #
-# @TEST-REQUIRES: which gawk
-#
 
 # Test that time format string does not affect the header timestamps.
 # @TEST-EXEC: cat $LOGS/test.log | bro-cut -C -U "%H %M %y %m %d" > utc-fmt
