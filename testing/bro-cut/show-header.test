@@ -24,3 +24,20 @@
 # Show first header for two logs (-c overrides -C).
 # @TEST-EXEC: cat $LOGS/conn.log $LOGS/test.log | bro-cut -C -c uid ts > both-c-opts-one
 # @TEST-EXEC: btest-diff both-c-opts-one
+
+# Log files use different field separators.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conncomma.log | bro-cut -C proto uid > nondefault-separator
+# @TEST-EXEC: btest-diff nondefault-separator
+
+# Column order changes between two log files.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -C > different-col-order
+# @TEST-EXEC: btest-diff different-col-order
+
+# Column order changes between two log files (and don't show all columns).
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -C ts uid > different-col-order-some
+# @TEST-EXEC: btest-diff different-col-order-some
+
+# Test what happens when input is missing the log header lines.
+# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -c > missing-header
+# @TEST-EXEC: btest-diff missing-header
+

@@ -1,4 +1,18 @@
 
+0.33-11 | 2014-07-08 20:42:32 -0700
+
+  * Add more tests of bro-cut. (Daniel Thayer)
+
+  * Fix bug in bro-cut when duplicate fields are specified. (Daniel Thayer)
+
+  * Fix bug in bro-cut when log file has missing field. (Daniel Thayer)
+
+  * Fix bug in bro-cut output of "#types" header line. (Daniel Thayer)
+
+  * Fix bug in bro-cut when separator is not hexadecimal. (Daniel Thayer)
+
+  * Adding test target to top-level Makefile. (Robin Sommer)
+
 0.33-4 | 2014-06-26 17:31:25 -0700
 
   * Test-suite for bro-cut. (Daniel Thayer)

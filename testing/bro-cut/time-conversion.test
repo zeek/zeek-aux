@@ -3,9 +3,11 @@
 # @TEST-REQUIRES: which gawk
 #
 
+# Test -d option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d > local
 # @TEST-EXEC: btest-diff local
 
+# Test -u option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u > utc
 # @TEST-EXEC: btest-diff utc
 
@@ -17,13 +19,15 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -d > both-2
 # @TEST-EXEC: btest-diff both-2
 
+# Test -D option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" > local-fmt
 # @TEST-EXEC: btest-diff local-fmt
 
+# Test -U option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" > utc-fmt
 # @TEST-EXEC: btest-diff utc-fmt
 
-# Test that -u is ignored.
+# Test that -D overrides -u.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -D "%H %M %y %m %d" > utc-local-fmt
 # @TEST-EXEC: btest-diff utc-local-fmt
 
@@ -31,17 +35,13 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" -u > local-fmt-utc
 # @TEST-EXEC: btest-diff local-fmt-utc
 
-# Test that -d is ignored.
+# Test that -U overrides -d.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -U "%H %M %y %m %d" > local-utc-fmt
 # @TEST-EXEC: btest-diff local-utc-fmt
 
 # Test that local time is output, but with format string from -U.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" -d > utc-fmt-local
 # @TEST-EXEC: btest-diff utc-fmt-local
-
-# Test that -U does not affect the header.
-# @TEST-EXEC: cat $LOGS/test.log | bro-cut -U "%H %M %y %m %d" -c > utc-fmt-show-header
-# @TEST-EXEC: btest-diff utc-fmt-show-header
 
 # Output local time with format from environment.
 # @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -d > env-local
@@ -59,6 +59,19 @@
 # @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -U "%H %M %y %m %d" > env-utc-fmt
 # @TEST-EXEC: btest-diff env-utc-fmt
 
+# Test with a file that has timestamp, but not in the first column.
+# @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -u > time-last-col
+# @TEST-EXEC: btest-diff time-last-col
+
+# Column order changes between two log files.
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -u > different-col-order
+# @TEST-EXEC: btest-diff different-col-order
+
 # Test with a file that has no timestamps.
 # @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -d > no-timestamps
 # @TEST-EXEC: btest-diff no-timestamps
+
+# Test what happens when input is missing the log header lines.
+# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -d > missing-header
+# @TEST-EXEC: btest-diff missing-header
+

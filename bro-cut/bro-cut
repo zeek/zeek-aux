@@ -96,15 +96,16 @@ function hexdigit(d) {
 }
 
 function parseSep(s) {
-    # s must be sequence of "\xXX"
-    if ( s == "" )
-        return "";
+    # Check if s is a sequence of "\xXX".
+    if ( substr(s, 1, 2) == "\\x" ) {
+        a = substr(s, 3, 1);
+        b = substr(s, 4, 1);
+        tail = substr(s, s + 5);
 
-    a = substr(s, 3, 1);
-    b = substr(s, 4, 1);
-    tail = substr(s, s + 5);
+        return asc(hexdigit(a) * 16 + hexdigit(b)) parseSep(tail);
+    }
 
-    return asc(hexdigit(a) * 16 + hexdigit(b)) parseSep(tail);
+    return s
 }
 
 function printHeader() {
@@ -114,8 +115,12 @@ function printHeader() {
 BEGIN {
     first_header = 1;
     len_f = split(fields, f, /:/);
-    for ( i = 1; i <= len_f; ++i )
+    for ( i = 1; i <= len_f; ++i ) {
+        if ( ! negate && f[i] in idx )
+            error("duplicate field \"" f[i] "\"");
+
         idx[f[i]] = i;
+    }
 }
 
 /^#separator/ {
@@ -143,12 +148,14 @@ BEGIN {
     }
 
     else if ( ! negate ) {
-        len_columns = len_f;
+        split("", columns);   # delete all elements of the array
 
         for ( i = 2; i <= NF; ++i ) {
             if ( $i in idx )
                 columns[idx[$i]] = i-1;
             }
+
+        len_columns = len_f;
 
         for ( i = 1; i <= len_f; ++i ) {
             if ( columns[idx[f[i]]] == "" )
@@ -177,9 +184,10 @@ BEGIN {
 /^#(fields|types)/ && printHeader() {
     printf("%s", $1);
     for ( i = 1; i <= len_columns; ++i ) {
-        val = $(int(columns[i]) + 1);
+        j = int(columns[i]);
+        val = $(j + 1);
 
-        if ( $1 == "#types" && substtime && times[i] == "1" )
+        if ( $1 == "#types" && substtime && times[j] == "1" )
             val = "string";
 
         printf("%s%s", OFS, val);

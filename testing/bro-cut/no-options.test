@@ -1,4 +1,15 @@
 # Test bro-cut without any command-line options.
 #
+
+# No options and valid log file.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut > no-opts
 # @TEST-EXEC: btest-diff no-opts
+
+# Test what happens when input is missing the log header lines.
+# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut > missing-header
+# @TEST-EXEC: btest-diff missing-header
+
+# Log file in "tsv" (tab-separated-values) format.
+# @TEST-EXEC: cat $LOGS/conn-tsv.log | bro-cut > tsv
+# @TEST-EXEC: btest-diff tsv
+
