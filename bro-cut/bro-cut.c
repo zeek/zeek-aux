@@ -4,9 +4,6 @@
 #include <unistd.h>
 #include <time.h>
 
-/* This must be at least as large as the maximum expected log line length. */
-#define MAX_LINE_LEN 16384
-
 /* The maximum number of columns that bro-cut can handle. */
 #define MAX_COLS 1024
 
@@ -286,8 +283,9 @@ int bro_cut(struct useropts bopts) {
     struct logparams lp;   /* parameters specific to each log file */
     int headers_seen = 0;  /* 0=no header blocks seen, 1=one seen, 2=2+ seen */
     int prev_line_hdr = 0; /* previous line was a header line? 0=no, 1=yes */
-    size_t linelen;
-    char line[MAX_LINE_LEN];
+    ssize_t linelen;
+    size_t linesize = 100000;
+    char *line = (char *)malloc(linesize);
 
     lp.out_indexes = NULL;
     lp.num_out_indexes = 0;
@@ -298,13 +296,7 @@ int bro_cut(struct useropts bopts) {
     lp.ifs[0] = '\t';
     lp.ifs[1] = '\0';
 
-    while (fgets(line, MAX_LINE_LEN, stdin) != NULL) {
-        linelen = strlen(line);
-        if (linelen == MAX_LINE_LEN - 1) {
-            fputs("bro-cut: log line too long\n", stderr);
-            return 1;
-        }
-
+    while ((linelen = getline(&line, &linesize, stdin)) > 0) {
         /* Remove trailing '\n' */
         line[linelen - 1] = '\0';
 
@@ -357,6 +349,7 @@ int bro_cut(struct useropts bopts) {
 
     }
 
+    free(line);
     return 0;
 }
 
