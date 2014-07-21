@@ -15,6 +15,11 @@ function lower
     echo "$1" | tr A-Z a-z
 }
 
+function upper
+{
+    echo "$1" | tr a-z A-Z
+}
+
 function init-skeleton
 {
     for i in `cd ${skeleton} && find * -type d`; do
@@ -34,6 +39,8 @@ function init-skeleton
         cat ${src} \
             | sed "s/@PLUGIN_NAME@/${plugin_name}/g" \
             | sed "s/@PLUGIN_NAMESPACE@/${plugin_ns}/g" \
+            | sed "s/@PLUGIN_NAME_UPPER@/${plugin_name_upper}/g" \
+            | sed "s/@PLUGIN_NAMESPACE_UPPER@/${plugin_ns_upper}/g" \
             >${tmp}
 
         if [ -e ${dst} ]; then
@@ -58,6 +65,8 @@ plugin_ns=$1
 plugin_name=$2
 plugin_ns_lower=`lower $1`
 plugin_name_lower=`lower $2`
+plugin_ns_upper=`upper $1`
+plugin_name_upper=`upper $2`
 plugin_src=`pwd`
 plugin_build=`pwd`/dylib
 
