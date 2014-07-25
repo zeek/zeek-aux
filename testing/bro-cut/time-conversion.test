@@ -9,20 +9,20 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u > utc
 # @TEST-EXEC: btest-diff utc
 
-# Test that -u overrides -d. 
+# Test that -u can override -d. 
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -u > both-1
 # @TEST-EXEC: btest-diff both-1
 
-# Test that -d overrides -u. 
+# Test that -d can override -u. 
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -d > both-2
 # @TEST-EXEC: btest-diff both-2
 
 # Test with a file that has timestamp, but not in the first column.
-# @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -u > time-last-col
+# @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -d > time-last-col
 # @TEST-EXEC: btest-diff time-last-col
 
 # Column order changes between two log files.
-# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -u > different-col-order
+# @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -d > different-col-order
 # @TEST-EXEC: btest-diff different-col-order
 
 # Test with a file that has no timestamps.
