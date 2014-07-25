@@ -26,9 +26,10 @@ struct logparams {
     int *out_indexes;  /* array of log file column indices to output */
     int num_out_indexes;  /* number of elements in "out_indexes" */
     int idx_range;   /* max. value in "out_indexes" plus one */
-    int timecol;     /* column num. that contains timestamp (or -1 if none) */
     char ifs[2];     /* input field separator character */
     char ofs[2];     /* output field separator character */
+    int num_time_cols;       /* number of elements in "time_cols" */
+    int time_cols[MAX_COLS]; /* array of column nums. that contain timestamp */
 };
 
 char *tmp_fields[MAX_COLS];
@@ -91,12 +92,11 @@ char parsesep(const char *sepstr) {
     return ifs;
 }
 
-/* Return the column number (that we will output) where the field is "time" (or
- * -1 if not found).
+/* Determine the column numbers (that we will output) where the field is "time".
  */
-int find_timecol(const char *line, struct logparams *lp) {
+void find_timecol(const char *line, struct logparams *lp) {
     int i;
-    int col = -1;
+    int ntc = 0;
     char *copy_of_line = strdup(line);
     char *field_ptr = copy_of_line;
     char *field;
@@ -107,15 +107,19 @@ int find_timecol(const char *line, struct logparams *lp) {
             break;
         }
 
-        /* If the field is "time" and we're printing this column, then stop */
+        /* Save col. num. if field is "time" and we're printing this column */
         if (!strcmp("time", field) && contains(lp->out_indexes, lp->num_out_indexes, i)) {
-            col = i;
-            break;
+            if (ntc == MAX_COLS) {
+                fputs("bro-cut: too many time columns\n", stderr);
+                break;
+            }
+            lp->time_cols[ntc++] = i;
         }
     }
 
+    lp->num_time_cols = ntc;
+
     free(copy_of_line);
-    return col;
 }
 
 /* Return the number of elements in "out_indexes" (or -1 for failure), and
@@ -244,7 +248,7 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
             fputs(lp->ofs, stdout);
 
         if (idxval != -1) {
-            if (dotimeconv && lp->timecol == idxval) {
+            if (dotimeconv && contains(lp->time_cols, lp->num_time_cols, idxval)) {
                 /* convert time */
                 time_t tt = atol(tmp_fields[idxval]);
                 struct tm *tmptr;
@@ -290,7 +294,7 @@ int bro_cut(struct useropts bopts) {
     lp.out_indexes = NULL;
     lp.num_out_indexes = 0;
     lp.idx_range = 0;
-    lp.timecol = -1;
+    lp.num_time_cols = 0;
     lp.ofs[0] = '\t';
     lp.ofs[1] = '\0';
     lp.ifs[0] = '\t';
@@ -333,7 +337,7 @@ int bro_cut(struct useropts bopts) {
                 return 1;
             }
         } else if (bopts.timeconv && !strncmp(line, "#types", 6)) {
-            lp.timecol = find_timecol(line + 7, &lp);
+            find_timecol(line + 7, &lp);
         }
 
         /* Decide if we want to output this header */
