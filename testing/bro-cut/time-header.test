@@ -25,3 +25,6 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -C -u ts id.orig_h ts > ts-twice
 # @TEST-EXEC: btest-diff ts-twice
 
+# Test with a log file that has more than one time column.
+# @TEST-EXEC: cat $LOGS/multiple-times.log | bro-cut -C -u proto ts2 ts1 > multiple-times
+# @TEST-EXEC: btest-diff multiple-times

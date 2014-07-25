@@ -33,11 +33,3 @@
 # @TEST-EXEC: cat $LOGS/test.log $LOGS/conn.log | bro-cut uid proto > one-nonexistent-2
 # @TEST-EXEC: btest-diff one-nonexistent-2
 
-# Test what happens when input is missing the "#separator" log header line.
-# @TEST-EXEC: grep -v '^#separator' $LOGS/conn.log | bro-cut uid proto > missing-sep-header
-# @TEST-EXEC: btest-diff missing-sep-header
-
-# Test what happens when input is missing the log header lines.
-# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut uid > missing-header
-# @TEST-EXEC: btest-diff missing-header
-

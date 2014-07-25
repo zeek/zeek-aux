@@ -37,7 +37,3 @@
 # @TEST-EXEC: cat $LOGS/test.log | bro-cut -c -n uid > not-one-show-header
 # @TEST-EXEC: btest-diff not-one-show-header
 
-# Test what happens when input is missing the log header lines.
-# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -n uid > missing-header
-# @TEST-EXEC: btest-diff missing-header
-
