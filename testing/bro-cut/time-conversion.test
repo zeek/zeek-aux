@@ -7,11 +7,11 @@
 
 # Test -u option.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u > utc
-# @TEST-EXEC: btest-diff utc
+# @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/diff-time-zone btest-diff utc
 
 # Test that -u can override -d. 
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -u > both-1
-# @TEST-EXEC: btest-diff both-1
+# @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/diff-time-zone btest-diff both-1
 
 # Test that -d can override -u. 
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -d > both-2
