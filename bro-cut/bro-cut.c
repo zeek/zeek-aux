@@ -4,9 +4,6 @@
 #include <unistd.h>
 #include <time.h>
 
-/* The maximum number of columns that bro-cut can handle. */
-#define MAX_COLS 1024
-
 /* The maximum length of converted timestamp that bro-cut can handle. */
 #define MAX_TIMESTAMP_LEN 100
 
@@ -26,13 +23,13 @@ struct logparams {
     int *out_indexes;  /* array of log file column indices to output */
     int num_out_indexes;  /* number of elements in "out_indexes" */
     int idx_range;   /* max. value in "out_indexes" plus one */
+    int *time_cols;  /* array of columns (0=not timestamp, 1=timestamp) */
+    char **tmp_fields; /* array of pointers to each field on a line */
+    int num_fields;    /* number of fields in log file */
     char ifs[2];     /* input field separator character */
     char ofs[2];     /* output field separator character */
-    int num_time_cols;       /* number of elements in "time_cols" */
-    int time_cols[MAX_COLS]; /* array of column nums. that contain timestamp */
 };
 
-char *tmp_fields[MAX_COLS];
 
 int usage(void) {
     puts("\nbro-cut [options] [<columns>]\n");
@@ -92,79 +89,102 @@ char parsesep(const char *sepstr) {
     return ifs;
 }
 
-/* Determine the column numbers (that we will output) where the field is "time".
+/* Determine the columns (if any) where the field is "time".  Return 0 for
+ * success, and non-zero otherwise.
  */
-void find_timecol(const char *line, struct logparams *lp) {
+int find_timecol(const char *line, struct logparams *lp) {
     int i;
-    int ntc = 0;
-    char *copy_of_line = strdup(line);
-    char *field_ptr = copy_of_line;
+    int *tmpptr;
+    char *copy_of_line;
+    char *field_ptr;
     char *field;
 
+    tmpptr = (int *) realloc(lp->time_cols, lp->idx_range * sizeof(int));
+    if (tmpptr == NULL) {
+        fputs("bro-cut: out of memory\n", stderr);
+        return 1;
+    }
+
+    lp->time_cols = tmpptr;
+
+    if ((copy_of_line = strdup(line)) == NULL) {
+        fputs("bro-cut: out of memory\n", stderr);
+        return 1;
+    }
+    field_ptr = copy_of_line;
+
+    int ret = 0;
     for (i = 0; i < lp->idx_range; ++i) {
         if ((field = strsep(&field_ptr, lp->ifs)) == NULL) {
-            fputs("bro-cut: malformed log header\n", stderr);
+            fputs("bro-cut: log header does not have enough fields\n", stderr);
+            ret = 1;
             break;
         }
 
-        /* Save col. num. if field is "time" and we're printing this column */
-        if (!strcmp("time", field) && contains(lp->out_indexes, lp->num_out_indexes, i)) {
-            if (ntc == MAX_COLS) {
-                fputs("bro-cut: too many time columns\n", stderr);
-                break;
-            }
-            lp->time_cols[ntc++] = i;
-        }
+        /* Set value of 1 for each "time" column, or 0 otherwise */
+        lp->time_cols[i] = strcmp("time", field) ? 0 : 1;
     }
 
-    lp->num_time_cols = ntc;
-
     free(copy_of_line);
+    return ret;
 }
 
-/* Return the number of elements in "out_indexes" (or -1 for failure), and
- * allocate memory for "out_indexes" and store index numbers there
- * corresponding to the columns in "line" that we want to output later.  Also
+/* Allocate memory for "out_indexes" and store index numbers there
+ * corresponding to the columns in "line" that we want to output later.
+ * Set the number of elements in "out_indexes".  Also
  * store in "idx_range" the maximum value contained in "out_indexes" plus one.
+ * Return 0 for success, and non-zero otherwise.
  */
 int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts) {
     int idx;
     int *out_indexes;
-    int num_fields = 0;
     char *field_ptr;
     char *copy_of_line = NULL;
     char *field;
 
     /* Get the number of fields */
+    lp->num_fields = 0;
     field = line;
     while ((field = strchr(field, lp->ifs[0])) != NULL) {
-        num_fields++;
+        lp->num_fields++;
         field++;
     }
-    num_fields++;
+    lp->num_fields++;
 
-    if (num_fields >= MAX_COLS) {
-        return -1;
+    char **tmpptr;
+    /* note: size is num_fields+1 because header lines have an extra field */
+    tmpptr = (char **) realloc(lp->tmp_fields, (lp->num_fields + 1) * sizeof(char *));
+    if (tmpptr == NULL) {
+        return 1;
     }
+    lp->tmp_fields = tmpptr;
 
     if (bopts->num_columns == 0) {
         /* No columns specified on cmd-line, so use all the columns */
-        out_indexes = (int *) realloc(lp->out_indexes, num_fields * sizeof(int));
-        for (idx = 0; idx < num_fields; ++idx) {
+        out_indexes = (int *) realloc(lp->out_indexes, lp->num_fields * sizeof(int));
+        if (out_indexes == NULL) {
+            return 1;
+        }
+
+        for (idx = 0; idx < lp->num_fields; ++idx) {
             out_indexes[idx] = idx;
         }
 
         lp->out_indexes = out_indexes;
-        lp->idx_range = num_fields;
-        return num_fields;
+        lp->idx_range = lp->num_fields;
+        lp->num_out_indexes = lp->num_fields;
+        return 0;
     }
 
     /* Set tmp_fields to point to each field on the line */
-    copy_of_line = strdup(line);
+    if ((copy_of_line = strdup(line)) == NULL) {
+        return 1;
+    }
     field_ptr = copy_of_line;
+
     idx = 0;
     while ((field = strsep(&field_ptr, lp->ifs)) != NULL) {
-        tmp_fields[idx++] = field;
+        lp->tmp_fields[idx++] = field;
     }
 
     int out_idx = 0;
@@ -173,9 +193,12 @@ int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts
     if (!bopts->negate) {
         /* One or more column names were specified on cmd-line */
         out_indexes = (int *) realloc(lp->out_indexes, bopts->num_columns * sizeof(int));
+        if (out_indexes == NULL) {
+            return 1;
+        }
 
         for (idx = 0; idx < bopts->num_columns; ++idx) {
-            out_indexes[idx] = string_index(tmp_fields, num_fields, bopts->columns[idx]);
+            out_indexes[idx] = string_index(lp->tmp_fields, lp->num_fields, bopts->columns[idx]);
             if (out_indexes[idx] > maxval) {
                 maxval = out_indexes[idx];
             }
@@ -183,10 +206,13 @@ int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts
         out_idx = bopts->num_columns;
     } else {
         /* The "-n" option was specified on cmd-line */
-        out_indexes = (int *) realloc(lp->out_indexes, num_fields * sizeof(int));
+        out_indexes = (int *) realloc(lp->out_indexes, lp->num_fields * sizeof(int));
+        if (out_indexes == NULL) {
+            return 1;
+        }
 
-        for (idx = 0; idx < num_fields; ++idx) {
-            if (string_index(bopts->columns, bopts->num_columns, tmp_fields[idx]) == -1) {
+        for (idx = 0; idx < lp->num_fields; ++idx) {
+            if (string_index(bopts->columns, bopts->num_columns, lp->tmp_fields[idx]) == -1) {
                 out_indexes[out_idx++] = idx;
                 if (idx > maxval) {
                     maxval = idx;
@@ -199,7 +225,8 @@ int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts
 
     lp->out_indexes = out_indexes;
     lp->idx_range = maxval + 1;
-    return out_idx;
+    lp->num_out_indexes = out_idx;
+    return 0;
 }
 
 /* Output the columns of "line" that the user specified.  The value of "hdr"
@@ -222,22 +249,22 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 
     for (i = 0; i < idxrange; ++i) {
         if ((field = strsep(&line, lp->ifs)) == NULL) {
-            fputs("bro-cut: malformed log line\n", stderr);
+            fputs("bro-cut: skipping log line (not enough fields)\n", stderr);
             return;
         }
-        tmp_fields[i] = field;
+        lp->tmp_fields[i] = field;
     }
 
     /* If user selected time conversion and this line is a "#types" header,
      * then try to change the "time" type field.
      */
-    if (bopts->timeconv && hdr && !strcmp(tmp_fields[0], "#types")) {
+    if (bopts->timeconv && hdr && !strcmp(lp->tmp_fields[0], "#types")) {
         dotimetypeconv = 1;
     }
 
     if (hdr) {
         /* Output the initial "#" field on the header line */
-        fputs(tmp_fields[0], stdout);
+        fputs(lp->tmp_fields[0], stdout);
         firstdone = 1;
     }
 
@@ -248,9 +275,9 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
             fputs(lp->ofs, stdout);
 
         if (idxval != -1) {
-            if (dotimeconv && contains(lp->time_cols, lp->num_time_cols, idxval)) {
+            if (dotimeconv && lp->time_cols[idxval]) {
                 /* convert time */
-                time_t tt = atol(tmp_fields[idxval]);
+                time_t tt = atol(lp->tmp_fields[idxval]);
                 struct tm *tmptr;
                 char tbuf[MAX_TIMESTAMP_LEN];
 
@@ -258,16 +285,16 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 
                 if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
                     tbuf[sizeof(tbuf) - 1] = '\0';
-                    fputs("bro-cut: timestamp too long\n", stderr);
+                    fputs("bro-cut: truncating timestamp (too long)\n", stderr);
                 }
 
                 fputs(tbuf, stdout);
-            } else if (dotimetypeconv && !strcmp("time", tmp_fields[idxval + hdr])) {
+            } else if (dotimetypeconv && !strcmp("time", lp->tmp_fields[idxval + hdr])) {
                 /* change the "time" type field to "string" */
                 fputs("string", stdout);
             } else {
                 /* output the field without modification */
-                fputs(tmp_fields[idxval + hdr], stdout);
+                fputs(lp->tmp_fields[idxval + hdr], stdout);
             }
 
         }
@@ -281,20 +308,30 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 }
 
 /* Reads one or more log files from stdin and outputs them to stdout according
- * to the options specified in "bopts".
+ * to the options specified in "bopts".  Returns 0 on success, and non-zero
+ * otherwise.
  */
 int bro_cut(struct useropts bopts) {
+    int ret = 0;
     struct logparams lp;   /* parameters specific to each log file */
     int headers_seen = 0;  /* 0=no header blocks seen, 1=one seen, 2=2+ seen */
     int prev_line_hdr = 0; /* previous line was a header line? 0=no, 1=yes */
+    int prev_fields_line = 0; /* previous line was #fields line? 0=no, 1=yes */
     ssize_t linelen;
     size_t linesize = 100000;
-    char *line = (char *)malloc(linesize);
+    char *line = (char *) malloc(linesize);
+
+    if (line == NULL) {
+        fputs("bro-cut: out of memory\n", stderr);
+        return 1;
+    }
 
     lp.out_indexes = NULL;
     lp.num_out_indexes = 0;
     lp.idx_range = 0;
-    lp.num_time_cols = 0;
+    lp.time_cols = NULL;
+    lp.tmp_fields = NULL;
+    lp.num_fields = 0;
     lp.ofs[0] = '\t';
     lp.ofs[1] = '\0';
     lp.ifs[0] = '\t';
@@ -303,6 +340,12 @@ int bro_cut(struct useropts bopts) {
     while ((linelen = getline(&line, &linesize, stdin)) > 0) {
         /* Remove trailing '\n' */
         line[linelen - 1] = '\0';
+
+        if (prev_fields_line && strncmp(line, "#types", 6)) {
+            fputs("bro-cut: bad log header (missing #types line)\n", stderr);
+            ret = 1;
+            break;
+        }
 
         /* Check if this line is a header line or not */
         if (line[0] != '#') {
@@ -330,14 +373,26 @@ int bro_cut(struct useropts bopts) {
              */
             lp.ofs[0] = bopts.ofs[0] ? bopts.ofs[0] : lp.ifs[0];
         } else if (!strncmp(line, "#fields", 7)) {
-            lp.num_out_indexes = find_output_indexes(line + 8, &lp, &bopts);
-
-            if (lp.num_out_indexes == -1) {
-                fputs("bro-cut: log has too many columns\n", stderr);
-                return 1;
+            prev_fields_line = 1;
+            if (find_output_indexes(line + 8, &lp, &bopts)) {
+                fputs("bro-cut: out of memory\n", stderr);
+                ret = 1;
+                break;
             }
-        } else if (bopts.timeconv && !strncmp(line, "#types", 6)) {
-            find_timecol(line + 7, &lp);
+        } else if (!strncmp(line, "#types", 6)) {
+            if (!prev_fields_line) {
+                fputs("bro-cut: bad log header (missing #fields line)\n", stderr);
+                ret = 1;
+                break;
+            }
+            prev_fields_line = 0;
+
+            if (bopts.timeconv) {
+                if (find_timecol(line + 7, &lp)) {
+                    ret = 1;
+                    break;
+                }
+            }
         }
 
         /* Decide if we want to output this header */
@@ -353,8 +408,11 @@ int bro_cut(struct useropts bopts) {
 
     }
 
+    free(lp.time_cols);
+    free(lp.out_indexes);
+    free(lp.tmp_fields);
     free(line);
-    return 0;
+    return ret;
 }
 
 int main(int argc, char *argv[]) {
