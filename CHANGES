@@ -1,4 +1,18 @@
 
+0.33-26 | 2014-07-30 15:51:42 -0500
+
+  * Remove a superfluous file from plugin skeleton. (Jon Siwek)
+
+  * init-plugin now creates a Plugin.h as well. (Robin Sommer)
+
+  * Adding a basic btest setup to the plugin skeleton. (Robin Sommer)
+
+  * Updating plugin skeleton to new API. (Robin Sommer)
+
+  * Updates to the init-plugin script/skeleton. (Robin Sommer)
+
+  * A script to setup a skeleton for a new dynamic plugin. (Robin Sommer)
+
 0.33-11 | 2014-07-08 20:42:32 -0700
 
   * Add more tests of bro-cut. (Daniel Thayer)
