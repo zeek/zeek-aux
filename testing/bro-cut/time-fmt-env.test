@@ -1,0 +1,19 @@
+# Test bro-cut with time conversion options and BRO_CUT_TIMEFMT.
+#
+
+# Output local time with format from environment.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -d > env-local
+# @TEST-EXEC: btest-diff env-local
+
+# Output UTC with format from environment.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -u > env-utc
+# @TEST-EXEC: btest-diff env-utc
+
+# Test that command-line format string overrides environment variable.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -D "%H %M %y %m %d" > env-local-fmt
+# @TEST-EXEC: btest-diff env-local-fmt
+
+# Test that command-line format string overrides environment variable.
+# @TEST-EXEC: cat $LOGS/conn.log | BRO_CUT_TIMEFMT="%H%M_%y%m%d" bro-cut -U "%H %M %y %m %d" > env-utc-fmt
+# @TEST-EXEC: btest-diff env-utc-fmt
+

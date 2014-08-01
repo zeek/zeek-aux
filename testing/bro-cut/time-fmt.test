@@ -1,0 +1,27 @@
+# Test bro-cut with time conversion options (-D/-U).
+#
+
+# Test -D option.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" > local-fmt
+# @TEST-EXEC: btest-diff local-fmt
+
+# Test -U option.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" > utc-fmt
+# @TEST-EXEC: btest-diff utc-fmt
+
+# Test that -D can override -u.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -D "%H %M %y %m %d" > utc-local-fmt
+# @TEST-EXEC: btest-diff utc-local-fmt
+
+# Test that UTC time is output, but with format string from -D.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" -u > local-fmt-utc
+# @TEST-EXEC: btest-diff local-fmt-utc
+
+# Test that -U can override -d.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -U "%H %M %y %m %d" > local-utc-fmt
+# @TEST-EXEC: btest-diff local-utc-fmt
+
+# Test that local time is output, but with format string from -U.
+# @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" -d > utc-fmt-local
+# @TEST-EXEC: btest-diff utc-fmt-local
+
