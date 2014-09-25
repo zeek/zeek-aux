@@ -19,8 +19,9 @@ file_version="VERSION"              # The VERSION file.
 file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
 release_tag="release"               # We mark the current release with this tag.
-beta_tag="beta"               # We mark the current beta with this tag.
+beta_tag="beta"                     # We mark the current beta with this tag.
 new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
+show_authors=1                      # Include author names with commit.
 
 # The command line used to generate a revision's version string.
 git_describe="git describe --always" # {rev} will be added.
@@ -151,7 +152,7 @@ function add_to_changes_entry
            bullet="-"
    fi
 
-   ( echo -n "$msg"; test "$author" != "" && printf " (%s)" "$author" ) \
+   ( echo -n "$msg"; test "$author" != "" && test "$show_authors" == "1" && printf " (%s)" "$author" ) \
        | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' \
        | sed 's/[\t ]*$//' >>$dst
 
