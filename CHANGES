@@ -1,4 +1,8 @@
 
+0.33-45 | 2014-08-21 15:47:29 -0500
+
+  * Various tweaks to the plugin skeleton. (Robin Sommer)
+
 0.33-38 | 2014-08-01 14:03:49 -0700
 
   * bro-cut has been rewritten in C, and is hence much faster. (Daniel
