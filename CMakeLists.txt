@@ -61,6 +61,10 @@ macro(AddAuxInstallTarget _target)
     endif ()
 endmacro(AddAuxInstallTarget)
 
+if ( NOT BRO_MAN_INSTALL_PATH )
+    set(BRO_MAN_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/share/man)
+endif ()
+
 add_subdirectory(adtrace)
 add_subdirectory(bro-cut)
 add_subdirectory(nftools)
