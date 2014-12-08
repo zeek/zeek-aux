@@ -1,4 +1,16 @@
 
+0.33-55 | 2014-12-08 13:49:37 -0800
+
+  * Add man page for bro-cut. (Raúl Benencia)
+
+  * Add --install-root to plugin skeleton's configure. (Robin
+    Sommer)
+
+  * Fix get-bro-env script to use sh equality operator. (Jon Siwek)
+
+  * Add an option to update-changes that prevents it from adding
+    author names to entries. (Robin Sommer)
+
 0.33-45 | 2014-08-21 15:47:29 -0500
 
   * Various tweaks to the plugin skeleton. (Robin Sommer)
@@ -39,7 +51,7 @@
 0.33-4 | 2014-06-26 17:31:25 -0700
 
   * Test-suite for bro-cut. (Daniel Thayer)
-    
+
 0.33-2 | 2014-06-26 17:27:09 -0700
 
   * Change bro-cut UTC options to not always override local time.
@@ -109,7 +121,7 @@
     description of bro-cut. (Daniel Thayer)
 
   * Switching to relative submodule paths. (Robin Sommer)
-    
+
 0.26-21 | 2013-08-19 11:21:11 -0700
 
   * Fixing git-show-fastpath handling of non-existing fastpath
@@ -128,7 +140,7 @@
 0.26-14 | 2013-03-22 12:17:54 -0700
 
   * Fixing bro-cut to work with older gawk versions. (Chris Kanich)
-    
+
   * s/bro-ids.org/bro.org/g (Robin Sommer)
 
 0.26-5 | 2012-11-01 14:24:25 -0700
@@ -170,7 +182,7 @@
   * Tweaks for OpenBSD support. (Jon Siwek)
 
   * bro-cut extensions and fixes.  (Robin Sommer)
-    
+
     - If no field names are given on the command line, we now pass through
       all fields. Adresses #657.
 
