@@ -1,5 +1,5 @@
 project(BroAux C CXX)
-cmake_minimum_required(VERSION 2.6.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 include(cmake/CommonCMakeConfig.cmake)
 
 ########################################################################
@@ -49,11 +49,10 @@ macro(AddAuxInstallTarget _target)
         "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
         install(TARGETS ${_target} DESTINATION bin)
     else ()
-        get_property(_target_loc TARGET ${_target} PROPERTY LOCATION)
         add_custom_target(install-${_target}
             COMMAND ${CMAKE_COMMAND} -E make_directory
                     ${CMAKE_INSTALL_PREFIX}/bin
-            COMMAND ${CMAKE_COMMAND} -E copy ${_target_loc}
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_target}>
                     ${CMAKE_INSTALL_PREFIX}/bin)
         add_dependencies(install-${_target} ${_target})
         set(AUX_TARGETS install-${_target};${AUX_TARGETS})

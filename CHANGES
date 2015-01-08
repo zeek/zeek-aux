@@ -1,4 +1,8 @@
 
+0.33-56 | 2015-01-08 13:06:36 -0600
+
+  * Increase minimum required CMake version to 2.8. (Jon Siwek)
+
 0.33-55 | 2014-12-08 13:49:37 -0800
 
   * Add man page for bro-cut. (Raúl Benencia)
