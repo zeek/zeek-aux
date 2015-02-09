@@ -1,6 +1,8 @@
 // See the file "COPYING" in the main distribution directory for copyright.
 
 #include <string.h>
+// define required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
