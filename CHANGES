@@ -1,4 +1,8 @@
 
+0.33-58 | 2015-02-12 12:15:39 -0600
+
+  * Fix bro-cut compile warning on FreeBSD (Johanna Amann)
+
 0.33-56 | 2015-01-08 13:06:36 -0600
 
   * Increase minimum required CMake version to 2.8. (Jon Siwek)
