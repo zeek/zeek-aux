@@ -54,7 +54,7 @@ while [ $# -ne 0 ]; do
             ;;
 
         --bro-dist=*)
-            brodist=$optarg
+            brodist=`cd $optarg && pwd`
             ;;
 
         --install-root=*)
