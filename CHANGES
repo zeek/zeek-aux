@@ -1,4 +1,32 @@
 
+0.33-68 | 2015-02-23 11:26:14 -0600
+
+  * Plugin skeleton updates. (Robin Sommer)
+
+    - Updating plugin skeleton license.
+
+    - Removing the plugin MAINTAINER skeleton file.
+
+    - Adding hooks to configure script so that plugins can add options
+      without modifying the scripts itself.
+
+    - BIT-1302: Extending plugin skeleton Makefile to reload cached
+      CMake variables when Bro has been reconfigured. (Robin Sommer)
+
+    - Removing bdist and sdist make targets. The former is superseded by
+      the new build process which always creates a binary distribution
+      tarball. The latter is easy enough to do manually now that all
+      dynamic stuff is in build/
+
+    - Added a VERSION file; content goes into name of the binary tarball
+
+    - Move README.edit-me to README.
+
+    - Allowing relative paths for --bro-dist
+
+  * Changing init-plugin to take an additional parameter specifying the
+    directory where to create the plugin skeleton. (Robin Sommer)
+
 0.33-58 | 2015-02-12 12:15:39 -0600
 
   * Fix bro-cut compile warning on FreeBSD (Johanna Amann)

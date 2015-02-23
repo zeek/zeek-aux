@@ -60,19 +60,37 @@ function init-skeleton
     done
 }
 
-if [ $# != 2 ]; then
-    echo "Usage: `basename $0` <namespace> <plugin name>"
+update=0
+
+if [ "$1" == "-u" ]; then
+    update=1
+    shift
+fi
+
+if [ $# != 3 ]; then
+    echo "Usage: `basename $0` [-u] <dst-dir> <namespace> <plugin name>"
     exit 1
 fi
 
-skeleton=`dirname $0`/skeleton
-plugin_ns=$1
-plugin_name=$2
-plugin_ns_lower=`lower $1`
-plugin_name_lower=`lower $2`
-plugin_ns_upper=`upper $1`
-plugin_name_upper=`upper $2`
-plugin_src=`pwd`
-plugin_build=`pwd`/dylib
+dstdir=$1
+
+if [ -e "${dstdir}" -a ${update} != 1 ]; then
+    echo "error: ${dstdir} already exits, use -u if you want to update skeleton files in there."
+    exit 1
+fi
+
+mkdir -p ${dstdir}
+dstdir=`abspath ${dstdir}`
+
+basedir=`dirname $0`
+skeleton=`abspath ${basedir}`/skeleton
+plugin_ns=$2
+plugin_name=$3
+plugin_ns_lower=`lower $2`
+plugin_name_lower=`lower $3`
+plugin_ns_upper=`upper $2`
+plugin_name_upper=`upper $3`
+plugin_src=${dstdir}
+plugin_build=${dstdir}/dylib
 
 init-skeleton

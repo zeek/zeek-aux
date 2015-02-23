@@ -2,9 +2,17 @@
 #
 # Wrapper for viewing/setting options that the plugin's CMake
 # scripts will recognize.
+#
+# Don't edit this. Edit configure.plugin to add plugin-specific options.
+#
 
 set -e
 command="$0 $*"
+
+if [ -e `dirname $0`/configure.plugin ]; then
+    # Include custom additions.
+    source `dirname $0`/configure.plugin
+fi
 
 # Check for `cmake` command.
 type cmake > /dev/null 2>&1 || {
@@ -15,16 +23,24 @@ use this configure script to access CMake equivalent functionality.\
     exit 1;
 }
 
-usage="\
-Usage: $0 [OPTION]... [VAR=VALUE]...
+function usage() {
 
-  Generic Plugin Options:
-    --bro-dist=DIR             path to Bro source tree
-    --install-root=DIR         path where to install plugin into
+cat 1>&2 <<EOF
+Usage: $0 [OPTIONS]
 
-  Plugin-specific options:
-    None
-"
+  Plugin Options:
+    --bro-dist=DIR             Path to Bro source tree
+    --install-root=DIR         Path where to install plugin into
+EOF
+
+if type -t plugin_usage >/dev/null 2>&1; then
+    plugin_usage 1>&2
+fi
+
+echo
+
+exit 1
+}
 
 # Function to append a CMake cache entry definition to the
 # CMakeCacheEntries variable
@@ -49,12 +65,11 @@ while [ $# -ne 0 ]; do
 
     case "$1" in
         --help|-h)
-            echo "${usage}" 1>&2
-            exit 1
+            usage
             ;;
 
         --bro-dist=*)
-            brodist=$optarg
+            brodist=`cd $optarg && pwd`
             ;;
 
         --install-root=*)
@@ -62,6 +77,10 @@ while [ $# -ne 0 ]; do
             ;;
 
         *)
+            if type -t plugin_option >/dev/null 2>&1; then
+                plugin_option $1 && shift && continue;
+            fi
+
             echo "Invalid option '$1'.  Try $0 --help to see available options."
             exit 1
             ;;
@@ -78,7 +97,8 @@ append_cache_entry BRO_DIST PATH $brodist
 append_cache_entry CMAKE_MODULE_PATH PATH $brodist/cmake
 
 if [ "$installroot" != "default" ]; then
-     append_cache_entry BRO_PLUGIN_INSTALL_ROOT PATH $installroot
+    mkdir -p $installroot
+    append_cache_entry BRO_PLUGIN_INSTALL_ROOT PATH $installroot
 fi
 
 echo "Build Directory        : $builddir"
