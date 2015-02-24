@@ -3,7 +3,7 @@
 # Hooks to add custom options to the configure script.
 #
 
-function plugin_usage
+plugin_usage()
 {
     : # Do nothing
 #    cat <<EOF
@@ -11,7 +11,7 @@ function plugin_usage
 # EOF
 }
 
-function plugin_option
+plugin_option()
 {
     case "$1" in
 #        --with-foo=*)
