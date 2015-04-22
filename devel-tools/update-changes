@@ -8,7 +8,7 @@
 #
 # If the script finds a file called .update-changes.cfg it sources it at beginning. That
 # script can define a function "new_version_hook" that will be called with the new
-# version number. It may use any of the replace_version_* function defined below
+# version number. It may use any of the replace_version_* functions defined below
 # to update other files as necessary.
 #
 # If $1 is given, it's interpreted as a release version and a corresponding
@@ -51,7 +51,6 @@ function usage
     echo "    -B <tag>    Tag the current revision as a beta release. Use VERSION to use that."
     echo "    -I          Initialize a new, initially empty CHANGES file."
     echo "    -c          Check whether CHANGES is up to date."
-    echo "    -a          Amend to previous commit if not yet pushed upstream."
     echo
     exit 1
 }
@@ -337,14 +336,14 @@ if [ "$last_rev" == "" ]; then
 fi
 
 if [ "$last_rev" == "" ]; then
-    echo 'Cannot determine previous revision to compare with, specify with "-p <rev>"'.
+    echo 'Cannot determine previous revision to compare with, specify with "-p <rev>".'
     exit 1
 fi
 
 auto_version=`version HEAD`
 
 if [ "$auto_version" == "" ]; then
-    echo "cannto determine version for HEAD did not return anything."
+    echo "Cannot determine version for HEAD did not return anything."
     exit 1
 fi
 
@@ -426,7 +425,7 @@ echo >>$tmp
 cat $file_changes >>$tmp
 
 # If we are ahead of origin, we can amend. If not, we need to create a new commit even
-# if the users wants otherwise.
+# if the user wants otherwise.
 amend=0
 if git remote | grep -q origin; then
      if git rev-list origin..HEAD | grep -q .; then
