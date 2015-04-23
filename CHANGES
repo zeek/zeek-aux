@@ -1,4 +1,13 @@
 
+0.33-74 | 2015-04-23 06:58:37 -0700
+
+  * Correct a few typos in update-changes script. (Daniel Thayer)
+
+  * Adding function to update-changes that updates version in a C
+    header file. (Robin Sommer)
+
+  * Fix plugin configure skeletons to work on more shells. (Jon Siwek)
+
 0.33-68 | 2015-02-23 11:26:14 -0600
 
   * Plugin skeleton updates. (Robin Sommer)
