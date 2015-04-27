@@ -105,9 +105,8 @@ function replace_version_in_c_header
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([\\t ]#define[\\t ]*[_A-Za-z0-9]*\\)_VERSION[\\t ]\\)\"\\([0-9.-]\\{1,\\}\\)\"#\1\"$version\"#g" >$file.tmp
-    cat $file.tmp >$file
-    rm -f $file.tmp
+    cat $file | sed "s#\\([\\t ]*\\#define[\\t ]*[_A-Za-z0-9]*_VERSION[\\t ]*\\)\"[0-9.-]\\{1,\\}\"#\\1\"$version\"#g" >$file.tmp
+    mv $file.tmp $file
     git add $file
 }
 
