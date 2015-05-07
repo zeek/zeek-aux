@@ -1,4 +1,8 @@
 
+0.34 | 2015-04-27 08:24:06 -0700
+
+  * Release 0.34.
+
 0.33-76 | 2015-04-27 08:23:18 -0700
 
   * Fix sed regex for replacing version in header file. (Jon Siwek)
