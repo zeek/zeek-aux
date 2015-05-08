@@ -1,7 +1,9 @@
 
-0.34 | 2015-04-27 08:24:06 -0700
+0.34 | 2015-05-07 20:30:43 -0700
 
   * Release 0.34.
+
+  * Change make-release to assume sign-file is in path (Johanna Amann)
 
 0.33-76 | 2015-04-27 08:23:18 -0700
 

@@ -120,8 +120,7 @@ for dist in $dists; do
     mv $tgz $dst
 
     echo Signing $dst ...
-    t=`readlink $0`
-    `dirname $t`/sign-file $dst
+    sign-file $dst
 
 done
 
