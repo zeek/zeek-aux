@@ -75,7 +75,7 @@ fi
 dstdir=$1
 
 if [ -e "${dstdir}" -a ${update} != 1 ]; then
-    echo "error: ${dstdir} already exits, use -u if you want to update skeleton files in there."
+    echo "error: ${dstdir} already exists, use -u if you want to update skeleton files in there."
     exit 1
 fi
 
