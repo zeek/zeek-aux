@@ -79,7 +79,7 @@ function replace_version_in_rst
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9.-]\\{1,\\}\\)#\1$version#g" >$file.tmp
+    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9beta.-]\\{1,\\}\\)#\1$version#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
