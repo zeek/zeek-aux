@@ -1,4 +1,8 @@
 
+0.35 | 2015-06-03 09:02:49 -0700
+
+  * Release 0.35.
+
 0.34-5 | 2015-06-03 09:02:10 -0700
 
   * Fix replace_version_in_rst function in update-changes script to
