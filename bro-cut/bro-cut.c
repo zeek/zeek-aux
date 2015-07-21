@@ -1,6 +1,7 @@
 // See the file "COPYING" in the main distribution directory for copyright.
 
 #include <string.h>
+#include <getopt.h>
 // define required for FreeBSD
 #define _WITH_GETLINE
 #include <stdio.h>
@@ -430,7 +431,11 @@ int main(int argc, char *argv[]) {
     bopts.ofs = "";
     bopts.timefmt = envtimefmt ? envtimefmt : "%Y-%m-%dT%H:%M:%S%z";
 
-    while ((c = getopt(argc, argv, "cCnF:duD:U:h")) != -1) {
+    static struct option long_opts[] = {
+        {"help",    no_argument,    0,  'h'},
+    };
+
+    while ((c = getopt_long(argc, argv, "cCnF:duD:U:h", long_opts, NULL)) != -1) {
         switch (c) {
             case 'c':
                 bopts.showhdr = 1;
