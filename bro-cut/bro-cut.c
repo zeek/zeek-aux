@@ -287,6 +287,12 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
                 char tbuf[MAX_TIMESTAMP_LEN];
 
                 tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
+                if (tt == 0 || tmptr == NULL) {
+                    fprintf(stderr, "bro-cut: invalid timestamp: %s\n", lp->tmp_fields[idxval]);
+                    fputs(lp->tmp_fields[idxval], stdout);
+                    continue;
+                }
+
 
                 if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
                     tbuf[sizeof(tbuf) - 1] = '\0';
