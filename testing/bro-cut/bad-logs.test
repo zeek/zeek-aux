@@ -34,7 +34,7 @@
 # @TEST-EXEC: btest-diff invalid-time-field
 
 # Separator is missing
-# @TEST-EXEC: cat $LOGS/malformed-separator.log | bro-cut -d ts > missing-separator
+# @TEST-EXEC: cat $LOGS/missing-separator.log | bro-cut -d ts > missing-separator
 # @TEST-EXEC: btest-diff missing-separator
 
 # Separator is \x00
