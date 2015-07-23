@@ -29,14 +29,14 @@
 # @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -n uid > no-header-not-column
 # @TEST-EXEC: btest-diff no-header-not-column
 
-# Time field is out of range
+# Time field is invalid or out of range
 # @TEST-EXEC: cat $LOGS/invalid-time.log | bro-cut -d ts > invalid-time-field
 # @TEST-EXEC: btest-diff invalid-time-field
 
 # Separator is missing
-# @TEST-EXEC-FAIL: cat $LOGS/missing-separator.log | bro-cut -d ts > missing-separator
+# @TEST-EXEC-FAIL: cat $LOGS/missing-separator.log | bro-cut 2> missing-separator
 # @TEST-EXEC: btest-diff missing-separator
 
 # Separator is \x00
-# @TEST-EXEC-FAIL: cat $LOGS/null-separator.log | bro-cut -d ts > null-separator
+# @TEST-EXEC-FAIL: cat $LOGS/null-separator.log | bro-cut 2> null-separator
 # @TEST-EXEC: btest-diff null-separator
