@@ -377,7 +377,14 @@ int bro_cut(struct useropts bopts) {
         }
 
         if (!strncmp(line, "#separator ", 11)) {
-            lp.ifs[0] = parsesep(line + 11);
+            char ifs = parsesep(line + 11);
+            if (ifs == '\0') {
+                fputs("bro-cut: bad log header (invalid #separator line)\n", stderr);
+                ret = 1;
+                break;
+            }
+
+            lp.ifs[0] = ifs;
 
             /* If user-specified ofs is set, then use it. Otherwise, just
              * use the log file's input field separator.
