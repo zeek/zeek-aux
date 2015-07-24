@@ -281,15 +281,16 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
                     fprintf(stderr, "bro-cut: invalid timestamp: %s\n", lp->tmp_fields[idxval]);
                     /* output the field without modification */
                     fputs(lp->tmp_fields[idxval], stdout);
-                    continue;
                 }
-
-                if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
-                    tbuf[sizeof(tbuf) - 1] = '\0';
-                    fputs("bro-cut: truncating timestamp (too long)\n", stderr);
+                else if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
+                    fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
+                    /* output the field without modification */
+                    fputs(lp->tmp_fields[idxval], stdout);
                 }
-
-                fputs(tbuf, stdout);
+                else {
+                    /* output the formatted timestamp */
+                    fputs(tbuf, stdout);
+                }
             } else if (dotimetypeconv && !strcmp("time", lp->tmp_fields[idxval + hdr])) {
                 /* change the "time" type field to "string" */
                 fputs("string", stdout);
@@ -475,6 +476,11 @@ int main(int argc, char *argv[]) {
                 usage();
                 break;
         }
+    }
+
+    if (bopts.timeconv && strlen(bopts.timefmt) == 0) {
+        fputs("bro-cut: time format string cannot be empty\n", stderr);
+        exit(1);
     }
 
     bopts.columns = &argv[optind];
