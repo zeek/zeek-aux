@@ -68,18 +68,6 @@ int string_index(char *haystack[], int haystack_size, const char *needle) {
     return -1;
 }
 
-/* Return whether or not "needle" is contained in "haystack" (0=false, 1=true).
- */
-int contains(int *haystack, int haystack_size, int needle) {
-    int i;
-    for (i = 0; i < haystack_size; ++i) {
-        if (haystack[i] == needle) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 /* Return the input field separator from the log's "#separator " header line. */
 char parsesep(const char *sepstr) {
     char ifs;
@@ -448,6 +436,7 @@ int main(int argc, char *argv[]) {
 
     static struct option long_opts[] = {
         {"help",    no_argument,    0,  'h'},
+        {0,         0,              0,  0}
     };
 
     while ((c = getopt_long(argc, argv, "cCnF:duD:U:h", long_opts, NULL)) != -1) {
