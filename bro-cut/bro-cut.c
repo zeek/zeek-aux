@@ -68,18 +68,6 @@ int string_index(char *haystack[], int haystack_size, const char *needle) {
     return -1;
 }
 
-/* Return whether or not "needle" is contained in "haystack" (0=false, 1=true).
- */
-int contains(int *haystack, int haystack_size, int needle) {
-    int i;
-    for (i = 0; i < haystack_size; ++i) {
-        if (haystack[i] == needle) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 /* Return the input field separator from the log's "#separator " header line. */
 char parsesep(const char *sepstr) {
     char ifs;
@@ -288,12 +276,21 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 
                 tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
 
-                if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
-                    tbuf[sizeof(tbuf) - 1] = '\0';
-                    fputs("bro-cut: truncating timestamp (too long)\n", stderr);
+                /* check for invalid or out-of-range time value */
+                if (tt == 0 || tmptr == NULL) {
+                    fprintf(stderr, "bro-cut: invalid timestamp: %s\n", lp->tmp_fields[idxval]);
+                    /* output the field without modification */
+                    fputs(lp->tmp_fields[idxval], stdout);
                 }
-
-                fputs(tbuf, stdout);
+                else if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
+                    fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
+                    /* output the field without modification */
+                    fputs(lp->tmp_fields[idxval], stdout);
+                }
+                else {
+                    /* output the formatted timestamp */
+                    fputs(tbuf, stdout);
+                }
             } else if (dotimetypeconv && !strcmp("time", lp->tmp_fields[idxval + hdr])) {
                 /* change the "time" type field to "string" */
                 fputs("string", stdout);
@@ -371,7 +368,14 @@ int bro_cut(struct useropts bopts) {
         }
 
         if (!strncmp(line, "#separator ", 11)) {
-            lp.ifs[0] = parsesep(line + 11);
+            char ifs = parsesep(line + 11);
+            if (ifs == '\0') {
+                fputs("bro-cut: bad log header (invalid #separator line)\n", stderr);
+                ret = 1;
+                break;
+            }
+
+            lp.ifs[0] = ifs;
 
             /* If user-specified ofs is set, then use it. Otherwise, just
              * use the log file's input field separator.
@@ -433,6 +437,7 @@ int main(int argc, char *argv[]) {
 
     static struct option long_opts[] = {
         {"help",    no_argument,    0,  'h'},
+        {0,         0,              0,  0}
     };
 
     while ((c = getopt_long(argc, argv, "cCnF:duD:U:h", long_opts, NULL)) != -1) {
@@ -471,6 +476,11 @@ int main(int argc, char *argv[]) {
                 usage();
                 break;
         }
+    }
+
+    if (bopts.timeconv && strlen(bopts.timefmt) == 0) {
+        fputs("bro-cut: time format string cannot be empty\n", stderr);
+        exit(1);
     }
 
     bopts.columns = &argv[optind];
