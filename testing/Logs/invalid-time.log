@@ -1,4 +1,5 @@
 #fields	ts	test
 #types	time	string
 hello	a
-7777777777777777777	b
+-12345	b
+77777777777777777777	c
