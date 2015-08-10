@@ -1,4 +1,9 @@
 
+0.35-8 | 2015-08-10 14:56:24 -0700
+
+  * Plugin skeletons now include a __preload__.bro that pulls in
+    types.bro for defining types. (Robin Sommer)
+
 0.35-7 | 2015-08-10 12:58:35 -0700
 
   * Fix a test for large time values that fails on some systems.
