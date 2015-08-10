@@ -1,5 +1,10 @@
 
-0.35-12 | 2015-08-06 22:29:36 -0400
+0.35-7 | 2015-08-10 12:58:35 -0700
+
+  * Fix a test for large time values that fails on some systems.
+    (Daniel Thayer)
+
+0.35-6 | 2015-08-06 22:29:36 -0400
 
   * Improved handling of malformed input, avoiding crashes. (Justin
     Azoff and Daniel Thayer)
