@@ -1,4 +1,8 @@
 
+0.35-15 | 2016-02-01 12:37:46 -0800
+
+  * Fix the init-plugin script to be more portable. (Daniel Thayer)
+
 0.35-8 | 2015-08-10 14:56:24 -0700
 
   * Plugin skeletons now include a __preload__.bro that pulls in
