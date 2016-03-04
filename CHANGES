@@ -1,4 +1,8 @@
 
+0.35-18 | 2016-03-04 12:38:16 -0800
+
+  * Update for new CMake OpenSSL script. (Johanna Amann)
+
 0.35-15 | 2016-02-01 12:37:46 -0800
 
   * Fix the init-plugin script to be more portable. (Daniel Thayer)

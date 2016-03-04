@@ -22,7 +22,7 @@ endif ()
 include_directories(BEFORE
                     ${BIND_INCLUDE_DIR}
                     ${PCAP_INCLUDE_DIR}
-                    ${OpenSSL_INCLUDE_DIR}
+                    ${OPENSSL_INCLUDE_DIR}
                     )
 
 ########################################################################
