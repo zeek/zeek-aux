@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Plugin)
 
+find_package(OpenSSL)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 include(BroPlugin)
 
 bro_plugin_begin(@PLUGIN_NAMESPACE@ @PLUGIN_NAME@)
