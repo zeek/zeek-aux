@@ -34,6 +34,7 @@ struct logparams {
     int num_fields;    /* number of fields in log file */
     char ifs[2];     /* input field separator character */
     char ofs[2];     /* output field separator character */
+    char *unsetf;    /* unset field string */
 };
 
 
@@ -223,6 +224,47 @@ int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts
     return 0;
 }
 
+/*
+ * Try to convert a time value to a human-readable timestamp, and then output
+ * the result.  A valid time value is one or more digits followed by a decimal
+ * point (everything after the decimal point is ignored).  If the time
+ * conversion fails for any reason, then just output the field unmodified.
+ */
+void output_time(const char *field, const char *unsetf, struct useropts *bopts) {
+    char *tmp;
+    long tl = strtol(field, &tmp, 10);
+
+    if (tl < 0 || tl == LONG_MAX) {
+        fprintf(stderr, "bro-cut: time value out-of-range: %s\n", field);
+    } else if (*tmp != '.') {
+        /* it's not an error if the field equals the unset field string */
+        if (strcmp(field, unsetf)) {
+            fprintf(stderr, "bro-cut: time field is not valid: %s\n", field);
+        }
+    } else {
+        time_t tt = tl;
+        struct tm *tmptr;
+        char tbuf[MAX_TIMESTAMP_LEN];
+        tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
+
+        if (tmptr) {
+            if (strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
+                /* output the formatted timestamp */
+                fputs(tbuf, stdout);
+                return;
+            } else {
+                fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
+            }
+        } else {
+            /* the time conversion will fail for large values */
+            fprintf(stderr, "bro-cut: time value out-of-range: %s\n", field);
+        }
+    }
+
+    /* failed to convert, so just output the field without modification */
+    fputs(field, stdout);
+}
+
 /* Output the columns of "line" that the user specified.  The value of "hdr"
  * indicates whether "line" is a header line or not (0=not header, 1=header).
  */
@@ -270,29 +312,8 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 
         if (idxval != -1) {
             if (dotimeconv && lp->time_cols[idxval]) {
-                /* convert time */
-                long tl = atol(lp->tmp_fields[idxval]);
-                time_t tt = tl;
-                struct tm *tmptr;
-                char tbuf[MAX_TIMESTAMP_LEN];
-
-                tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
-
-                /* check for invalid or out-of-range time value */
-                if (tl <= 0 || tl == LONG_MAX || tmptr == NULL) {
-                    fprintf(stderr, "bro-cut: invalid timestamp: %s\n", lp->tmp_fields[idxval]);
-                    /* output the field without modification */
-                    fputs(lp->tmp_fields[idxval], stdout);
-                }
-                else if (!strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
-                    fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
-                    /* output the field without modification */
-                    fputs(lp->tmp_fields[idxval], stdout);
-                }
-                else {
-                    /* output the formatted timestamp */
-                    fputs(tbuf, stdout);
-                }
+                /* output time field */
+                output_time(lp->tmp_fields[idxval], lp->unsetf, bopts);
             } else if (dotimetypeconv && !strcmp("time", lp->tmp_fields[idxval + hdr])) {
                 /* change the "time" type field to "string" */
                 fputs("string", stdout);
@@ -340,6 +361,12 @@ int bro_cut(struct useropts bopts) {
     lp.ofs[1] = '\0';
     lp.ifs[0] = '\t';
     lp.ifs[1] = '\0';
+    lp.unsetf = strdup("-");
+
+    if (lp.unsetf == NULL) {
+        fputs("bro-cut: out of memory\n", stderr);
+        return 1;
+    }
 
     while ((linelen = getline(&line, &linesize, stdin)) > 0) {
         /* Remove trailing '\n' */
@@ -383,6 +410,19 @@ int bro_cut(struct useropts bopts) {
              * use the log file's input field separator.
              */
             lp.ofs[0] = bopts.ofs[0] ? bopts.ofs[0] : lp.ifs[0];
+        } else if (!strncmp(line, "#unset_field", 12)) {
+            if (line[12] && line[13]) {
+                free(lp.unsetf);
+                if ((lp.unsetf = strdup(line + 13)) == NULL) {
+                    fputs("bro-cut: out of memory\n", stderr);
+                    ret = 1;
+                    break;
+                }
+            } else {
+                fputs("bro-cut: bad log header (invalid #unset_field line)\n", stderr);
+                ret = 1;
+                break;
+            }
         } else if (!strncmp(line, "#fields", 7)) {
             prev_fields_line = 1;
             if (find_output_indexes(line + 8, &lp, &bopts)) {
@@ -422,6 +462,7 @@ int bro_cut(struct useropts bopts) {
     free(lp.time_cols);
     free(lp.out_indexes);
     free(lp.tmp_fields);
+    free(lp.unsetf);
     free(line);
     return ret;
 }
