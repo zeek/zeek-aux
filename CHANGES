@@ -1,4 +1,11 @@
 
+0.35-27 | 2016-06-21 18:31:33 -0700
+
+  * Fix bro-cut to allow unset or zero time values. (Daniel Thayer)
+
+  * Fix failure to build plugins on OS X 10.11 with init-plugin.
+    (Daniel Thayer)
+
 0.35-18 | 2016-03-04 12:38:16 -0800
 
   * Update for new CMake OpenSSL script. (Johanna Amann)

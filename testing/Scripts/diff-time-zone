@@ -5,4 +5,4 @@
 # with the "%z" format string behaves differently on OS X (it just always
 # shows the local time zone instead of "+0000").
 
-sed 's/[+-][0-9][0-9][0-9][0-9]/+0000/'
+sed 's/[+-][0-9][0-9][0-9][0-9]/+0000/g'
