@@ -365,6 +365,7 @@ int bro_cut(struct useropts bopts) {
 
     if (lp.unsetf == NULL) {
         fputs("bro-cut: out of memory\n", stderr);
+        free(line);
         return 1;
     }
 
