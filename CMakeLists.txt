@@ -66,7 +66,6 @@ endif ()
 
 add_subdirectory(adtrace)
 add_subdirectory(bro-cut)
-add_subdirectory(nftools)
 add_subdirectory(rst)
 
 if (NOT (BINARY_PACKAGING_MODE OR

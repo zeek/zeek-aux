@@ -87,15 +87,6 @@ cpu-bench-with-trace
     Run a number of Bro benchmarks on a trace file.
 
 
-nftools
-=======
-
-The "nfcollector" and "ftwire2bro" utilities are for dealing with Bro's
-custom file format for storing NetFlow records.  The "nfcollector" utility
-reads NetFlow data from a socket and writes it in Bro's format.  The
-"ftwire2bro" utility reads NetFlow "wire" format (e.g., as generated
-by a 'flow-export' directive) and writes it in Bro's format.
-
 rst
 ===
 
