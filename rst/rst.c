@@ -27,6 +27,7 @@ static const char copyright[] =
 /* need this due to linux's funny idea of a tcphdr */
 #if defined(__linux__)
 #define _DEFAULT_SOURCE
+#define _BSD_SOURCE /* Deprecated, but still needed by older Linux. */
 #endif
 
 #include <sys/types.h>
