@@ -1,4 +1,17 @@
 
+0.36 | 2016-08-12 13:12:49 -0700
+
+  * Release 0.36.
+
+  * Update gen-mozilla-ca-list.rb to use a file instead of accessing the
+    Mozilla server. (Johanna Amann)
+
+  * Fix compiler warning. (Robin Sommer)
+
+  * Removing nftools. (Robin Sommer)
+
+  * Fix coverity warning (memory leak) in bro-cut (Daniel Thayer)
+
 0.35-27 | 2016-06-21 18:31:33 -0700
 
   * Fix bro-cut to allow unset or zero time values. (Daniel Thayer)
@@ -222,7 +235,7 @@
   * Prettyfing check-release output. (Robin Sommer)
 
   * Update gen-mozilla-ca-list.rb to retrieve the Mozilla
-    root CA list from a current url. (Bernhard Amann)
+    root CA list from a current url. (Johanna Amann)
 
 0.26-25 | 2013-09-18 14:44:35 -0700
 
