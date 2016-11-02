@@ -1,4 +1,11 @@
 
+0.37 | 2016-10-27 14:42:01 -0700
+
+  * Release 0.37.
+
+  * Reverting fix to build plugins on OS X; no longer necessary because plugins
+    do no longer have to pull in OpenSSL. (Johanna Amann)
+
 0.36 | 2016-08-12 13:12:49 -0700
 
   * Release 0.36.
