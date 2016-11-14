@@ -1,4 +1,8 @@
 
+0.38 | 2016-11-14 09:19:05 -0800
+
+  * Robustness fix for check-release script. (Robin Sommer)
+
 0.37 | 2016-10-27 14:42:01 -0700
 
   * Release 0.37.
