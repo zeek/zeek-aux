@@ -1,4 +1,18 @@
 
+0.39 | 2017-05-26 08:26:51 -0500
+
+  * Release 0.39.
+
+  * Update plugin skeleton's CMakeLists.txt.
+
+    The project name is now derived from the actual plugin name instead of
+    just "Plugin" and it now sets up CPack packaging (e.g. RPM/DEB) to be
+    available via "make package" in the build dir. (Jon Siwek)
+
+  * Remove superfluous spaces from line endings. (Johanna Amann)
+
+  * Small update to plugin-support to use override instead of virtual (Johanna Amann)
+
 0.38 | 2016-11-14 09:19:05 -0800
 
   * Robustness fix for check-release script. (Robin Sommer)
