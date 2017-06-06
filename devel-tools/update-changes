@@ -115,7 +115,7 @@ function replace_version_in_c_header
 function version
 {
     rev=$1
-    $git_describe $rev 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g'
+    $git_describe $rev --match "v*" 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g'
 }
 
 function start_changes_entry
@@ -322,7 +322,7 @@ if [ "$release" != "" ]; then
 fi
 
 if [ "$beta" != "" ]; then
-    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+-beta'; then
+    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+(\.[0-9]+)-beta'; then
         echo "Release tag must be of the form vX.Y[.Z]-beta*"
         exit 1
     fi
