@@ -1,4 +1,17 @@
 
+0.39-4 | 2017-07-29 07:43:25 -0700
+
+  * Add script to generate certificate transparency list file.
+    (Johanna Amann)
+
+  * Two updates for update-changes. (Johanna Amann)
+
+        - Betas accept versions in the 1.2.3 format, not just 1.2.
+
+        - When searching for the last version tag, upgate-changes now
+          specifically only searches for tags starting with "v", for
+          example ignoring release tags.
+
 0.39 | 2017-05-26 08:26:51 -0500
 
   * Release 0.39.
