@@ -53,7 +53,7 @@ append_cache_entry () {
 
 # set defaults
 builddir=build
-brodist=`cd ../../.. && pwd`
+brodist=`bro-config --bro_dist 2> /dev/null || (cd ../../.. && pwd)`
 installroot="default"
 CMakeCacheEntries=""
 
