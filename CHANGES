@@ -1,4 +1,8 @@
 
+0.39-7 | 2017-12-05 11:17:43 -0600
+
+  * Use bro-config for plugin configure if available. (Jan Grashoefer)
+
 0.39-4 | 2017-07-29 07:43:25 -0700
 
   * Add script to generate certificate transparency list file.
