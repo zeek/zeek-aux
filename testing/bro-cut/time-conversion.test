@@ -17,6 +17,10 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -d > both-2
 # @TEST-EXEC: btest-diff both-2
 
+# First time value is zero.
+# @TEST-EXEC: cat $LOGS/zerotime.log | bro-cut -u > zero
+# @TEST-EXEC: btest-diff zero
+
 # File has timestamp, but not in the first column.
 # @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -d > time-last-col
 # @TEST-EXEC: btest-diff time-last-col
