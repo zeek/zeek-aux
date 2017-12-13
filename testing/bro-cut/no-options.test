@@ -1,11 +1,9 @@
 # Test bro-cut without any command-line options.
 #
 
-# No options.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut > no-opts
 # @TEST-EXEC: btest-diff no-opts
 
 # Log file in "tsv" (tab-separated-values) format.
 # @TEST-EXEC: cat $LOGS/conn-tsv.log | bro-cut > tsv
 # @TEST-EXEC: btest-diff tsv
-

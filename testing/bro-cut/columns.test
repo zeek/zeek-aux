@@ -1,7 +1,7 @@
 # Test bro-cut with column names, but no other options.
 #
 
-# One column.
+# Select one column.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut uid > one
 # @TEST-EXEC: btest-diff one
 
@@ -32,4 +32,3 @@
 # Specify a column name that exists only in the second log file.
 # @TEST-EXEC: cat $LOGS/test.log $LOGS/conn.log | bro-cut uid proto > one-nonexistent-2
 # @TEST-EXEC: btest-diff one-nonexistent-2
-

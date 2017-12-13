@@ -17,7 +17,7 @@
 # @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -n ts uid > different-col-order
 # @TEST-EXEC: btest-diff different-col-order
 
-# Don't show any columns (i.e., list all columns in the log file).
+# Don't show any columns.
 # @TEST-EXEC: cat $LOGS/test.log | bro-cut -n ts uid id.orig_h id.orig_p id.resp_h > not-all
 # @TEST-EXEC: btest-diff not-all
 
@@ -25,7 +25,7 @@
 # @TEST-EXEC: cat $LOGS/onecolumn.log | bro-cut -n id.orig_h > not-only
 # @TEST-EXEC: btest-diff not-only
 
-# Don't specify any column names to exclude.
+# Don't exclude any columns.
 # @TEST-EXEC: cat $LOGS/test.log | bro-cut -n > not-none
 # @TEST-EXEC: btest-diff not-none
 
@@ -36,4 +36,3 @@
 # Show that the -n option also affects the header.
 # @TEST-EXEC: cat $LOGS/test.log | bro-cut -c -n uid > not-one-show-header
 # @TEST-EXEC: btest-diff not-one-show-header
-
