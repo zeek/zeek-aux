@@ -25,6 +25,10 @@
 # @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -d > time-last-col
 # @TEST-EXEC: btest-diff time-last-col
 
+# File has more than one time column, and some timestamps are duplicates.
+# @TEST-EXEC: cat $LOGS/multiple-times.log | bro-cut -d > multiple-times
+# @TEST-EXEC: btest-diff multiple-times
+
 # Column order changes between two log files.
 # @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -d > different-col-order
 # @TEST-EXEC: btest-diff different-col-order
