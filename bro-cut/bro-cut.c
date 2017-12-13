@@ -35,6 +35,7 @@ struct logparams {
     char ifs[2];     /* input field separator character */
     char ofs[2];     /* output field separator character */
     char *unsetf;    /* unset field string */
+    long prev_ts;    /* previous timestamp */
 };
 
 
@@ -230,27 +231,34 @@ int find_output_indexes(char *line, struct logparams *lp, struct useropts *bopts
  * point (everything after the decimal point is ignored).  If the time
  * conversion fails for any reason, then just output the field unmodified.
  */
-void output_time(const char *field, const char *unsetf, struct useropts *bopts) {
+void output_time(const char *field, struct logparams *lp, struct useropts *bopts) {
+    /* Buffer is declared static in order to reuse the timestamp string */
+    static char tbuf[MAX_TIMESTAMP_LEN];
+
     char *tmp;
     long tl = strtol(field, &tmp, 10);
 
     if (tl < 0 || tl == LONG_MAX) {
         fprintf(stderr, "bro-cut: time value out-of-range: %s\n", field);
     } else if (*tmp != '.') {
-        /* it's not an error if the field equals the unset field string */
-        if (strcmp(field, unsetf)) {
+        if (strcmp(field, lp->unsetf)) {
+            /* field is not a valid value and is not the unset field string */
             fprintf(stderr, "bro-cut: time field is not valid: %s\n", field);
         }
+    } else if (tl == lp->prev_ts) {
+        /* timestamp is same as the previous one, so skip the conversion */
+        fputs(tbuf, stdout);
+        return;
     } else {
         time_t tt = tl;
         struct tm *tmptr;
-        char tbuf[MAX_TIMESTAMP_LEN];
         tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
 
         if (tmptr) {
             if (strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
                 /* output the formatted timestamp */
                 fputs(tbuf, stdout);
+                lp->prev_ts = tl;
                 return;
             } else {
                 fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
@@ -313,7 +321,7 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
         if (idxval != -1) {
             if (dotimeconv && lp->time_cols[idxval]) {
                 /* output time field */
-                output_time(lp->tmp_fields[idxval], lp->unsetf, bopts);
+                output_time(lp->tmp_fields[idxval], lp, bopts);
             } else if (dotimetypeconv && !strcmp("time", lp->tmp_fields[idxval + hdr])) {
                 /* change the "time" type field to "string" */
                 fputs("string", stdout);
@@ -362,6 +370,7 @@ int bro_cut(struct useropts bopts) {
     lp.ifs[0] = '\t';
     lp.ifs[1] = '\0';
     lp.unsetf = strdup("-");
+    lp.prev_ts = -1; /* initialize with an invalid time value */
 
     if (lp.unsetf == NULL) {
         fputs("bro-cut: out of memory\n", stderr);
