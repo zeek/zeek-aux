@@ -19,7 +19,7 @@
 
 # First time value is zero.
 # @TEST-EXEC: cat $LOGS/zerotime.log | bro-cut -u > zero
-# @TEST-EXEC: btest-diff zero
+# @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/diff-time-zone btest-diff zero
 
 # File has timestamp, but not in the first column.
 # @TEST-EXEC: cat $LOGS/conntimelast.log | bro-cut -d > time-last-col
