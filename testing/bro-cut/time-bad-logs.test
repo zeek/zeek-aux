@@ -10,5 +10,6 @@
 # @TEST-EXEC: btest-diff no-header-time
 
 # Time field is invalid or out of range
-# @TEST-EXEC: cat $LOGS/invalid-time.log | bro-cut -d > invalid-time-field
+# @TEST-EXEC: cat $LOGS/invalid-time.log | bro-cut -d > invalid-time-field 2> invalid-time-field.err
 # @TEST-EXEC: btest-diff invalid-time-field
+# @TEST-EXEC: btest-diff invalid-time-field.err

@@ -1,0 +1,5 @@
+bro-cut: time field is not valid: hello
+bro-cut: time value out-of-range: -12345.123456
+bro-cut: time value out-of-range: 77777777777777777777
+bro-cut: time field is not valid: 
+bro-cut: time field is not valid: 123456789
