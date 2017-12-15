@@ -41,15 +41,16 @@ struct logparams {
 
 int usage(void) {
     puts("\nbro-cut [options] [<columns>]\n");
-    puts("Extracts the given columns from an ASCII Bro log on standard input.");
-    puts("If no columns are given, all are selected. By default, bro-cut does");
-    puts("not include format header blocks into the output.");
+    puts("Extracts the given columns from ASCII Bro logs on standard input, and outputs");
+    puts("them to standard output. If no columns are given, all are selected.");
+    puts("By default, bro-cut does not include format header blocks in the output.");
     puts("\nExample: cat conn.log | bro-cut -d ts id.orig_h id.orig_p");
-    puts("\n    -c       Include the first format header block into the output.");
-    puts("    -C       Include all format header blocks into the output.");
+    puts("\n    -c       Include the first format header block in the output.");
+    puts("    -C       Include all format header blocks in the output.");
     puts("    -d       Convert time values into human-readable format.");
     puts("    -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).");
-    puts("    -F <ofs> Sets a different output field separator.");
+    puts("    -F <ofs> Sets a different output field separator character.");
+    puts("    -h       Show help.");
     puts("    -n       Print all fields *except* those specified.");
     puts("    -u       Like -d, but print timestamps in UTC instead of local time.");
     puts("    -U <fmt> Like -D, but print timestamps in UTC instead of local time.\n");
