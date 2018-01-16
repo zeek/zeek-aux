@@ -1,4 +1,12 @@
 
+0.39-15 | 2018-01-16 12:55:57 -0600
+
+  * Improvements to documentation of bro-cut (Daniel Thayer)
+
+  * Improve bro-cut tests (Daniel Thayer)
+
+  * Faster bro-cut timestamp conversion (Daniel Thayer)
+
 0.39-7 | 2017-12-05 11:17:43 -0600
 
   * Use bro-config for plugin configure if available. (Jan Grashoefer)

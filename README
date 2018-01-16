@@ -1,7 +1,7 @@
 .. -*- mode: rst; -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 0.39-7
+.. |version| replace:: 0.39-15
 
 ======================
 Bro Auxiliary Programs
@@ -38,27 +38,33 @@ bro-cut
 The "bro-cut" utility reads ASCII Bro logs on standard input
 and outputs them to standard output with only the specified columns (the
 column names can be found in each log file in the "#fields" header line).
-The specified order of the column names determines the output order of the
-columns (i.e., "bro-cut" can reorder the columns).  If no column names are
-specified, then "bro-cut" simply outputs all columns.
+If no column names are specified, then "bro-cut" simply outputs all columns.
 
 There are several command-line options available to modify the output (run
-"bro-cut -h" to see a list of all options).  For example,
-there are options to convert timestamps into human-readable format, and
-options to specify whether or not to include the format header lines in the
-output (by default, they're not included).  For example, the following command
-will output the three specified columns from conn.log with the timestamps
-from the "ts" column being converted to human-readable format::
+"bro-cut -h" to see a list of all options).  There are options to convert
+timestamps into human-readable format, and options to specify whether or not
+to include the format header lines in the output (by default, they're not
+included).
+
+For example, the following command will output the three specified columns
+from conn.log with the timestamps from the "ts" column being converted to
+human-readable format::
 
     cat conn.log | bro-cut -d ts id.orig_h id.orig_p
 
+The specified order of the column names determines the output order of the
+columns (i.e., "bro-cut" can reorder the columns).
+
 The "bro-cut" utility can read the concatenation of one or more uncompressed
-ASCII log files produced by Bro version 2.0 or newer, as long as each log
-file contains format header lines (i.e., lines at the beginning of the file
-starting with "#").  So, for example, "bro-cut" cannot read a Bro log file
-in the JSON format.  To read a compressed log file, a tool such as "zcat"
-must be used to uncompress the file.  For example, "bro-cut" can read a
-group of compressed conn.log files with a command like this::
+ASCII log files (however, JSON format is not supported) produced by Bro
+version 2.0 or newer, as long as each log file contains format header
+lines (these are the lines at the beginning of the file starting with "#").
+In fact, "bro-cut" can process the concatenation of multiple ASCII log files
+that have different column layouts.
+
+To read a compressed log file, a tool such as "zcat" must be used to
+uncompress the file.  For example, "bro-cut" can read a group of compressed
+conn.log files with a command like this::
 
     zcat conn.*.log.gz | bro-cut
 

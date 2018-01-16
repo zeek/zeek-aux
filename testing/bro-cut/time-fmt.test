@@ -9,19 +9,18 @@
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" > utc-fmt
 # @TEST-EXEC: btest-diff utc-fmt
 
-# Test that -D can override -u.
+# Output local time (-D overrides -u).
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -u -D "%H %M %y %m %d" > utc-local-fmt
 # @TEST-EXEC: btest-diff utc-local-fmt
 
-# Test that UTC time is output, but with format string from -D.
+# Output UTC time, but with format string from -D.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -D "%H %M %y %m %d" -u > local-fmt-utc
 # @TEST-EXEC: btest-diff local-fmt-utc
 
-# Test that -U can override -d.
+# Output UTC time (-U overrides -d).
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -d -U "%H %M %y %m %d" > local-utc-fmt
 # @TEST-EXEC: btest-diff local-utc-fmt
 
-# Test that local time is output, but with format string from -U.
+# Output local time, but with format string from -U.
 # @TEST-EXEC: cat $LOGS/conn.log | bro-cut -U "%H %M %y %m %d" -d > utc-fmt-local
 # @TEST-EXEC: btest-diff utc-fmt-local
-

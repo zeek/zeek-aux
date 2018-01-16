@@ -9,17 +9,9 @@
 # @TEST-EXEC-FAIL: grep -v '^#fields' $LOGS/conn.log | bro-cut -C 2> missing-fields-header
 # @TEST-EXEC: btest-diff missing-fields-header
 
-# The "#types" log header line is missing (convert times).
-# @TEST-EXEC-FAIL: grep -v '^#types' $LOGS/conn.log | bro-cut -d 2> missing-types-header
-# @TEST-EXEC: btest-diff missing-types-header
-
 # All log header lines are missing (show header).
 # @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -c > no-header-show
 # @TEST-EXEC: btest-diff no-header-show
-
-# All log header lines are missing (convert times).
-# @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -d > no-header-time
-# @TEST-EXEC: btest-diff no-header-time
 
 # All log header lines are missing (select column to show).
 # @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut uid > no-header-column
@@ -28,10 +20,6 @@
 # All log header lines are missing (select column to not show).
 # @TEST-EXEC: grep -v '^#' $LOGS/conn.log | bro-cut -n uid > no-header-not-column
 # @TEST-EXEC: btest-diff no-header-not-column
-
-# Time field is invalid or out of range
-# @TEST-EXEC: cat $LOGS/invalid-time.log | bro-cut -d > invalid-time-field
-# @TEST-EXEC: btest-diff invalid-time-field
 
 # Separator is missing
 # @TEST-EXEC-FAIL: cat $LOGS/missing-separator.log | bro-cut 2> missing-separator

@@ -36,4 +36,3 @@
 # Column order changes between two log files (and don't show all columns).
 # @TEST-EXEC: cat $LOGS/conn.log $LOGS/conntimelast.log | bro-cut -C ts uid > different-col-order-some
 # @TEST-EXEC: btest-diff different-col-order-some
-
