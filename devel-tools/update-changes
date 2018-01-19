@@ -1,15 +1,16 @@
 #! /usr/bin/env bash
 #
 # Assembles a draft CHANGES entry out of revisions committed since the last
-# entry was added. The entry is prepended to the current CHANGES file, and the user
-# then gets a chance to further edit it in the editor before it gets committed.
+# entry was added. The entry is prepended to the current CHANGES file, and the
+# user then gets a chance to further edit it in the editor before it gets
+# committed.
 #
 # The script also maintains and updates a VERSION file.
 #
-# If the script finds a file called .update-changes.cfg it sources it at beginning. That
-# script can define a function "new_version_hook" that will be called with the new
-# version number. It may use any of the replace_version_* functions defined below
-# to update other files as necessary.
+# If the script finds a file called .update-changes.cfg it sources it at the
+# beginning. That script can define a function "new_version_hook" that will be
+# called with the new version number. It may use any of the replace_version_*
+# functions defined below to update other files as necessary.
 #
 # If $1 is given, it's interpreted as a release version and a corresponding
 # tag is created.
@@ -26,14 +27,16 @@ show_authors=1                      # Include author names with commit.
 # The command line used to generate a revision's version string.
 git_describe="git describe --always" # {rev} will be added.
 
-# The command line used to generate a revision's date. The revision will be appended.
-# Not used with Bro style.
+# The command line used to generate a revision's date. The revision will be
+# appended.  Not used with Bro-style CHANGES file.
 git_rev_date="git show -s --pretty=tformat:%ci"
 
-# The command line used to generate the list of revision between old and new state.
+# The command line used to generate the list of revisions between old and new
+# state.
 git_rev_list="git rev-list --topo-order HEAD" # ^{past-rev} will be added.
 
-# The command line used to show the one-line summary of a revision before editing.
+# The command line used to show the one-line summary of a revision before
+# editing.
 git_rev_summary="git show -s '--pretty=tformat: %h | %aN | %s'"  # {rev} will be added.
 
 # The command line used to get a revision's author.
@@ -56,11 +59,12 @@ function usage
 }
 
 ### Functions that can be used to replace version strings in other files.
-### To use them, create a file $file_config and define a function "new_version_hook"
-### in there that does whatever is necessary, like calling any of thse.
+### To use them, create a file $file_config and define a function
+### "new_version_hook" in there that does whatever is necessary, like calling
+### any of these.
 
-# Function that looks for lines of the form 'VERSION="1.2.3"' in $1. It will replace
-# the version number with $2 and then git-adds the change.
+# Function that looks for lines of the form 'VERSION="1.2.3"' in $1. It will
+# replace the version number with $2 and then git-adds the change.
 function replace_version_in_script
 {
     file=$1
@@ -72,8 +76,8 @@ function replace_version_in_script
     git add $file
 }
 
-# Function that looks for lines of the form '.. |version| replace:: 0.3' in $1. It will replace
-# the version number with $2 and then git-adds the change.
+# Function that looks for lines of the form '.. |version| replace:: 0.3' in $1.
+# It will replace the version number with $2 and then git-adds the change.
 function replace_version_in_rst
 {
     file=$1
@@ -85,8 +89,8 @@ function replace_version_in_rst
     git add $file
 }
 
-# Function that looks for version information in setup.py in $1. It will replace
-# the version number with $2 and then git-adds the change.
+# Function that looks for lines of the form 'version="1.2-3"' in $1. It will
+# replace the version number with $2 and then git-adds the change.
 function replace_version_in_setup_py
 {
     file=$1
@@ -98,8 +102,9 @@ function replace_version_in_setup_py
     git add $file
 }
 
-# Function that looks for lines of the form "#define .*VERSION "0.3"", with the number being "version * 100". It will
-# replace the version with $2 and then git-adds the change.
+# Function that looks for lines of the form "#define .*VERSION "0.3"", with the
+# number being "version * 100". It will replace the version with $2 and then
+# git-adds the change.
 function replace_version_in_c_header
 {
     file=$1
@@ -423,8 +428,8 @@ echo >>$tmp
 
 cat $file_changes >>$tmp
 
-# If we are ahead of origin, we can amend. If not, we need to create a new commit even
-# if the user wants otherwise.
+# If we are ahead of origin, we can amend. If not, we need to create a new
+# commit even if the user wants otherwise.
 amend=0
 if git remote | grep -q origin; then
      if git rev-list origin..HEAD | grep -q .; then
