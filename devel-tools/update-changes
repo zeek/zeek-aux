@@ -96,7 +96,7 @@ function replace_version_in_setup_py
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([\\t ]*version[\\t ]*=[\\t ]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
+    cat $file | sed "s#\\([[:blank:]]*version[[:blank:]]*=[[:blank:]]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -110,7 +110,7 @@ function replace_version_in_c_header
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([\\t ]*\\#define[\\t ]*[_A-Za-z0-9]*_VERSION[\\t ]*\\)\"[0-9.-]\\{1,\\}\"#\\1\"$version\"#g" >$file.tmp
+    cat $file | sed "s#\\([[:blank:]]*\\#define[[:blank:]]*[_A-Za-z0-9]*_VERSION[[:blank:]]*\\)\"[0-9.-]\\{1,\\}\"#\\1\"$version\"#g" >$file.tmp
     mv $file.tmp $file
     git add $file
 }
@@ -170,7 +170,7 @@ function add_to_changes_entry
 
    ( echo -n "$msg"; test "$author" != "" && test "$show_authors" == "1" && printf " (%s)" "$author" ) \
        | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' \
-       | sed 's/[\t ]*$//' >>$dst
+       | sed 's/[[:blank:]]*$//' >>$dst
 
    return 0;
 }
@@ -451,6 +451,9 @@ echo Type Enter to edit new $file_changes, or CTRL-C to abort without any modifi
 read
 
 # Run editor.
+if [ -z "$EDITOR" ]; then
+    EDITOR=vi
+fi
 eval $EDITOR $tmp
 
 # Put changes in place.
