@@ -1,4 +1,13 @@
 
+0.39-19 | 2018-01-26 11:27:08 -0600
+
+  * Add PATH to bro-cut in btest.cfg, allows building bro-cut and running
+    unit tests without needing entire bro repo. (Daniel Thayer)
+
+  * Improve portability of the update-changes script (Daniel Thayer)
+
+  * Improve code comments in the update-changes file (Daniel Thayer)
+
 0.39-15 | 2018-01-16 12:55:57 -0600
 
   * Improvements to documentation of bro-cut (Daniel Thayer)
