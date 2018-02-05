@@ -1,4 +1,8 @@
 
+0.39-21 | 2018-02-05 15:03:13 -0800
+
+  * Add a .travis.yml file (Daniel Thayer)
+
 0.39-19 | 2018-01-26 11:27:08 -0600
 
   * Add PATH to bro-cut in btest.cfg, allows building bro-cut and running
