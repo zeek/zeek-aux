@@ -1,4 +1,8 @@
 
+0.39-27 | 2018-05-15 15:38:29 +0000
+
+  * Updating submodules.
+
 0.39-24 | 2018-03-15 14:55:39 -0700
 
   * Configure Travis CI email recipients and build branches. (Daniel Thayer)
