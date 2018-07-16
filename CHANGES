@@ -1,4 +1,11 @@
 
+0.39-29 | 2018-07-16 10:02:20 -0500
+
+  * Add author re-writing logic to update-changes
+
+    Any commits authored by an @corelight.com email address will use
+    "Corelight" as the author name in CHANGES entries. (Corelight)
+
 0.39-27 | 2018-05-15 15:38:29 +0000
 
   * Updating submodules.

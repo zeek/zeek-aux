@@ -41,6 +41,7 @@ git_rev_summary="git show -s '--pretty=tformat: %h | %aN | %s'"  # {rev} will be
 
 # The command line used to get a revision's author.
 git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
+git_author_email="git show -s --pretty=format:%aE"  # {rev} will be added.
 
 # The command line used to get a revision's message.
 git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
@@ -147,7 +148,14 @@ function add_to_changes_entry
    author=`cat /etc/passwd | grep '$whoami:'`
 
    if [ "$msg" == "" ]; then
-       author=`$git_author $rev`
+       author_email=`$git_author_email $rev`
+
+       if [[ "$author_email" == *@corelight.com ]]; then
+           author="Corelight"
+       else
+           author=`$git_author $rev`
+       fi
+
        msg=`$git_msg $rev`
    fi
 
