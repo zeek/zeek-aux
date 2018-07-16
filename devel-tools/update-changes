@@ -149,11 +149,12 @@ function add_to_changes_entry
 
    if [ "$msg" == "" ]; then
        author_email=`$git_author_email $rev`
+       author=`$git_author $rev`
 
        if [[ "$author_email" == *@corelight.com ]]; then
-           author="Corelight"
+           author="$author, Corelight"
        else
-           author=`$git_author $rev`
+           author="$author"
        fi
 
        msg=`$git_msg $rev`

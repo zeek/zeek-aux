@@ -1,4 +1,8 @@
 
+0.39-30 | 2018-07-16 16:11:02 -0500
+
+  * Change how update-changes formats Corelight credit (Jon Siwek, Corelight)
+
 0.39-29 | 2018-07-16 10:02:20 -0500
 
   * Add author re-writing logic to update-changes
