@@ -1,4 +1,9 @@
 
+0.39-32 | 2018-07-24 01:47:55 +0000
+
+  * Update plugin configure skeleton to allow independence from
+    --bro-dist. (Jon Siwek, Corelight)
+
 0.39-30 | 2018-07-16 16:11:02 -0500
 
   * Change how update-changes formats Corelight credit (Jon Siwek, Corelight)
