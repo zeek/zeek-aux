@@ -1,4 +1,9 @@
 
+0.39-34 | 2018-07-24 16:35:27 -0500
+
+  * Teach plugin configure script about bro-config's broker/caf/binpac dirs
+    (Jon Siwek, Corelight)
+
 0.39-32 | 2018-07-24 01:47:55 +0000
 
   * Update plugin configure skeleton to allow independence from

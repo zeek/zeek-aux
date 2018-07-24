@@ -83,14 +83,17 @@ while [ $# -ne 0 ]; do
 
         --with-binpac=*)
             append_cache_entry BinPAC_ROOT_DIR PATH $optarg
+            binpac_root=$optarg
             ;;
 
         --with-broker=*)
-           append_cache_entry BROKER_ROOT_DIR PATH $optarg
+            append_cache_entry BROKER_ROOT_DIR PATH $optarg
+            broker_root=$optarg
             ;;
 
         --with-caf=*)
             append_cache_entry CAF_ROOT_DIR PATH $optarg
+            caf_root=$optarg
             ;;
 
         --with-bifcl=*)
@@ -122,6 +125,18 @@ if [ -z "$brodist" ]; then
             append_cache_entry BRO_CONFIG_PLUGIN_DIR PATH `bro-config --plugin_dir`
             append_cache_entry BRO_CONFIG_CMAKE_DIR PATH `bro-config --cmake_dir`
             append_cache_entry CMAKE_MODULE_PATH PATH `bro-config --cmake_dir`
+
+            if [ -z "$binpac_root" ]; then
+                append_cache_entry BinPAC_ROOT_DIR PATH `bro-config --binpac_root`
+            fi
+
+            if [ -z "$broker_root" ]; then
+                append_cache_entry BROKER_ROOT_DIR PATH `bro-config --broker_root`
+            fi
+
+            if [ -z "$caf_root" ]; then
+                append_cache_entry CAF_ROOT_DIR PATH `bro-config --caf_root`
+            fi
         else
             brodist=`bro-config --bro_dist 2> /dev/null`
 
