@@ -336,7 +336,7 @@ if [ "$release" != "" ]; then
 fi
 
 if [ "$beta" != "" ]; then
-    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+(\.[0-9]+)-beta'; then
+    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+(\.[0-9]+)?-beta'; then
         echo "Release tag must be of the form vX.Y[.Z]-beta*"
         exit 1
     fi
