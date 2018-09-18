@@ -1,4 +1,9 @@
 
+0.41 | 2018-09-18 15:03:00 -0500
+
+  * Fix update-changes to allow beta version tags w/o patch number
+    (Jon Siwek, Corelight)
+
 0.40 | 2018-08-31 15:24:30 -0500
 
   * Improve `make dist` (Jon Siwek, Corelight)
