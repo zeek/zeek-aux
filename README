@@ -1,7 +1,7 @@
 .. -*- mode: rst; -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 0.39-34
+.. |version| replace:: 0.40
 
 ======================
 Bro Auxiliary Programs
