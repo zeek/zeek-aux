@@ -144,8 +144,7 @@ function add_to_changes_entry
    dst=$2
    msg=$3
 
-   whoami=`whoami`
-   author=`cat /etc/passwd | grep '$whoami:'`
+   author=""
 
    if [ "$msg" == "" ]; then
        author_email=`$git_author_email $rev`

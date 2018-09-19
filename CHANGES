@@ -1,4 +1,8 @@
 
+0.41-2 | 2018-09-19 09:52:48 -0500
+
+  * Remove some unused code in the update-changes script (Daniel Thayer)
+
 0.41 | 2018-09-18 15:03:00 -0500
 
   * Fix update-changes to allow beta version tags w/o patch number
