@@ -1,4 +1,9 @@
 
+0.41-3 | 2018-10-05 14:22:04 -0500
+
+  * Update plugin configure script to automatically add debug flags
+    Addresses bro/bro#184 (Jon Siwek, Corelight)
+
 0.41-2 | 2018-09-19 09:52:48 -0500
 
   * Remove some unused code in the update-changes script (Daniel Thayer)
