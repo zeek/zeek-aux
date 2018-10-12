@@ -1,0 +1,4 @@
+[package]
+script_dir = scripts/@PLUGIN_NAMESPACE@/@PLUGIN_NAME@
+build_command = ./configure && make
+test_command = cd tests && btest

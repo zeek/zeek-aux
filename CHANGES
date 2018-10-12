@@ -1,4 +1,17 @@
 
+0.41-8 | 2018-10-12 12:44:40 -0400
+
+  * Fix comments in scripts skeleton files. (Robin Sommer, Corelight)
+
+  * Remove init.bro from plugin skeleton. (Robin Sommer, Corelight)
+
+  * Update the plugin skeleton. (Robin Sommer, Corelight)
+
+    - Add top-level .gitignore file
+    - Add bro-pkg.meta template
+    - Don't skip .gitignore files when creating skeleton
+    - Update btest configuration to no longer require a source tree.
+
 0.41-3 | 2018-10-05 14:22:04 -0500
 
   * Update plugin configure script to automatically add debug flags
