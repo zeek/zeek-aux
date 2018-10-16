@@ -126,6 +126,12 @@ if [ -z "$brodist" ]; then
             append_cache_entry BRO_CONFIG_CMAKE_DIR PATH `bro-config --cmake_dir`
             append_cache_entry CMAKE_MODULE_PATH PATH `bro-config --cmake_dir`
 
+            build_type=`bro-config --build_type`
+
+            if [ "$build_type" = "debug" ]; then
+                append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
+            fi
+
             if [ -z "$binpac_root" ]; then
                 append_cache_entry BinPAC_ROOT_DIR PATH `bro-config --binpac_root`
             fi
