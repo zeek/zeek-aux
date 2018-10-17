@@ -7,11 +7,11 @@ bro_dist=`cat ${base}/../../build/CMakeCache.txt | grep BRO_DIST | cut -d = -f 2
 
 if [ -n "${bro_dist}" ]; then
     if [ "$1" = "bropath" ]; then
-        ${bro}/build/bro-path-dev
+        ${bro_dist}/build/bro-path-dev
     elif [ "$1" = "bro_plugin_path" ]; then
         ( cd ${base}/../.. && pwd )
     elif [ "$1" = "path" ]; then
-        echo ${bro}/build/src:${bro}/aux/btest:${base}/:${bro}/aux/bro-cut:$PATH
+        echo ${bro_dist}/build/src:${bro_dist}/aux/btest:${base}/:${bro_dist}/aux/bro-cut:$PATH
     else
         echo "usage: `basename $0` <var>" >&2
         exit 1
