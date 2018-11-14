@@ -1,4 +1,13 @@
 
+0.41-12 | 2018-11-14 17:07:14 -0600
+
+  * Remove the version number from show-plugin btest skeleton.
+    With 2.7, the additional .patch version will break bro-pkg tests during
+    the transition from previous versions. (Michael Dopheide)
+
+  * use ${bro_dist} instead of ${bro} in get-bro-env since bro is undefined as
+    of fdd1f55 (Foster McLane)
+
 0.41-8 | 2018-10-12 12:44:40 -0400
 
   * Fix comments in scripts skeleton files. (Robin Sommer, Corelight)
