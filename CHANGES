@@ -1,4 +1,8 @@
 
+0.42-5 | 2018-11-29 16:21:54 -0600
+
+  * Add patch version to plugin skeleton (Jon Zeolla)
+
 0.42 | 2018-11-14 17:09:06 -0600
 
   * Release 0.42.
