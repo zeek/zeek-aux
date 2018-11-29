@@ -1,4 +1,8 @@
 
+0.42 | 2018-11-14 17:09:06 -0600
+
+  * Release 0.42.
+
 0.41-12 | 2018-11-14 17:07:14 -0600
 
   * Remove the version number from show-plugin btest skeleton.
