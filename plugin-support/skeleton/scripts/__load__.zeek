@@ -4,9 +4,7 @@
 # always execute unconditionally at that time. 
 # 
 # Note that often you may want your plugin's accompanying scripts not here, but
-# in scripts/<plugin-namespace>/<plugin-name>/__load__.bro. That's processed
+# in scripts/<plugin-namespace>/<plugin-name>/__load__.zeek. That's processed
 # only on explicit `@load <plugin-namespace>/<plugin-name>`.
 #
-
-
 
