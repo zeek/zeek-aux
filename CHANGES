@@ -1,4 +1,10 @@
 
+0.42-13 | 2019-04-16 11:54:45 -0700
+
+  * Change script file extension from ".bro" to ".zeek" (Daniel Thayer)
+
+  * Update submodules to use github.com/zeek (Jon Siwek, Corelight)
+
 0.42-5 | 2018-11-29 16:21:54 -0600
 
   * Add patch version to plugin skeleton (Jon Zeolla)
