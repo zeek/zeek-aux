@@ -117,37 +117,37 @@ while [ $# -ne 0 ]; do
 done
 
 if [ -z "$brodist" ]; then
-    if type bro-config >/dev/null 2>&1; then
-        if bro-config --cmake_dir >/dev/null 2>&1; then
-            # Have a newer version of bro-config that has needed flags
-            append_cache_entry BRO_CONFIG_PREFIX PATH `bro-config --prefix`
-            append_cache_entry BRO_CONFIG_INCLUDE_DIR PATH `bro-config --include_dir`
-            append_cache_entry BRO_CONFIG_PLUGIN_DIR PATH `bro-config --plugin_dir`
-            append_cache_entry BRO_CONFIG_CMAKE_DIR PATH `bro-config --cmake_dir`
-            append_cache_entry CMAKE_MODULE_PATH PATH `bro-config --cmake_dir`
+    if type zeek-config >/dev/null 2>&1; then
+        if zeek-config --cmake_dir >/dev/null 2>&1; then
+            # Have a newer version of zeek-config that has needed flags
+            append_cache_entry ZEEK_CONFIG_PREFIX PATH `zeek-config --prefix`
+            append_cache_entry ZEEK_CONFIG_INCLUDE_DIR PATH `zeek-config --include_dir`
+            append_cache_entry ZEEK_CONFIG_PLUGIN_DIR PATH `zeek-config --plugin_dir`
+            append_cache_entry ZEEK_CONFIG_CMAKE_DIR PATH `zeek-config --cmake_dir`
+            append_cache_entry CMAKE_MODULE_PATH PATH `zeek-config --cmake_dir`
 
-            build_type=`bro-config --build_type`
+            build_type=`zeek-config --build_type`
 
             if [ "$build_type" = "debug" ]; then
                 append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
             fi
 
             if [ -z "$binpac_root" ]; then
-                append_cache_entry BinPAC_ROOT_DIR PATH `bro-config --binpac_root`
+                append_cache_entry BinPAC_ROOT_DIR PATH `zeek-config --binpac_root`
             fi
 
             if [ -z "$broker_root" ]; then
-                append_cache_entry BROKER_ROOT_DIR PATH `bro-config --broker_root`
+                append_cache_entry BROKER_ROOT_DIR PATH `zeek-config --broker_root`
             fi
 
             if [ -z "$caf_root" ]; then
-                append_cache_entry CAF_ROOT_DIR PATH `bro-config --caf_root`
+                append_cache_entry CAF_ROOT_DIR PATH `zeek-config --caf_root`
             fi
         else
-            brodist=`bro-config --bro_dist 2> /dev/null`
+            brodist=`zeek-config --bro_dist 2> /dev/null`
 
-            if [ ! -e "$brodist/bro-path-dev.in" ]; then
-                echo "$brodist does not appear to be a valid Bro source tree."
+            if [ ! -e "$brodist/zeek-path-dev.in" ]; then
+                echo "$brodist does not appear to be a valid Zeek source tree."
                 exit 1
             fi
 
@@ -155,12 +155,12 @@ if [ -z "$brodist" ]; then
             append_cache_entry CMAKE_MODULE_PATH PATH $brodist/cmake
         fi
     else
-        echo "Either 'bro-config' must be in PATH or '--bro-dist=<path>' used"
+        echo "Either 'zeek-config' must be in PATH or '--bro-dist=<path>' used"
         exit 1
     fi
 else
-    if [ ! -e "$brodist/bro-path-dev.in" ]; then
-      echo "$brodist does not appear to be a valid Bro source tree."
+    if [ ! -e "$brodist/zeek-path-dev.in" ]; then
+      echo "$brodist does not appear to be a valid Zeek source tree."
       exit 1
     fi
 
