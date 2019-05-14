@@ -65,7 +65,7 @@ if ( NOT BRO_MAN_INSTALL_PATH )
 endif ()
 
 add_subdirectory(adtrace)
-add_subdirectory(bro-cut)
+add_subdirectory(zeek-cut)
 add_subdirectory(rst)
 
 if (NOT (BINARY_PACKAGING_MODE OR
@@ -75,7 +75,7 @@ if (NOT (BINARY_PACKAGING_MODE OR
     add_dependencies(install-aux ${AUX_TARGETS})
 endif ()
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/bro-cut/bro-cut DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/zeek-cut/zeek-cut DESTINATION bin)
 
 ########################################################################
 ## Build Summary

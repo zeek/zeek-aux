@@ -1,4 +1,12 @@
 
+0.42-18 | 2019-05-14 12:27:26 -0700
+
+  * Update plugin skeleton's configure to work with Bro 2.6. (Robin Sommer, Corelight)
+
+  * GH-239: Rename bro-cut to zeek-cut. (Robin Sommer, Corelight)
+
+  * Use zeek-config instead of bro-config in plugin skeleton. (Robin Sommer, Corelight)
+
 0.42-13 | 2019-04-16 11:54:45 -0700
 
   * Change script file extension from ".bro" to ".zeek" (Daniel Thayer)
