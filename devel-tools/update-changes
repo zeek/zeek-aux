@@ -28,7 +28,7 @@ show_authors=1                      # Include author names with commit.
 git_describe="git describe --always" # {rev} will be added.
 
 # The command line used to generate a revision's date. The revision will be
-# appended.  Not used with Bro-style CHANGES file.
+# appended.  Not used with Zeek-style CHANGES file.
 git_rev_date="git show -s --pretty=tformat:%ci"
 
 # The command line used to generate the list of revisions between old and new
@@ -129,7 +129,7 @@ function start_changes_entry
     version=$1
     dst=$2
 
-    if [ "$bro_style" == "0" ]; then
+    if [ "$zeek_style" == "0" ]; then
         date=`$git_rev_date HEAD`
         printf '%s | %s\n' "$version" "$date" >>$dst
     else
@@ -170,7 +170,7 @@ function add_to_changes_entry
 
    echo >>$dst
 
-   if [ "$bro_style" == "0" ]; then
+   if [ "$zeek_style" == "0" ]; then
            bullet="  *"
        else
            bullet="-"
@@ -303,7 +303,7 @@ if [ "$beta" == "VERSION" ]; then
     beta="v`cat VERSION`"
 fi
 
-bro_style=0        # If 1, we use a slightly different format.
+zeek_style=0        # If 1, we use a slightly different format.
 
 if [ "$init" != "0" ]; then
     if [ -e $file_changes ]; then
@@ -319,9 +319,9 @@ else
         echo "$file_changes does not exist, initialize it with '-I'."
         exit 1
     else
-        # If we find this marker, it's Bro-style CHANGES file.
+        # If we find this marker, it's Zeek-style CHANGES file.
         grep -vq -- '-+-+-+-+-+-+-+-+-+-' $file_changes;
-        bro_style=$?
+        zeek_style=$?
     fi
 fi
 

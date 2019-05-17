@@ -5,7 +5,7 @@
 # it will only check for unpushed commits, not for uncommited
 # changes.
 #
-# To install this, copy it into you Bro tree's .git/hooks/pre-push.
+# To install this, copy it into you Zeek tree's .git/hooks/pre-push.
 #
 # This hook is called with the following parameters:
 #

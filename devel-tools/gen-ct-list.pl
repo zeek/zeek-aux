@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Generate the Bro file containing the current list of known
+# Generate the Zeek file containing the current list of known
 # Certificate Transparency logs from the source file provided
 # by Google.
 #
