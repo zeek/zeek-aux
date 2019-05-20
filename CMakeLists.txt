@@ -60,8 +60,8 @@ macro(AddAuxInstallTarget _target)
     endif ()
 endmacro(AddAuxInstallTarget)
 
-if ( NOT BRO_MAN_INSTALL_PATH )
-    set(BRO_MAN_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/share/man)
+if ( NOT ZEEK_MAN_INSTALL_PATH )
+    set(ZEEK_MAN_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/share/man)
 endif ()
 
 add_subdirectory(adtrace)
