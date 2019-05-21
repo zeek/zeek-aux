@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# Signs $1 with the Bro GPG key. Signature will be written to $1.asc.
+# Signs $1 with the Zeek GPG key. Signature will be written to $1.asc.
 #
 # GPG agent needs to be running.
 #

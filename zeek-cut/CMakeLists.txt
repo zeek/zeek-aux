@@ -1,10 +1,10 @@
-set(brocut_SRCS
+set(zeekcut_SRCS
     zeek-cut.c
 )
 
-add_executable(zeek-cut ${brocut_SRCS})
+add_executable(zeek-cut ${zeekcut_SRCS})
 
-install(FILES zeek-cut.1 DESTINATION ${BRO_MAN_INSTALL_PATH}/man1)
+install(FILES zeek-cut.1 DESTINATION ${ZEEK_MAN_INSTALL_PATH}/man1)
 
 # Install wrapper script for Bro-to-Zeek renaming.
 include(InstallSymlink)

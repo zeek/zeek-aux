@@ -10,10 +10,10 @@
 #include <unistd.h>
 #include <time.h>
 
-/* The maximum length of converted timestamp that bro-cut can handle. */
+/* The maximum length of converted timestamp that zeek-cut can handle. */
 #define MAX_TIMESTAMP_LEN 100
 
-/* User-specified options that stay constant during a run of bro-cut. */
+/* User-specified options that stay constant during a run of zeek-cut. */
 struct useropts {
     int showhdr;     /* show log headers? (0=no, 1=only first, 2=all) */
     int negate;      /* show all but the specified columns? (0=no, 1=yes) */
@@ -40,11 +40,11 @@ struct logparams {
 
 
 int usage(void) {
-    puts("\nbro-cut [options] [<columns>]\n");
-    puts("Extracts the given columns from ASCII Bro logs on standard input, and outputs");
+    puts("\nzeek-cut [options] [<columns>]\n");
+    puts("Extracts the given columns from ASCII Zeek logs on standard input, and outputs");
     puts("them to standard output. If no columns are given, all are selected.");
-    puts("By default, bro-cut does not include format header blocks in the output.");
-    puts("\nExample: cat conn.log | bro-cut -d ts id.orig_h id.orig_p");
+    puts("By default, zeek-cut does not include format header blocks in the output.");
+    puts("\nExample: cat conn.log | zeek-cut -d ts id.orig_h id.orig_p");
     puts("\n    -c       Include the first format header block in the output.");
     puts("    -C       Include all format header blocks in the output.");
     puts("    -d       Convert time values into human-readable format.");
@@ -98,14 +98,14 @@ int find_timecol(const char *line, struct logparams *lp) {
 
     tmpptr = (int *) realloc(lp->time_cols, lp->idx_range * sizeof(int));
     if (tmpptr == NULL) {
-        fputs("bro-cut: out of memory\n", stderr);
+        fputs("zeek-cut: out of memory\n", stderr);
         return 1;
     }
 
     lp->time_cols = tmpptr;
 
     if ((copy_of_line = strdup(line)) == NULL) {
-        fputs("bro-cut: out of memory\n", stderr);
+        fputs("zeek-cut: out of memory\n", stderr);
         return 1;
     }
     field_ptr = copy_of_line;
@@ -113,7 +113,7 @@ int find_timecol(const char *line, struct logparams *lp) {
     int ret = 0;
     for (i = 0; i < lp->idx_range; ++i) {
         if ((field = strsep(&field_ptr, lp->ifs)) == NULL) {
-            fputs("bro-cut: log header does not have enough fields\n", stderr);
+            fputs("zeek-cut: log header does not have enough fields\n", stderr);
             ret = 1;
             break;
         }
@@ -240,11 +240,11 @@ void output_time(const char *field, struct logparams *lp, struct useropts *bopts
     long tl = strtol(field, &tmp, 10);
 
     if (tl < 0 || tl == LONG_MAX) {
-        fprintf(stderr, "bro-cut: time value out-of-range: %s\n", field);
+        fprintf(stderr, "zeek-cut: time value out-of-range: %s\n", field);
     } else if (*tmp != '.') {
         if (strcmp(field, lp->unsetf)) {
             /* field is not a valid value and is not the unset field string */
-            fprintf(stderr, "bro-cut: time field is not valid: %s\n", field);
+            fprintf(stderr, "zeek-cut: time field is not valid: %s\n", field);
         }
     } else if (tl == lp->prev_ts) {
         /* timestamp is same as the previous one, so skip the conversion */
@@ -262,11 +262,11 @@ void output_time(const char *field, struct logparams *lp, struct useropts *bopts
                 lp->prev_ts = tl;
                 return;
             } else {
-                fputs("bro-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
+                fputs("zeek-cut: failed to convert timestamp (try a shorter format string)\n", stderr);
             }
         } else {
             /* the time conversion will fail for large values */
-            fprintf(stderr, "bro-cut: time value out-of-range: %s\n", field);
+            fprintf(stderr, "zeek-cut: time value out-of-range: %s\n", field);
         }
     }
 
@@ -294,7 +294,7 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
 
     for (i = 0; i < idxrange; ++i) {
         if ((field = strsep(&line, lp->ifs)) == NULL) {
-            fputs("bro-cut: skipping log line (not enough fields)\n", stderr);
+            fputs("zeek-cut: skipping log line (not enough fields)\n", stderr);
             return;
         }
         lp->tmp_fields[i] = field;
@@ -345,7 +345,7 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
  * to the options specified in "bopts".  Returns 0 on success, and non-zero
  * otherwise.
  */
-int bro_cut(struct useropts bopts) {
+int zeek_cut(struct useropts bopts) {
     int ret = 0;
     struct logparams lp;   /* parameters specific to each log file */
     int headers_seen = 0;  /* 0=no header blocks seen, 1=one seen, 2=2+ seen */
@@ -356,7 +356,7 @@ int bro_cut(struct useropts bopts) {
     char *line = (char *) malloc(linesize);
 
     if (line == NULL) {
-        fputs("bro-cut: out of memory\n", stderr);
+        fputs("zeek-cut: out of memory\n", stderr);
         return 1;
     }
 
@@ -374,7 +374,7 @@ int bro_cut(struct useropts bopts) {
     lp.prev_ts = -1; /* initialize with an invalid time value */
 
     if (lp.unsetf == NULL) {
-        fputs("bro-cut: out of memory\n", stderr);
+        fputs("zeek-cut: out of memory\n", stderr);
         free(line);
         return 1;
     }
@@ -384,7 +384,7 @@ int bro_cut(struct useropts bopts) {
         line[linelen - 1] = '\0';
 
         if (prev_fields_line && strncmp(line, "#types", 6)) {
-            fputs("bro-cut: bad log header (missing #types line)\n", stderr);
+            fputs("zeek-cut: bad log header (missing #types line)\n", stderr);
             ret = 1;
             break;
         }
@@ -410,7 +410,7 @@ int bro_cut(struct useropts bopts) {
         if (!strncmp(line, "#separator ", 11)) {
             char ifs = parsesep(line + 11);
             if (ifs == '\0') {
-                fputs("bro-cut: bad log header (invalid #separator line)\n", stderr);
+                fputs("zeek-cut: bad log header (invalid #separator line)\n", stderr);
                 ret = 1;
                 break;
             }
@@ -425,25 +425,25 @@ int bro_cut(struct useropts bopts) {
             if (line[12] && line[13]) {
                 free(lp.unsetf);
                 if ((lp.unsetf = strdup(line + 13)) == NULL) {
-                    fputs("bro-cut: out of memory\n", stderr);
+                    fputs("zeek-cut: out of memory\n", stderr);
                     ret = 1;
                     break;
                 }
             } else {
-                fputs("bro-cut: bad log header (invalid #unset_field line)\n", stderr);
+                fputs("zeek-cut: bad log header (invalid #unset_field line)\n", stderr);
                 ret = 1;
                 break;
             }
         } else if (!strncmp(line, "#fields", 7)) {
             prev_fields_line = 1;
             if (find_output_indexes(line + 8, &lp, &bopts)) {
-                fputs("bro-cut: out of memory\n", stderr);
+                fputs("zeek-cut: out of memory\n", stderr);
                 ret = 1;
                 break;
             }
         } else if (!strncmp(line, "#types", 6)) {
             if (!prev_fields_line) {
-                fputs("bro-cut: bad log header (missing #fields line)\n", stderr);
+                fputs("zeek-cut: bad log header (missing #fields line)\n", stderr);
                 ret = 1;
                 break;
             }
@@ -507,7 +507,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 'F':
                 if (strlen(optarg) != 1) {
-                    fputs("bro-cut: field separator must be a single character\n", stderr);
+                    fputs("zeek-cut: field separator must be a single character\n", stderr);
                     exit(1);
                 }
                 bopts.ofs = optarg;
@@ -533,13 +533,13 @@ int main(int argc, char *argv[]) {
     }
 
     if (bopts.timeconv && strlen(bopts.timefmt) == 0) {
-        fputs("bro-cut: time format string cannot be empty\n", stderr);
+        fputs("zeek-cut: time format string cannot be empty\n", stderr);
         exit(1);
     }
 
     bopts.columns = &argv[optind];
     bopts.num_columns = argc - optind;
 
-    return bro_cut(bopts);
+    return zeek_cut(bopts);
 }
 

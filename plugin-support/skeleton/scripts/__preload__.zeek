@@ -1,5 +1,5 @@
 #
-# This is loaded automatically at Bro startup once the plugin gets activated,
+# This is loaded automatically at Zeek startup once the plugin gets activated,
 # but before any of the BiFs that the plugin defines become available.
 #
 # This is primarily for defining types that BiFs already depend on.  If you

@@ -1,4 +1,4 @@
-project(BroAux C CXX)
+project(ZeekAux C CXX)
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 include(cmake/CommonCMakeConfig.cmake)
 
@@ -60,8 +60,8 @@ macro(AddAuxInstallTarget _target)
     endif ()
 endmacro(AddAuxInstallTarget)
 
-if ( NOT BRO_MAN_INSTALL_PATH )
-    set(BRO_MAN_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/share/man)
+if ( NOT ZEEK_MAN_INSTALL_PATH )
+    set(ZEEK_MAN_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/share/man)
 endif ()
 
 add_subdirectory(adtrace)
@@ -71,7 +71,7 @@ add_subdirectory(rst)
 if (NOT (BINARY_PACKAGING_MODE OR
          "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}") )
     add_custom_target(install-aux
-        COMMENT "Bro auxiliary tools installed to ${CMAKE_INSTALL_PREFIX}/bin")
+        COMMENT "Zeek auxiliary tools installed to ${CMAKE_INSTALL_PREFIX}/bin")
     add_dependencies(install-aux ${AUX_TARGETS})
 endif ()
 
@@ -85,7 +85,7 @@ if (CMAKE_BUILD_TYPE)
 endif ()
 
 message(
-    "\n==================|  Bro-Aux Build Summary  |==================="
+    "\n==================|  Zeek-Aux Build Summary  |=================="
     "\n"
     "\nInstall prefix:    ${CMAKE_INSTALL_PREFIX}"
     "\nDebug mode:        ${ENABLE_DEBUG}"

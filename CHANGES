@@ -1,4 +1,8 @@
 
+0.42-21 | 2019-05-20 19:52:45 -0700
+
+  * Rename Bro to Zeek (Daniel Thayer)
+
 0.42-18 | 2019-05-14 12:27:26 -0700
 
   * Update plugin skeleton's configure to work with Bro 2.6. (Robin Sommer, Corelight)
