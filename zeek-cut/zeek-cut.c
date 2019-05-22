@@ -55,7 +55,7 @@ int usage(void) {
     puts("    -u       Like -d, but print timestamps in UTC instead of local time.");
     puts("    -U <fmt> Like -D, but print timestamps in UTC instead of local time.\n");
     puts("For time conversion option -d or -u, the format string can be specified by");
-    puts("setting an environment variable BRO_CUT_TIMEFMT.\n");
+    puts("setting an environment variable ZEEK_CUT_TIMEFMT.\n");
     exit(1);
 }
 
@@ -480,7 +480,11 @@ int zeek_cut(struct useropts bopts) {
 
 int main(int argc, char *argv[]) {
     int c;
-    char *envtimefmt = getenv("BRO_CUT_TIMEFMT");
+    char *envtimefmt = getenv("ZEEK_CUT_TIMEFMT");
+    if (envtimefmt == NULL) {
+        envtimefmt = getenv("BRO_CUT_TIMEFMT");
+    }
+
     struct useropts bopts;
 
     bopts.showhdr = 0;
