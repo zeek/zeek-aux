@@ -1,4 +1,12 @@
 
+0.42-23 | 2019-05-23 19:33:19 -0700
+
+  * Rename all BRO-prefixed environment variables (Daniel Thayer)
+
+    For backward compatibility when reading values, we first check
+    the ZEEK-prefixed value, and if not set, then check the corresponding
+    BRO-prefixed value.
+
 0.42-21 | 2019-05-20 19:52:45 -0700
 
   * Rename Bro to Zeek (Daniel Thayer)

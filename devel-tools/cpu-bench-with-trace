@@ -15,7 +15,7 @@ zeek=$1
 trace=$2
 tmp=/tmp/bench.$$.zeek
 
-export BROPATH=`$zeek/build/zeek-path-dev`
+export ZEEKPATH=`$zeek/build/zeek-path-dev`
 
 cat </dev/null >$tmp
 

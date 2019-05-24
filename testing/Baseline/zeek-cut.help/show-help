@@ -18,5 +18,5 @@ Example: cat conn.log | zeek-cut -d ts id.orig_h id.orig_p
     -U <fmt> Like -D, but print timestamps in UTC instead of local time.
 
 For time conversion option -d or -u, the format string can be specified by
-setting an environment variable BRO_CUT_TIMEFMT.
+setting an environment variable ZEEK_CUT_TIMEFMT.
 
