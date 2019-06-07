@@ -1,4 +1,8 @@
 
+0.42-24 | 2019-06-06 20:01:06 -0700
+
+  * Update plugin skeleton unit test to use "zeek" (Jon Siwek, Corelight)
+
 0.42-23 | 2019-05-23 19:33:19 -0700
 
   * Rename all BRO-prefixed environment variables (Daniel Thayer)
