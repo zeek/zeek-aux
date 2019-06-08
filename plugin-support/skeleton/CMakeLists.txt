@@ -1,15 +1,15 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-project(BroPlugin@PLUGIN_NAME@)
+project(ZeekPlugin@PLUGIN_NAME@)
 
-include(BroPlugin)
+include(ZeekPlugin)
 
-bro_plugin_begin(@PLUGIN_NAMESPACE@ @PLUGIN_NAME@)
-bro_plugin_cc(src/Plugin.cc)
-bro_plugin_bif(src/@PLUGIN_NAME_LOWER@.bif)
-bro_plugin_dist_files(README CHANGES COPYING VERSION)
-bro_plugin_end()
+zeek_plugin_begin(@PLUGIN_NAMESPACE@ @PLUGIN_NAME@)
+zeek_plugin_cc(src/Plugin.cc)
+zeek_plugin_bif(src/@PLUGIN_NAME_LOWER@.bif)
+zeek_plugin_dist_files(README CHANGES COPYING VERSION)
+zeek_plugin_end()
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" VERSION LIMIT_COUNT 1)
 

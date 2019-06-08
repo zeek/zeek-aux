@@ -1,4 +1,12 @@
 
+0.42-25 | 2019-06-07 20:02:05 -0700
+
+  * Update plugin skeleton to use zeek_plugin CMake functions (Jon Siwek, Corelight)
+
+    One may still change this to use the bro_plugin functions to be
+    compatible with older Bro versions, but I think it's good to encourage
+    new plugins to be authored for the latest Zeek version by default.
+
 0.42-24 | 2019-06-06 20:01:06 -0700
 
   * Update plugin skeleton unit test to use "zeek" (Jon Siwek, Corelight)
