@@ -1,4 +1,10 @@
 
+0.42-28 | 2019-06-12 15:04:43 -0700
+
+  * Rename directories from bro to zeek (Daniel Thayer)
+
+    Also updated a test to use zeek.
+
 0.42-26 | 2019-06-12 10:33:37 -0700
 
   * Use zkg.meta file in plugin skeleton (Jon Siwek, Corelight)
