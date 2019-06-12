@@ -1,4 +1,8 @@
 
+0.42-26 | 2019-06-12 10:33:37 -0700
+
+  * Use zkg.meta file in plugin skeleton (Jon Siwek, Corelight)
+
 0.42-25 | 2019-06-07 20:02:05 -0700
 
   * Update plugin skeleton to use zeek_plugin CMake functions (Jon Siwek, Corelight)
