@@ -1,4 +1,16 @@
 
+0.43 | 2019-07-29 09:54:40 -0700
+
+  * Release v0.43 (Jon Siwek, Corelight)
+
+  * Change versioning of "-pre-X" to "-pre.X"
+
+    Where "pre" is any pre-release tag, like "beta", "rc", or "dev".
+    The new form using a dot to separate the numerical increment allows
+    for better ordering according to SemVer rules. (Jon Siwek, Corelight)
+
+  * Allow beta tag to be either -beta or -rc
+
 0.42-28 | 2019-06-12 15:04:43 -0700
 
   * Rename directories from bro to zeek (Daniel Thayer)
