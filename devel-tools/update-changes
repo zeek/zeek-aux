@@ -121,7 +121,7 @@ function replace_version_in_c_header
 function version
 {
     rev=$1
-    $git_describe $rev --match "v*" 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g' | sed 's/-\([[:alnum:]]\+\)-\([0-9]\+\)$/-\1.\2/g'
+    $git_describe $rev --match "v*" 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g' | sed 's/-\([[:alnum:]]\{1,\}\)-\([0-9]\{1,\}\)$/-\1.\2/g'
 }
 
 function start_changes_entry

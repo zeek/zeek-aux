@@ -1,4 +1,8 @@
 
+0.43-2 | 2019-08-14 13:22:54 -0700
+
+  * Fix a regex in update-changes to be compatible with BSD-sed (Jon Siwek, Corelight)
+
 0.43 | 2019-07-29 09:54:40 -0700
 
   * Release v0.43 (Jon Siwek, Corelight)
