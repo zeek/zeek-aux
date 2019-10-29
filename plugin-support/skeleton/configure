@@ -14,21 +14,13 @@ if [ -e `dirname $0`/configure.plugin ]; then
     . `dirname $0`/configure.plugin
 fi
 
-# Check for `cmake` command.
-type cmake > /dev/null 2>&1 || {
-    echo "\
-This package requires CMake, please install it first, then you may
-use this configure script to access CMake equivalent functionality.\
-" >&2;
-    exit 1;
-}
-
 usage() {
 
 cat 1>&2 <<EOF
 Usage: $0 [OPTIONS]
 
   Plugin Options:
+    --cmake=PATH               Path to CMake binary
     --zeek-dist=DIR            Path to Zeek source tree
     --install-root=DIR         Path where to install plugin into
     --with-binpac=DIR          Path to BinPAC installation root
@@ -71,6 +63,10 @@ while [ $# -ne 0 ]; do
     case "$1" in
         --help|-h)
             usage
+            ;;
+
+        --cmake=*)
+            CMakeCommand=$optarg
             ;;
 
         --zeek-dist=*)
@@ -119,6 +115,20 @@ while [ $# -ne 0 ]; do
     esac
     shift
 done
+
+if [ -z "$CMakeCommand" ]; then
+    # prefer cmake3 over "regular" cmake (cmake == cmake2 on RHEL)
+    if command -v cmake3 >/dev/null 2>&1 ; then
+        CMakeCommand="cmake3"
+    elif command -v cmake >/dev/null 2>&1 ; then
+        CMakeCommand="cmake"
+    else
+        echo "This package requires CMake, please install it first."
+        echo "Then you may use this script to configure the CMake build."
+        echo "Note: pass --cmake=PATH to use cmake in non-standard locations."
+        exit 1;
+    fi
+fi
 
 if [ -z "$zeekdist" ]; then
     if type zeek-config >/dev/null 2>&1; then
@@ -194,7 +204,7 @@ echo "Zeek Source Directory   : $zeekdist"
 mkdir -p $builddir
 cd $builddir
 
-cmake $CMakeCacheEntries ..
+"$CMakeCommand" $CMakeCacheEntries ..
 
 echo "# This is the command used to configure this build" > config.status
 echo $command >> config.status
