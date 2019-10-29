@@ -1,4 +1,10 @@
 
+0.43-10 | 2019-10-28 18:05:09 -0700
+
+  * Move CMake project() after cmake_minimum_required() (Jon Siwek, Corelight)
+
+  * Zeek plugin skeleton: require CMake 3 (Dominik Charousset, Corelight)
+
 0.43-2 | 2019-08-14 13:22:54 -0700
 
   * Fix a regex in update-changes to be compatible with BSD-sed (Jon Siwek, Corelight)
