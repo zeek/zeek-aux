@@ -440,7 +440,7 @@ cat $file_changes >>$tmp
 # commit even if the user wants otherwise.
 amend=0
 if git remote | grep -q origin; then
-     if git rev-list origin..HEAD | grep -q .; then
+     if git rev-list origin/`git rev-parse --abbrev-ref HEAD`..HEAD | grep -q .; then
          amend=1
      fi
 fi
