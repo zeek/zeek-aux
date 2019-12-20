@@ -1,4 +1,10 @@
 
+0.43-16 | 2019-12-20 07:52:14 +0000
+
+  * Fix when update-changes chooses to amend commits. The old logic
+    didn't work when used on a branch (e.g. release/X.Y for doing
+    releases). (Jon Siwek, Corelight)
+
 0.43-11 | 2019-10-28 22:22:26 -0700
 
   * Prefer cmake3 in Zeek plugin configure skeleton (Jon Siwek, Corelight)
