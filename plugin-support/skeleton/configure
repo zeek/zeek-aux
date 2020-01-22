@@ -73,10 +73,6 @@ while [ $# -ne 0 ]; do
             zeekdist=`cd $optarg && pwd`
             ;;
 
-        --bro-dist=*) # Legacy option for backwards compability
-            zeekdist=`cd $optarg && pwd`
-            ;;
-
         --install-root=*)
             installroot=$optarg
             ;;
@@ -133,65 +129,48 @@ fi
 if [ -z "$zeekdist" ]; then
     if type zeek-config >/dev/null 2>&1; then
        zeek_config="zeek-config"
-    elif type bro-config >/dev/null 2>&1; then
-       zeek_config="bro-config"
     fi
 
-    if [ -n "${zeek_config}" ]; then
-        if ${zeek_config} --cmake_dir >/dev/null 2>&1; then
-            # Have a newer version of zeek-config that has needed flags
-            append_cache_entry BRO_CONFIG_PREFIX PATH `${zeek_config} --prefix`
-            append_cache_entry BRO_CONFIG_INCLUDE_DIR PATH `${zeek_config} --include_dir`
-            append_cache_entry BRO_CONFIG_PLUGIN_DIR PATH `${zeek_config} --plugin_dir`
-            append_cache_entry BRO_CONFIG_CMAKE_DIR PATH `${zeek_config} --cmake_dir`
-            append_cache_entry CMAKE_MODULE_PATH PATH `${zeek_config} --cmake_dir`
+    if test -n "${zeek_config}" && ${zeek_config} --cmake_dir >/dev/null 2>&1; then
+        append_cache_entry BRO_CONFIG_PREFIX PATH `${zeek_config} --prefix`
+        append_cache_entry BRO_CONFIG_INCLUDE_DIR PATH `${zeek_config} --include_dir`
+        append_cache_entry BRO_CONFIG_PLUGIN_DIR PATH `${zeek_config} --plugin_dir`
+        append_cache_entry BRO_CONFIG_CMAKE_DIR PATH `${zeek_config} --cmake_dir`
+        append_cache_entry CMAKE_MODULE_PATH PATH `${zeek_config} --cmake_dir`
 
-            build_type=`${zeek_config} --build_type`
+        zeekdist=`${zeek_config} --zeek_dist`
+        build_type=`${zeek_config} --build_type`
 
-            if [ "$build_type" = "debug" ]; then
-                append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
-            fi
+        if [ "$build_type" = "debug" ]; then
+            append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
+        fi
 
-            if [ -z "$binpac_root" ]; then
-                append_cache_entry BinPAC_ROOT_DIR PATH `${zeek_config} --binpac_root`
-            fi
+        if [ -z "$binpac_root" ]; then
+            append_cache_entry BinPAC_ROOT_DIR PATH `${zeek_config} --binpac_root`
+        fi
 
-            if [ -z "$broker_root" ]; then
-                append_cache_entry BROKER_ROOT_DIR PATH `${zeek_config} --broker_root`
-            fi
+        if [ -z "$broker_root" ]; then
+            append_cache_entry BROKER_ROOT_DIR PATH `${zeek_config} --broker_root`
+        fi
 
-            if [ -z "$caf_root" ]; then
-                append_cache_entry CAF_ROOT_DIR PATH `${zeek_config} --caf_root`
-            fi
-        else
-            # Using legacy bro-config, so we must use the "--bro_dist" option.
-            zeekdist=`${zeek_config} --bro_dist 2> /dev/null`
-
-            if [ ! -e "$zeekdist/zeek-path-dev.in" ]; then
-                echo "$zeekdist does not appear to be a valid Zeek source tree."
-                exit 1
-            fi
-
-            # BRO_DIST is needed to support legacy Bro plugins
-            append_cache_entry BRO_DIST  PATH $zeekdist
-            append_cache_entry ZEEK_DIST PATH $zeekdist
-            append_cache_entry CMAKE_MODULE_PATH PATH $zeekdist/cmake
+        if [ -z "$caf_root" ]; then
+            append_cache_entry CAF_ROOT_DIR PATH `${zeek_config} --caf_root`
         fi
     else
         echo "Either 'zeek-config' must be in PATH or '--zeek-dist=<path>' used"
         exit 1
     fi
-else
-    if [ ! -e "$zeekdist/zeek-path-dev.in" -a ! -e "$zeekdist/bro-path-dev.in" ]; then
-      echo "$zeekdist does not appear to be a valid Zeek source tree."
-      exit 1
-    fi
-
-    # BRO_DIST is needed to support legacy Bro plugins
-    append_cache_entry BRO_DIST  PATH $zeekdist
-    append_cache_entry ZEEK_DIST PATH $zeekdist
-    append_cache_entry CMAKE_MODULE_PATH PATH $zeekdist/cmake
 fi
+
+if [ ! -e "$zeekdist/zeek-path-dev.in" ]; then
+    echo "$zeekdist does not appear to be a valid Zeek source tree."
+    exit 1
+fi
+
+# BRO_DIST is needed to support legacy Bro plugins
+append_cache_entry BRO_DIST  PATH $zeekdist
+append_cache_entry ZEEK_DIST PATH $zeekdist
+append_cache_entry CMAKE_MODULE_PATH PATH $zeekdist/cmake
 
 if [ "$installroot" != "default" ]; then
     mkdir -p $installroot
