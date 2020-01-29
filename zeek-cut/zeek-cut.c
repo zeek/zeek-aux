@@ -487,9 +487,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "zeek-cut warning: using legacy environment variable BRO_CUT_TIMEFMT, set ZEEK_CUT_TIMEFMT instead\n");
     }
 
-
     struct useropts bopts;
-
     bopts.showhdr = 0;
     bopts.negate = 0;
     bopts.timeconv = 0;
