@@ -1,4 +1,14 @@
 
+0.43-20 | 2020-01-30 18:58:57 -0800
+
+  * zeek-cut: Tiny formatting cleanup. (Robin Sommer, Corelight)
+
+  * zeek-cut: warn if BRO_CUT_TIMEFMT is used. (Robin Sommer, Corelight)
+
+  * Update the plugin skeleton's configure to require new Zeek trees. (Robin Sommer, Corelight)
+
+    It won't allow a Bro tree any further.
+
 0.43-16 | 2019-12-20 07:52:14 +0000
 
   * Fix when update-changes chooses to amend commits. The old logic

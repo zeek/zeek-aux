@@ -483,10 +483,11 @@ int main(int argc, char *argv[]) {
     char *envtimefmt = getenv("ZEEK_CUT_TIMEFMT");
     if (envtimefmt == NULL) {
         envtimefmt = getenv("BRO_CUT_TIMEFMT");
+        if (envtimefmt != NULL)
+            fprintf(stderr, "zeek-cut warning: using legacy environment variable BRO_CUT_TIMEFMT, set ZEEK_CUT_TIMEFMT instead\n");
     }
 
     struct useropts bopts;
-
     bopts.showhdr = 0;
     bopts.negate = 0;
     bopts.timeconv = 0;
