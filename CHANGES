@@ -1,4 +1,8 @@
 
+0.43-25 | 2020-02-07 09:26:03 -0800
+
+  * Add a script for running benchmarks on linux vs recorded data sets (Tim Wojtulewicz, Corelight)
+
 0.43-20 | 2020-01-30 18:58:57 -0800
 
   * zeek-cut: Tiny formatting cleanup. (Robin Sommer, Corelight)
