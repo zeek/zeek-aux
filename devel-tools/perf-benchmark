@@ -22,8 +22,8 @@ Usage: $0 -z [zeek binary path] -d [data file path]
     -f, --flamegraph PATH   (optional) The path to the directory where
                             Flamegraph is installed.
     -o, --output FILE       The file to use as output for Flamegraph. This
-                            will default to 'perf.svg', and is ignored if
-                            the '-f' argument is not passed.
+                            will default to 'benchmark.svg', and is ignored
+                            if the '-f' argument is not passed.
 
     By default the output will include CPU, memory, etc statistics from Zeek
     processing all of the data in the data file. With the -f argument, the
@@ -33,6 +33,11 @@ Usage: $0 -z [zeek binary path] -d [data file path]
     This script assumes that it is being run on a system with a large number
     of CPU cores. If being used on a smaller system, modify this script and
     set the ZEEK_CPU and TCPREPLAY_CPU variables to smaller values.
+
+    Symbols in Flamegraph outputs may not correctly stack unless the various
+    libraries linked into Zeek are built with frame pointers. This includes
+    glibc, libpcap, and openssl. Rebuilding those libraries with the
+    -fno-omit-frame-pointer compiler flag may provide more accurate output.
 "
 
     echo "${usage}"
