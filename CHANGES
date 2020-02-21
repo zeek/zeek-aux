@@ -1,4 +1,15 @@
 
+0.44-4 | 2020-02-20 17:21:06 -0800
+
+  * Updates to the benchmarking script (Tim Wojtulewicz, Corelight)
+
+    - Added --mode argument for setting the benchmarking mode
+    - Added "file" mode for reading a file directly from disk with the Zeek '-r' argument
+    - Added reverse flamegraphs to the output from the flamegraph mode
+    - Added --seed argument for passing a random seed file to Zeek
+
+  * Update docs in performance benchmarking script (Tim Wojtulewicz, Corelight)
+
 0.44 | 2020-02-07 09:26:27 -0800
 
   * Release 0.44.
