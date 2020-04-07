@@ -148,9 +148,10 @@ if [ "${MODE}" = "intf" ]; then
     taskset --cpu-list $ZEEK_CPU time -f "%M" -o $TIME_FILE $ZEEK_BUILD $ZEEK_ARGS &
     TIME_PID=$!
 
-    sleep 10
-
+    sleep 5
     ZEEK_PID=$(ps -ef | awk -v timepid="${TIME_PID}" '{ if ($3 == timepid) { print $2 } }')
+    renice -20 -p $ZEEK_PID > /dev/null
+    sleep 5
     echo "Zeek running on PID ${ZEEK_PID}"
 
     # Start perf stat on the zeek process
@@ -181,6 +182,9 @@ elif [ "${MODE}" = "file" ]; then
 
     echo "####### Testing reading the file directly from disk #######"
     taskset --cpu-list $ZEEK_CPU time -f "%e %M" -o $TIME_FILE $ZEEK_BUILD $ZEEK_ARGS -r $DATA_FILE
+    TIME_PID=$!
+    ZEEK_PID=$(ps -ef | awk -v timepid="${TIME_PID}" '{ if ($3 == timepid) { print $2 } }')
+    renice -20 -p $ZEEK_PID > /dev/null
     awk '{print "Time spent: " $1 " seconds\nMax memory usage: " $2 " bytes"}' $TIME_FILE
 
     rm $TIME_FILE
