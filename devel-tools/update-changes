@@ -428,8 +428,8 @@ if [ "$found" == "0" ]; then
 fi
 
 if [ "$check" == "1" ]; then
-    echo "CHANGES is NOT to date."
-    exit 0
+    echo "CHANGES is NOT up to date."
+    exit 1
 fi
 
 echo >>$tmp
