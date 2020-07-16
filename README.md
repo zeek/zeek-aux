@@ -13,12 +13,15 @@ requirements in mind:
   [Zeek Supervisor Framework](https://docs.zeek.org/en/current/frameworks/supervisor.html).
 * Independence from Python.
 
-## Build
-
-Dependencies:
+## Dependencies
 
 * CMake 3.0 or greater
 * C++ compiler with C++17 support (GCC 7+ or Clang 4+)
+* By default, compression is enabled by shelling out directly to `gzip`,
+  either install that separately or disable/change the compression
+  mechanism via the `--compression=` flag.
+
+## Build
 
 ```
 $ mkdir build && cd build && cmake .. && make
