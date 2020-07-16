@@ -21,7 +21,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.5.0-2";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.5.0-3";
 
 struct Options {
 	std::string src_dir;
@@ -376,34 +376,25 @@ static void parse_options(int argc, char** argv)
 
 static bool make_dir(const char* dir)
 	{
+	if ( mkdir(dir, 0700) == 0 )
+		return true;
+
+	auto mkdir_errno = errno;
 	struct stat st;
 
 	if ( stat(dir, &st) == -1 )
 		{
-		if ( errno != ENOENT )
-			{
-			error("Failed to make directory '%s': can't stat: %s", dir, strerror(errno));
-			return false;
-			}
-
-		if ( mkdir(dir, 0700) == -1 )
-			{
-			if ( errno == EEXIST )
-				return true;
-
-			error("Failed to make directory '%s': %s", dir, strerror(errno));
-			return false;
-			}
-
-		debug("Created directory: %s", dir);
-		}
-	else if ( ! S_ISDIR(st.st_mode) )
-		{
-		error("Failed to make directory '%s': non-directory already exists", dir);
+		// Show the original failure reason for mkdir() since nothing's there
+		// or we can't even tell what is now.
+		error("Failed to create directory %s: %s", dir, strerror(mkdir_errno));
 		return false;
 		}
 
-	return true;
+	if ( S_ISDIR(st.st_mode) )
+		return true;
+
+	error("Failed to create directory %s: exists but is not a directory", dir);
+	return false;
 	}
 
 static bool make_dirs(std::string_view dir)

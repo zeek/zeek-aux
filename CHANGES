@@ -1,4 +1,8 @@
 
+0.5.0-3 | 2020-07-16 12:30:51 -0700
+
+  * Fix race condition in make_dir() (Jon Siwek, Corelight)
+
 0.5.0-2 | 2020-07-16 11:31:20 -0700
 
   * Add CHANGES file (Jon Siwek, Corelight)
