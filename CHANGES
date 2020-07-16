@@ -1,4 +1,8 @@
 
+0.5.0-6 | 2020-07-16 15:53:57 -0700
+
+  * Add CI config (Jon Siwek, Corelight)
+
 0.5.0-5 | 2020-07-16 13:23:40 -0700
 
   * Update README dependency info (Jon Siwek, Corelight)

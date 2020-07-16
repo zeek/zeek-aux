@@ -26,6 +26,5 @@ message(
     "\nCXX:               ${CMAKE_CXX_COMPILER}"
     "\nCXXFLAGS (base):   ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BuildType}}"
     "\nCXXFLAGS (extra):  ${extra_cxx_flags}"
-    "\nCPP:               ${CMAKE_CXX_COMPILER}"
     "\n================================================================\n"
 )
