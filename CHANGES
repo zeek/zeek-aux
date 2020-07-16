@@ -1,4 +1,8 @@
 
+0.5.0-4 | 2020-07-16 12:39:54 -0700
+
+  * Tell CMake to generate compile_commands.json (Jon Siwek, Corelight)
+
 0.5.0-3 | 2020-07-16 12:30:51 -0700
 
   * Fix race condition in make_dir() (Jon Siwek, Corelight)
