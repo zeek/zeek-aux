@@ -23,13 +23,13 @@ requirements in mind:
 
 ## Build
 
+Just run `make`, which is short for:
+
 ```
-$ mkdir build && cd build && cmake .. && make
+$ mkdir -p build && cd build && cmake .. && make
 ```
 
 ## Install
-
-Assuming you just followed the Build directions above:
 
 ```
 $ make install

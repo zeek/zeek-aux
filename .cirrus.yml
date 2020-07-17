@@ -9,7 +9,7 @@ ci_template: &CI_TEMPLATE
     )
 
   build_script: ./ci/build.sh
-  # test_script: ./ci/test.sh
+  test_script: ./test.sh
 
 # Linux EOL timelines: https://linuxlifecycle.com/
 # Fedora (~13 months): https://fedoraproject.org/wiki/Fedora_Release_Life_Cycle
