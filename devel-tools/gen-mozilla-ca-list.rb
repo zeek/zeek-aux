@@ -47,7 +47,7 @@ io.each do |line|
         end
 
         cert_subj = `openssl x509 -in #{tmpcert} -inform DER -noout -subject -nameopt RFC2253`
-        cert_subj["subject= "]= ""
+        cert_subj["subject="]= ""
         cert_subj.chomp!
         File.delete(tmpcert)
 
