@@ -1,4 +1,10 @@
 
+0.6.0 | 2020-07-16 17:09:08 -0700
+
+  * Release 0.6.0
+
+  * Add tests (Jon Siwek, Corelight)
+
 0.5.0-6 | 2020-07-16 15:53:57 -0700
 
   * Add CI config (Jon Siwek, Corelight)
