@@ -11,7 +11,10 @@ requirements in mind:
 * Independence from [ZeekControl](https://github.com/zeek/zeekctl).
   It's meant for use in conjunction with the upcoming
   [Zeek Supervisor Framework](https://docs.zeek.org/en/current/frameworks/supervisor.html).
-* Independence from Python.
+* Independence from Python.  In retrospect, it's dubious whether that's
+  a benefit: implementing in C++ has little advantage over a solution done in
+  a simpler Bash/Python script, so it may get completely rewritten
+  later if any concrete maintenance burden/problems are encountered.
 
 ## Dependencies
 

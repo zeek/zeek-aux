@@ -21,7 +21,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.0";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.0-1";
 
 struct Options {
 	std::string src_dir;
