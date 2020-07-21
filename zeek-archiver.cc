@@ -21,7 +21,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.0-1";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.0-2";
 
 struct Options {
 	std::string src_dir;
@@ -165,13 +165,15 @@ static void print_usage()
 	fprintf(stderr, "    -1                            | Archive current logs and exit w/o looping\n");
 	fprintf(stderr, "    -h|--help                     | Show this usage information\n");
 	fprintf(stderr, "    -v|--verbose                  | Print verbose/debug logs to stderr\n");
-	fprintf(stderr, "    -c|--compress <ext,cmd>       | File extension and compression command\n"
+	fprintf(stderr, "    -c|--compress <ext,cmd>       | File extension and compression command,\n"
+	                "                                    empty string means \"disable compression\"\n"
 	                "                                    (default: \"gz,gzip\")\n");
 	fprintf(stderr, "    -d|--delimiter <string>       | Delimiter between timestamps in log names\n"
 	                "                                    (default: \"__\")\n");
 	fprintf(stderr, "    -t|--time-fmt <string>        | Format of timestamps within input file names\n"
 	                "                                    (default: \"%%Y-%%m-%%d-%%H-%%M-%%S\")\n");
-	fprintf(stderr, "    -z|--zip-extensions <strings> | File extensions for already-zipped logs\n"
+	fprintf(stderr, "    -z|--zip-extensions <strings> | File extensions for already-zipped logs,\n"
+	                "                                    an empty string disables this feature\n"
 	                "                                    (default: \"gz,bz2,lz,lz4\")\n");
 	}
 
@@ -501,6 +503,8 @@ static int archive_logs()
 			continue;
 			}
 
+		// Default log file format looks like this (4 parts delimited by "__"):
+		//     test__2020-07-16-09-43-10__2020-07-16-09-43-10__.log
 		auto parts = split_string(dp->d_name, options.delimiter);
 
 		if ( parts.size() != 4 )

@@ -1,4 +1,8 @@
 
+0.6.0-2 | 2020-07-21 12:26:11 -0700
+
+  * Improve documentation (Jon Siwek, Corelight)
+
 0.6.0-1 | 2020-07-20 15:43:48 -0700
 
   * Extend README with implementation rationale (Jon Siwek, Corelight)
