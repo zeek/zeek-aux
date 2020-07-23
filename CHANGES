@@ -1,4 +1,24 @@
 
+0.44-19 | 2020-07-23 08:26:26 -0700
+
+  * Update Zeek Plugin template to new namespacing and include style
+
+    Related to https://github.com/zeek/zeek/issues/1068 (Jon Siwek, Corelight)
+
+  * Update mozilla ca list update tool to changed format (Johanna Amann, Corelight)
+
+  * Update btest.cfg and plugin skeleton for aux/ to auxil/ rename (Jon Siwek, Corelight)
+
+  * Make exit code from "update-changes -c" useable.
+
+    If CHANGES is not up to date, "update-changes -c" now returns with
+    exit code 1. This allows using it in a git pre-commit hook. (Robin Sommer, Corelight)
+
+  * Renice the zeek process in perf-benchmark
+
+    This should help keep the kernel from pre-empting the process and
+    give slightly more consistent results from run to run. (Tim Wojtulewicz, Corelight)
+
 0.44-4 | 2020-02-20 17:21:06 -0800
 
   * Updates to the benchmarking script (Tim Wojtulewicz, Corelight)
