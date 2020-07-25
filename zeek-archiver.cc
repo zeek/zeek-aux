@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -475,6 +476,65 @@ static bool already_zipped(std::string_view file)
 	return false;
 	}
 
+// Fork a child and associate its stdin/stdout with the src and dst files,
+// then run compress_cmd via system().
+static int run_compress_cmd(std::string_view src_file, std::string_view dst_file)
+	{
+	int status;
+
+	pid_t pid = fork();
+	if (pid == 0)
+		{
+		close(STDIN_FILENO);
+		int src_fd = open(src_file.data(), O_RDONLY);
+		if (src_fd < 0)
+			{
+			error("Failed to open src_file %s: %s",
+			      src_file.data(), strerror(errno));
+			exit(253);
+			}
+
+		close(STDOUT_FILENO);
+		int dst_fd = open(dst_file.data(), O_CREAT|O_TRUNC|O_WRONLY, 0444);
+		if (dst_fd < 0)
+			{
+			error("Failed to open dst_file %s: %s",
+			      dst_file.data(), strerror(errno));
+			exit(254);
+			}
+
+		// Call the compression program via the shell.
+		//
+		// Switching to an execve form would save the extra fork()
+		// done in system(), but would also require parsing shell.
+		int status = system(options.compress_cmd.data());
+
+		close(src_fd);
+		close(dst_fd);
+
+		exit(WIFEXITED(status) ? WEXITSTATUS(status) : 255);
+		}
+	else if (pid == -1)
+		{
+		error("fork() to run compress command failed: %s", strerror(errno));
+		return -1;
+		}
+
+	waitpid(pid, &status, 0);
+
+	if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0))
+		{
+		error("Compression of %s failed, command exit status: %d (%x)",
+		       src_file.data(), WEXITSTATUS(status), status);
+
+		// If the compression command failed, unlink the destination
+		// file. Ignore any errors - it may not have been created.
+		unlink(dst_file.data());
+		}
+
+	return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+	}
+
 static int archive_logs()
 	{
 	int rval = 0;
@@ -566,26 +626,9 @@ static int archive_logs()
 			{
 			dst_file += "." + options.compress_ext;
 			debug("Archive via compression: %s -> %s", src_file.data(), dst_file.data());
-
-			std::string cmd = options.compress_cmd;
-			cmd += "<"; cmd += src_file.data();
-			cmd += ">"; cmd += tmp_file.data();
-
-			auto res = system(cmd.data());
-
-			if ( res == -1 )
-				{
-				error("Failed to execute compression command '%s': %s",
-				      cmd.data(), strerror(errno));
-				continue;
-				}
-
+			auto res = run_compress_cmd(src_file, tmp_file);
 			if ( res != 0 )
-				{
-				error("Compression command '%s' failed with exit code %d",
-				      cmd.data(), res);
 				continue;
-				}
 
 			res = rename(tmp_file.data(), dst_file.data());
 
