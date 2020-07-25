@@ -1,5 +1,5 @@
 [Unit]
-Description=Zeek Archiver atomically rotates/compresses Zeek logs
+Description=Zeek Archiver
 After=network.target
 
 [Service]
