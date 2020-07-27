@@ -1,4 +1,8 @@
 
+0.6.2 | 2020-07-27 10:10:41 -0700
+
+  * Release 0.6.2.
+
 0.6.1-3 | 2020-07-27 10:09:42 -0700
 
   * service: Use a more contained setup (Arne Welzel, Corelight)
