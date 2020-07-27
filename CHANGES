@@ -1,4 +1,25 @@
 
+0.6.1-3 | 2020-07-27 10:09:42 -0700
+
+  * service: Use a more contained setup (Arne Welzel, Corelight)
+
+    - do not run as root
+    - don't allow privilege escalation
+    - only allow read-write to /usr/local/zeek/logs
+
+  * service: Make Description identify the unit instead of describing it (Arne Welzel, Corelight)
+
+    The official docs have this gem:
+
+        This is used by systemd (and other UIs) as the label for the unit,
+        so this string should identify the unit rather than describe it,
+        despite the name.
+
+    ...and the logs look a bit nicer afterwards:
+
+        Jul 25 12:25:17 tinkyx280 systemd[1]: Started Zeek Archiver atomically rotates/compresses Zeek logs.
+        Jul 25 12:26:32 tinkyx280 systemd[1]: Started Zeek Archiver
+
 0.6.1 | 2020-07-21 12:26:33 -0700
 
   * Release 0.6.1.
