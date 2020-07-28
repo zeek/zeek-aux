@@ -564,7 +564,9 @@ static int archive_logs()
 
 		if ( compress )
 			{
-			dst_file += "." + options.compress_ext;
+			if ( ! options.compress_ext.empty() )
+				dst_file += "." + options.compress_ext;
+
 			debug("Archive via compression: %s -> %s", src_file.data(), dst_file.data());
 
 			std::string cmd = options.compress_cmd;
