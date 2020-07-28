@@ -107,6 +107,55 @@ if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
     exit_code=1
 fi
 
+### Test Case
+new_test "Command injection via filenames"
+
+log_in='test;uptime;__2020-07-16-09-43-10__2020-07-16-09-43-10__.log'
+log_out='test;uptime;.09:43:10-09:43:10.log'
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+### Test Case
+#
+# Verify the source file still exists and the destination wasn't created
+# (or removed) when the compression command fails.
+#
+new_test "Failing compress command"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__.log
+log_out=test.09\:43\:10-09\:43\:10.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v --compress=false,/bin/false $(queue_dir) $(archive_dir)
+
+
+if [[ ! -e "$(queue_dir)/${log_in}" ]] || [[ -e "$(archive_date_dir)/${log_out}.false" ]] ; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Pass extra parameters to compression"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__.log
+log_out=test.09\:43\:10-09\:43\:10.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v --compress 'gz,gzip -9' $(queue_dir) $(archive_dir)
+
+if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+
 ### Finalize
 if [[ ${exit_code} -eq 0 ]]; then
     echo "--- All ${testnum} tests passed ---"

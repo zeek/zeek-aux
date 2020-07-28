@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -475,6 +476,85 @@ static bool already_zipped(std::string_view file)
 	return false;
 	}
 
+// Fork a child and associate its stdin/stdout with the src and dst files,
+// then run compress_cmd via system().
+static int run_compress_cmd(const char* src_file, const char* dst_file)
+	{
+	pid_t pid = fork();
+
+	if ( pid == -1 )
+		{
+		error("Failed to fork() to run compress command: %s", strerror(errno));
+		return -1;
+		}
+
+	if ( pid == 0 )
+		{
+		int src_fd = open(src_file, O_RDONLY);
+
+		if ( src_fd < 0 )
+			{
+			error("Failed to open src_file %s: %s", src_file, strerror(errno));
+			exit(254);
+			}
+
+		if ( dup2(src_fd, STDIN_FILENO) == -1 )
+			{
+			error("Failed to redirect src_file %s to stdin: %s", src_file,
+			      strerror(errno));
+			exit(253);
+			}
+
+		if ( src_fd != STDIN_FILENO )
+			close(src_fd);
+
+		int dst_fd = open(dst_file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+
+		if ( dst_fd < 0 )
+			{
+			error("Failed to open dst_file %s: %s", dst_file, strerror(errno));
+			exit(252);
+			}
+
+		if ( dup2(dst_fd, STDOUT_FILENO) == -1 )
+			{
+			error("Failed to redirect dst_file %s to stdout: %s", dst_file,
+			      strerror(errno));
+			exit(251);
+			}
+
+		if ( dst_fd != STDOUT_FILENO )
+			close(dst_fd);
+
+		// Call the compression program via the shell.
+		execlp("sh", "sh", "-c", options.compress_cmd.data(), (char*)0);
+		error("Failed to exec(): %s", strerror(errno));
+		exit(255);
+		}
+
+	int status;
+	waitpid(pid, &status, 0);
+
+	if ( ! (WIFEXITED(status) && WEXITSTATUS(status) == 0) )
+		{
+		if ( WIFEXITED(status) )
+			error("Compression of %s failed, command exit status: %d (0x%x)",
+			       src_file, WEXITSTATUS(status), status);
+		else if ( WIFSIGNALED(status) )
+			error("Compression of %s failed, got signal: %d (0x%x)",
+			       src_file, WTERMSIG(status), status);
+		else
+			error("Compression of %s failed, unknown reason/status: (0x%x)",
+			       src_file, status);
+
+		// If the compression command failed, unlink the destination
+		// file. Ignore any errors - it may not have been created.
+		unlink(dst_file);
+		}
+
+	return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+	}
+
 static int archive_logs()
 	{
 	int rval = 0;
@@ -568,26 +648,10 @@ static int archive_logs()
 				dst_file += "." + options.compress_ext;
 
 			debug("Archive via compression: %s -> %s", src_file.data(), dst_file.data());
-
-			std::string cmd = options.compress_cmd;
-			cmd += "<"; cmd += src_file.data();
-			cmd += ">"; cmd += tmp_file.data();
-
-			auto res = system(cmd.data());
-
-			if ( res == -1 )
-				{
-				error("Failed to execute compression command '%s': %s",
-				      cmd.data(), strerror(errno));
-				continue;
-				}
+			auto res = run_compress_cmd(src_file.data(), tmp_file.data());
 
 			if ( res != 0 )
-				{
-				error("Compression command '%s' failed with exit code %d",
-				      cmd.data(), res);
 				continue;
-				}
 
 			res = rename(tmp_file.data(), dst_file.data());
 
