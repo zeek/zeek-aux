@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstdarg>
@@ -22,7 +23,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.2";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.6.2-4";
 
 struct Options {
 	std::string src_dir;
@@ -476,19 +477,33 @@ static bool already_zipped(std::string_view file)
 	return false;
 	}
 
+static pid_t child_pid = -1;
+
+static void signal_handler(int signal)
+	{
+	if ( child_pid > 0 )
+		{
+		kill(child_pid, SIGKILL);
+		int status;
+		waitpid(child_pid, &status, 0);
+		}
+
+	_exit(131);
+	}
+
 // Fork a child and associate its stdin/stdout with the src and dst files,
 // then run compress_cmd via system().
 static int run_compress_cmd(const char* src_file, const char* dst_file)
 	{
-	pid_t pid = fork();
+	child_pid = fork();
 
-	if ( pid == -1 )
+	if ( child_pid == -1 )
 		{
 		error("Failed to fork() to run compress command: %s", strerror(errno));
 		return -1;
 		}
 
-	if ( pid == 0 )
+	if ( child_pid == 0 )
 		{
 		int src_fd = open(src_file, O_RDONLY);
 
@@ -533,7 +548,8 @@ static int run_compress_cmd(const char* src_file, const char* dst_file)
 		}
 
 	int status;
-	waitpid(pid, &status, 0);
+	waitpid(child_pid, &status, 0);
+	child_pid = -1;
 
 	if ( ! (WIFEXITED(status) && WEXITSTATUS(status) == 0) )
 		{
@@ -735,6 +751,7 @@ static int archive_logs()
 
 int main(int argc, char** argv)
 	{
+	signal(SIGTERM, signal_handler);
 	parse_options(argc, argv);
 
 	debug("Using src_dir: '%s'", options.src_dir.data());
