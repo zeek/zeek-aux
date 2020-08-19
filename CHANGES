@@ -1,4 +1,10 @@
 
+0.6.3-2 | 2020-08-19 11:35:47 -0700
+
+  * Add GH Action for CI email notifications (Jon Siwek, Corelight)
+
+  * Add example of how to use with ZeekControl (Jon Siwek, Corelight)
+
 0.6.3 | 2020-07-28 16:03:04 -0700
 
   * Release 0.6.3.
