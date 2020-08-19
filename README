@@ -1,7 +1,7 @@
 .. -*- mode: rst; -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 0.45
+.. |version| replace:: 0.45-1
 
 =======================
 Zeek Auxiliary Programs

@@ -1,4 +1,8 @@
 
+0.45-1 | 2020-08-19 10:48:17 -0700
+
+  * Prevent CI notifications on forked repos (Jon Siwek, Corelight)
+
 0.45 | 2020-07-23 08:28:10 -0700
 
   * Release 0.45.

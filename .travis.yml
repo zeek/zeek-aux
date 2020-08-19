@@ -17,6 +17,7 @@ notifications:
   email:
     recipients:
     - zeek-commits-internal@zeek.org
+    if: repo = zeek/zeek-aux
 
 before_install: pip install --user btest
 
