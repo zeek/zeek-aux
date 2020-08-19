@@ -49,6 +49,36 @@ $ systemctl enable zeek-archiver
 $ systemctl start zeek-archiver
 ```
 
+## Use With ZeekControl
+
+While `zeek-archiver` is meant to be used with the Zeek Supervisor Framework,
+it's still possible to use with ZeekControl in the time before it's entirely
+succeeded by the Supervisor Framework.  As an example of how to configure
+`zeek-archiver` to work with ZeekControl, add this code to your `local.zeek`
+
+```zeek
+@if ( Cluster::local_node_type() == Cluster::LOGGER )
+
+redef Log::default_rotation_dir = "/usr/local/zeek/logs/log-queue";
+
+function my_rotation_format_func(ri: Log::RotationFmtInfo): Log::RotationPath
+	{
+	local open_str = strftime(Log::default_rotation_date_format, ri$open);
+	local close_str = strftime(Log::default_rotation_date_format, ri$open);
+	local base = fmt("%s__%s__%s__", ri$path, open_str, close_str);
+	local rval = Log::RotationPath($file_basename=base);
+	return rval;
+	}
+
+redef Log::rotation_format_func = my_rotation_format_func;
+redef Log::default_rotation_postprocessor_cmd = "";
+
+@endif
+```
+
+Then run `zeek-archiver` the same way as explained earlier to have it monitor
+and rotate any logs that show up in `/usr/local/zeek/logs/log-queue`.
+
 ## Further Background
 
 The historical ZeekControl method for log rotation/archival looked like:
