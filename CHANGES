@@ -1,4 +1,8 @@
 
+0.6.3-3 | 2020-08-25 17:01:32 -0700
+
+  * Fix closing timestamp in rotation format function example (Jon Siwek, Corelight)
+
 0.6.3-2 | 2020-08-19 11:35:47 -0700
 
   * Add GH Action for CI email notifications (Jon Siwek, Corelight)
