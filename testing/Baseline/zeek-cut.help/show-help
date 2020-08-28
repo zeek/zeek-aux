@@ -9,6 +9,8 @@ Example: cat conn.log | zeek-cut -d ts id.orig_h id.orig_p
 
     -c       Include the first format header block in the output.
     -C       Include all format header blocks in the output.
+    -m       Include the first format header blocks in the output in minimal view.
+    -M       Include all format header blocks in the output in minimal view.
     -d       Convert time values into human-readable format.
     -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).
     -F <ofs> Sets a different output field separator character.

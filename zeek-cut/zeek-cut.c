@@ -16,6 +16,7 @@
 /* User-specified options that stay constant during a run of zeek-cut. */
 struct useropts {
     int showhdr;     /* show log headers? (0=no, 1=only first, 2=all) */
+    int minimalview; /* show headers in minimal view? (0=no, 1=yes) */
     int negate;      /* show all but the specified columns? (0=no, 1=yes) */
     int timeconv;    /* do time conversion? (0=no, 1=local, 2=UTC) */
     char **columns;  /* array of user-specified column names */
@@ -47,6 +48,8 @@ int usage(void) {
     puts("\nExample: cat conn.log | zeek-cut -d ts id.orig_h id.orig_p");
     puts("\n    -c       Include the first format header block in the output.");
     puts("    -C       Include all format header blocks in the output.");
+    puts("    -m       Include the first format header blocks in the output in minimal view.");
+    puts("    -M       Include all format header blocks in the output in minimal view.");
     puts("    -d       Convert time values into human-readable format.");
     puts("    -D <fmt> Like -d, but specify format for time (see strftime(3) for syntax).");
     puts("    -F <ofs> Sets a different output field separator character.");
@@ -307,7 +310,7 @@ void output_indexes(int hdr, char *line, struct logparams *lp, struct useropts *
         dotimetypeconv = 1;
     }
 
-    if (hdr) {
+    if (hdr && bopts->minimalview == 0) {
         /* Output the initial "#" field on the header line */
         fputs(lp->tmp_fields[0], stdout);
         firstdone = 1;
@@ -459,10 +462,10 @@ int zeek_cut(struct useropts bopts) {
 
         /* Decide if we want to output this header */
         if (bopts.showhdr >= headers_seen) {
-            if (!strncmp(line, "#fields", 7) || !strncmp(line, "#types", 6)) {
+            if (!strncmp(line, "#fields", 7) || (!strncmp(line, "#types", 6) && (bopts.minimalview == 0))) {
                 /* Output a modified "#fields" or "#types" header line */
                 output_indexes(1, line, &lp, &bopts);
-            } else {
+            } else if (bopts.minimalview == 0){
                 /* Output the header line with no changes */
                 puts(line);
             }
@@ -489,6 +492,7 @@ int main(int argc, char *argv[]) {
 
     struct useropts bopts;
     bopts.showhdr = 0;
+    bopts.minimalview = 0;
     bopts.negate = 0;
     bopts.timeconv = 0;
     bopts.ofs = "";
@@ -499,12 +503,22 @@ int main(int argc, char *argv[]) {
         {0,         0,              0,  0}
     };
 
-    while ((c = getopt_long(argc, argv, "cCnF:duD:U:h", long_opts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "cCmMnF:duD:U:h", long_opts, NULL)) != -1) {
         switch (c) {
             case 'c':
+                bopts.minimalview = 0;
                 bopts.showhdr = 1;
                 break;
             case 'C':
+                bopts.minimalview = 0;
+                bopts.showhdr = 2;
+                break;
+            case 'm':
+                bopts.minimalview = 1;
+                bopts.showhdr = 1;
+                break;
+            case 'M':
+                bopts.minimalview = 1;
                 bopts.showhdr = 2;
                 break;
             case 'n':
