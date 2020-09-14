@@ -1,4 +1,12 @@
 
+0.45-3 | 2020-09-14 13:24:13 -0700
+
+  * Add zeek-cut flag -m and -M to output minimal header field info (Guy Magen)
+
+    With these options, just the field names are output: the "#fields" token
+    itself as well as other header metadata lines are not output.  This
+    can essentially help target a CSV-ready output format.
+
 0.45-1 | 2020-08-19 10:48:17 -0700
 
   * Prevent CI notifications on forked repos (Jon Siwek, Corelight)
