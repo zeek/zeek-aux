@@ -1,4 +1,8 @@
 
+0.45-7 | 2020-11-24 15:13:44 -0800
+
+  * Add zeek-config --lib_dir to the cmake variables available during plugin builds (Christian Kreibich, Corelight)
+
 0.45-3 | 2020-09-14 13:24:13 -0700
 
   * Add zeek-cut flag -m and -M to output minimal header field info (Guy Magen)
