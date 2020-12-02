@@ -1,4 +1,8 @@
 
+0.6.3-5 | 2020-12-02 11:07:12 -0800
+
+  * Update minimum required CMake to 3.5 (Jon Siwek, Corelight)
+
 0.6.3-3 | 2020-08-25 17:01:32 -0700
 
   * Fix closing timestamp in rotation format function example (Jon Siwek, Corelight)
