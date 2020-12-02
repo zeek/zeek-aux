@@ -1,4 +1,10 @@
 
+0.45-10 | 2020-12-02 11:08:41 -0800
+
+  * Update minimum required CMake to 3.5 (Jon Siwek, Corelight)
+
+    This includes CMake skeletons for Zeek plugins
+
 0.45-7 | 2020-11-24 15:13:44 -0800
 
   * Add zeek-config --lib_dir to the cmake variables available during plugin builds (Christian Kreibich, Corelight)
