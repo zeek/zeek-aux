@@ -1,4 +1,10 @@
 
+0.6.3-7 | 2020-12-02 12:03:49 -0800 (Jon Siwek, Corelight)
+
+  * Update Cirrus CI config/Dockerfiles
+
+    Keeping in sync with Zeek's currently supported platforms
+
 0.6.3-5 | 2020-12-02 11:07:12 -0800
 
   * Update minimum required CMake to 3.5 (Jon Siwek, Corelight)

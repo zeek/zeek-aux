@@ -1,5 +1,7 @@
 FROM debian:9
 
+ENV DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles"
+
 RUN apt-get update && apt-get -y install \
     git \
     cmake \
@@ -9,7 +11,6 @@ RUN apt-get update && apt-get -y install \
     libc++abi-7-dev \
   && rm -rf /var/lib/apt/lists/*
 
-RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang-7 100
-RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-7 100
-
+ENV CC=/usr/bin/clang-7
+ENV CXX=/usr/bin/clang++-7
 ENV CXXFLAGS=-stdlib=libc++
