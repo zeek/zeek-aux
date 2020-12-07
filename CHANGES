@@ -1,4 +1,8 @@
 
+0.45-13 | 2020-12-07 17:52:17 +0000
+
+  * Baseline refresh to reflect btest 0.64 (Christian Kreibich, Corelight)
+
 0.45-10 | 2020-12-02 11:08:41 -0800
 
   * Update minimum required CMake to 3.5 (Jon Siwek, Corelight)
