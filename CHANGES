@@ -1,4 +1,10 @@
 
+0.7.0 | 2020-12-14 20:46:15 -0800
+
+  * Release 0.7.0
+
+  * Add 'dist' target to Makefile (Jon Siwek, Corelight)
+
 0.6.3-7 | 2020-12-02 12:03:49 -0800 (Jon Siwek, Corelight)
 
   * Update Cirrus CI config/Dockerfiles
