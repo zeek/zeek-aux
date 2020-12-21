@@ -1,4 +1,8 @@
 
+0.7.0-2 | 2020-12-21 10:38:57 -0800
+
+  * Add macOS Big Sur to CI (Jon Siwek, Corelight)
+
 0.7.0 | 2020-12-14 20:46:15 -0800
 
   * Release 0.7.0

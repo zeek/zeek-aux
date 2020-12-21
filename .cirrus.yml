@@ -74,10 +74,15 @@ ubuntu16_task:
     dockerfile: ci/ubuntu-16.04/Dockerfile
   << : *CI_TEMPLATE
 
-# Apple doesn't publish official long-term support timelines, so easiest
-# option is to only support the latest macOS release or whatever latest
-# image is available.
-macos_task:
+# Apple doesn't publish official long-term support timelines.
+# We aim to support both the current and previous macOS release.
+macos_big_sur_task:
+  osx_instance:
+    image: big-sur-base
+  prepare_script: ./ci/macos/prepare.sh
+  << : *CI_TEMPLATE
+
+macos_catalina_task:
   osx_instance:
     image: catalina-base
   prepare_script: ./ci/macos/prepare.sh
