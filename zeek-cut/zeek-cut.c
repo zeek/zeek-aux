@@ -255,8 +255,9 @@ void output_time(const char *field, struct logparams *lp, struct useropts *bopts
         return;
     } else {
         time_t tt = tl;
-        struct tm *tmptr;
-        tmptr = bopts->timeconv == 1 ? localtime(&tt) : gmtime(&tt);
+        struct tm tmval;
+        struct tm* tmptr;
+        tmptr = bopts->timeconv == 1 ? localtime_r(&tt, &tmval) : gmtime_r(&tt, &tmval);
 
         if (tmptr) {
             if (strftime(tbuf, sizeof(tbuf), bopts->timefmt, tmptr)) {
@@ -561,4 +562,3 @@ int main(int argc, char *argv[]) {
 
     return zeek_cut(bopts);
 }
-
