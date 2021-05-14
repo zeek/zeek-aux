@@ -23,7 +23,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.7.0-4";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.7.0-7";
 
 struct Options {
 	std::string src_dir;
@@ -162,7 +162,7 @@ static void print_usage()
 	print_version(stderr);
 	fprintf(stderr, "usage: zeek-archiver [options] <src_dir> <dst_dir>\n");
 	fprintf(stderr, "    <src_dir>                     | A directory to monitor for Zeek log files\n");
-	fprintf(stderr, "    <dst_dir>                     | A director to archive Zeek logs into\n");
+	fprintf(stderr, "    <dst_dir>                     | A directory to archive Zeek logs into\n");
 	fprintf(stderr, "    --version                     | Print version and exit\n");
 	fprintf(stderr, "    -1                            | Archive current logs and exit w/o looping\n");
 	fprintf(stderr, "    -h|--help                     | Show this usage information\n");

@@ -1,4 +1,8 @@
 
+0.7.0-7 | 2021-05-14 11:08:45 -0700
+
+  * Fixed typo in --help output (copeland3300)
+
 0.7.0-4 | 2021-01-19 21:05:03 -0800
 
   * Update Cirrus CI naming for MacOS images (Christian Kreibich, Corelight)
