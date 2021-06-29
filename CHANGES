@@ -1,3 +1,12 @@
+0.46-6 | 2021-06-29 08:42:46 -0700
+
+  * Make some improvements to update-changes (Tim Wojtulewicz, Corelight)
+
+    - Don't insert blank line at the top of the file that just needs to be deleted
+      when you manually edit it.
+    - Ignore merge commits
+    - Put the author attribution at the end of the first line of a commit message
+      instead of at the end of the message.
 
 0.46-4 | 2021-04-20 15:19:09 -0700
 

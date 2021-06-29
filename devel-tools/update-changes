@@ -147,13 +147,15 @@ function add_to_changes_entry
    author=""
 
    if [ "$msg" == "" ]; then
-       author_email=`$git_author_email $rev`
-       author=`$git_author $rev`
+       if [ "$show_authors" == "1" ]; then
+	   author_email=`$git_author_email $rev`
+	   author=`$git_author $rev`
 
-       if [[ "$author_email" == *@corelight.com ]]; then
-           author="$author, Corelight"
-       else
-           author="$author"
+	   if [[ "$author_email" == *@corelight.com ]]; then
+               author=" ($author, Corelight)"
+	   else
+               author=" ($author)"
+	   fi
        fi
 
        msg=`$git_msg $rev`
@@ -168,6 +170,11 @@ function add_to_changes_entry
        return 1;
    fi
 
+   if echo $msg | grep -q "^Merge remote-tracking branch"; then
+       # Ignore merge commits.
+       return 1;
+   fi
+
    echo >>$dst
 
    if [ "$zeek_style" == "0" ]; then
@@ -176,8 +183,8 @@ function add_to_changes_entry
            bullet="-"
    fi
 
-   ( echo -n "$msg"; test "$author" != "" && test "$show_authors" == "1" && printf " (%s)" "$author" ) \
-       | awk -v bullet="$bullet" 'NR==1{printf "%s %s\n", bullet, $0; next }{printf "    %s\n", $0}' \
+   echo -n "$msg" \
+       | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
        | sed 's/[[:blank:]]*$//' >>$dst
 
    return 0;
@@ -364,8 +371,6 @@ trap "rm -f $tmp" EXIT
 rm -f $tmp
 
 found=0
-
-echo >>$tmp
 
 new_version=$auto_version
 version=`version $rev`
