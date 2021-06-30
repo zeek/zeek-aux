@@ -11,7 +11,7 @@ use warnings;
 
 # This is the only kind-of user-configurable line
 
-my $google_log_url = "https://www.gstatic.com/ct/log_list/all_logs_list.json";
+my $google_log_url = "https://www.gstatic.com/ct/log_list/log_list.json";
 
 # And begin with loading everything we need.
 # I was lazy and you probably will have to install a few of these.
