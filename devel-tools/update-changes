@@ -42,7 +42,7 @@ git_author="git show -s --pretty=format:%aN"  # {rev} will be added.
 git_author_email="git show -s --pretty=format:%aE"  # {rev} will be added.
 
 # The command line used to get a revision's message.
-git_msg="git show -s --pretty=format:%B"  # {rev} will be added.
+git_msg=default_format_msg # {rev} will be added.
 
 function usage
 {
@@ -116,6 +116,28 @@ function replace_version_in_c_header
     git add $file
 }
 
+# Default function for preparing commit message. This scans the message for
+# GitHub issue references to include.
+function default_format_msg {
+    if command -v gawk &> /dev/null; then
+        # We need gawk for the match().
+        git show -s --pretty=format:%B $1 | \
+            gawk '
+                match($0, "([Ii]ssue|[Gg][Hh]|#)[ _-]?([0-9]+)", x) { issues[x[2]] = 1; }
+                                                                    { msg = msg $0 "\n"; }
+                END {
+                    if ( ! match(msg, "^GH-[0-9]+") ) {
+                        for ( i in issues )
+                            printf("GH-%s: ", i);
+                    }
+
+                    print msg;
+                }'
+    else
+        git show -s --pretty=format:%B $1
+    fi
+}
+
 ###
 
 function version
@@ -170,7 +192,7 @@ function add_to_changes_entry
        return 1;
    fi
 
-   if echo $msg | grep -q "^Merge remote-tracking branch"; then
+   if echo $msg | grep -q '^\(.*:\ *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
        # Ignore merge commits.
        return 1;
    fi
