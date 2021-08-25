@@ -44,6 +44,12 @@ centosstream8_task:
     dockerfile: ci/centos-stream-8/Dockerfile
   << : *CI_TEMPLATE
 
+debian11_task:
+  container:
+    # Debian 11 EOL: June 2026
+    dockerfile: ci/debian-11/Dockerfile
+  << : *CI_TEMPLATE
+
 debian10_task:
   container:
     # Debian 10 EOL: June 2024
@@ -84,12 +90,6 @@ ubuntu18_task:
   container:
     # Ubuntu 18.04 EOL: April 2023
     dockerfile: ci/ubuntu-18.04/Dockerfile
-  << : *CI_TEMPLATE
-
-ubuntu16_task:
-  container:
-    # Ubuntu 16.04 EOL: April 2021
-    dockerfile: ci/ubuntu-16.04/Dockerfile
   << : *CI_TEMPLATE
 
 # Apple doesn't publish official long-term support timelines.

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:11
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles"
 
@@ -6,11 +6,5 @@ RUN apt-get update && apt-get -y install \
     git \
     cmake \
     make \
-    clang-8 \
-    libc++-8-dev \
-    libc++abi-8-dev \
+    g++ \
   && rm -rf /var/lib/apt/lists/*
-
-ENV CC=/usr/bin/clang-8
-ENV CXX=/usr/bin/clang++-8
-ENV CXXFLAGS=-stdlib=libc++
