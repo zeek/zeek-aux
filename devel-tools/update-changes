@@ -55,6 +55,7 @@ function usage
     echo "    -B <tag>    Tag the current revision as a beta release. Use VERSION to use that."
     echo "    -I          Initialize a new, initially empty CHANGES file."
     echo "    -c          Check whether CHANGES is up to date."
+    echo "    -n          Do not amend the HEAD commit when feasible, create a new one."
     echo
     exit 1
 }
@@ -277,14 +278,16 @@ beta=""
 init=0
 check=0
 quiet=0
+no_amends=0
 
-while getopts "hp:R:B:Ic" opt; do
+while getopts "hp:R:B:Icn" opt; do
     case "$opt" in
         p) last_rev="$OPTARG";;
         R) release="$OPTARG";;
         B) beta="$OPTARG";;
         I) init=1;;
         c) check=1; quiet=1;;
+        n) no_amends=1;;
         *) usage;;
     esac
 done
@@ -442,12 +445,14 @@ echo >>$tmp
 cat $file_changes >>$tmp
 
 # If we are ahead of origin, we can amend. If not, we need to create a new
-# commit even if the user wants otherwise.
+# commit even if the user wants otherwise. If the user requested -n (no
+# amendments), we skip all of this.
 amend=0
-if git remote | grep -q origin; then
-     if git rev-list origin/`git rev-parse --abbrev-ref HEAD`..HEAD | grep -q .; then
-         amend=1
-     fi
+
+if [ $no_amends == "0" ] \
+       && git remote | grep -q origin \
+       && git rev-list origin/`git rev-parse --abbrev-ref HEAD`..HEAD | grep -q .; then
+    amend=1
 fi
 
 echo
