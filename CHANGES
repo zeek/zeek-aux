@@ -1,3 +1,9 @@
+0.7.0-15 | 2021-11-05 12:44:52 -0700
+
+  * Add macOS Monterey and drop Catalina in CI (Christian Kreibich, Corelight)
+
+  * Add Fedora 35 to CI (Christian Kreibich, Corelight)
+
 0.7.0-11 | 2021-08-26 14:28:39 -0700
 
   * CI support refresh (Christian Kreibich, Corelight)
