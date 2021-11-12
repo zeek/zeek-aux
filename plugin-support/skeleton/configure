@@ -176,6 +176,10 @@ if [ "$installroot" != "default" ]; then
     append_cache_entry BRO_PLUGIN_INSTALL_ROOT PATH $installroot
 fi
 
+if type plugin_addl >/dev/null 2>&1; then
+    plugin_addl
+fi
+
 echo "Build Directory        : $builddir"
 echo "Zeek Source Directory   : $zeekdist"
 
