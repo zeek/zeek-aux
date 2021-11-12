@@ -119,7 +119,7 @@ if [ -z "$CMakeCommand" ]; then
     elif command -v cmake >/dev/null 2>&1 ; then
         CMakeCommand="cmake"
     else
-        echo "This package requires CMake, please install it first."
+        echo "This plugin requires CMake, please install it first."
         echo "Then you may use this script to configure the CMake build."
         echo "Note: pass --cmake=PATH to use cmake in non-standard locations."
         exit 1;
