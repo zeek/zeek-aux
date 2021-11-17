@@ -9,7 +9,7 @@ zeek_plugin_begin(@PLUGIN_NAMESPACE@ @PLUGIN_NAME@)
 zeek_plugin_cc(src/Plugin.cc)
 zeek_plugin_bif(src/@PLUGIN_NAME_LOWER@.bif)
 zeek_plugin_dist_files(README CHANGES COPYING VERSION)
-zeek_plugin_script(
+zeek_plugin_scripts(
         scripts/types.zeek
         scripts/__preload__.zeek
         scripts/__load__.zeek
