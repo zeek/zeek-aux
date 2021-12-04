@@ -28,6 +28,7 @@ Usage: $0 [OPTIONS]
     --with-caf=DIR             Path to CAF installation root
     --with-bifcl=PATH          Path to bifcl executable
     --enable-debug             Compile in debugging mode
+    --disable-cpp-tests        Don't build C++ unit tests
 EOF
 
 if type plugin_usage >/dev/null 2>&1; then
@@ -52,6 +53,7 @@ append_cache_entry () {
 builddir=build
 zeekdist=""
 installroot="default"
+zeek_plugin_begin_opts=""
 CMakeCacheEntries=""
 
 while [ $# -ne 0 ]; do
@@ -97,7 +99,11 @@ while [ $# -ne 0 ]; do
             ;;
 
         --enable-debug)
-            append_cache_entry BRO_PLUGIN_ENABLE_DEBUG         BOOL   true
+            append_cache_entry BRO_PLUGIN_ENABLE_DEBUG BOOL true
+            ;;
+
+        --disable-cpp-tests)
+            zeek_plugin_begin_opts="DISABLE_CPP_TESTS;$zeek_plugin_begin_opts"
             ;;
 
         *)
@@ -174,6 +180,10 @@ fi
 if [ "$installroot" != "default" ]; then
     mkdir -p $installroot
     append_cache_entry BRO_PLUGIN_INSTALL_ROOT PATH $installroot
+fi
+
+if [ -n "$zeek_plugin_begin_opts" ]; then
+    append_cache_entry ZEEK_PLUGIN_BEGIN_OPTS STRING "$zeek_plugin_begin_opts"
 fi
 
 if type plugin_addl >/dev/null 2>&1; then
