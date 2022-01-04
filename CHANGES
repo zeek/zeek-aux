@@ -1,3 +1,17 @@
+0.48 | 2021-12-10 09:40:34 -0700
+
+  * Update cmake submodule to latest master (Tim Wojtulewicz, Corelight)
+
+  * Merge branch 'topic/christian/doctest-in-packages' (Christian Kreibich, Corelight)
+
+    * topic/christian/doctest-in-packages:
+      Add --disable-cpp-tests to init-plugin's configure template
+
+  * Add --disable-cpp-tests to init-plugin's configure template (Christian Kreibich, Corelight)
+
+    This allows suppressing unit-test compilation in a plugin when it's otherwise
+    supported by Zeek. Also a minor whitespace tweak.
+
 0.47-12 | 2021-11-18 17:04:04 -0800
 
   * Updates to init-plugin:
