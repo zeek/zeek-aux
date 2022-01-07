@@ -1,3 +1,7 @@
+0.48-3 | 2022-01-07 11:35:30 -0700
+
+  * Make some usability updates to git-move-submodules (Tim Wojtulewicz, Corelight)
+
 0.48 | 2021-12-10 09:40:34 -0700
 
   * Update cmake submodule to latest master (Tim Wojtulewicz, Corelight)
