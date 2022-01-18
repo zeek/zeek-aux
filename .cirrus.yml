@@ -32,6 +32,12 @@ centos7_task:
     dockerfile: ci/centos-7/Dockerfile
   << : *CI_TEMPLATE
 
+centosstream9_task:
+  container:
+    # Stream 9 EOL: Around Dec 2027
+    dockerfile: ci/centos-stream-9/Dockerfile
+  << : *CI_TEMPLATE
+
 centosstream8_task:
   container:
     # Stream 8 support should be 5 years, so until 2024. but I cannot find a concrete timeline --cpk
