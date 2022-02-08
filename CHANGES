@@ -1,3 +1,7 @@
+0.48-7 | 2022-02-08 09:54:34 -0700
+
+  * Don't set beta and release tags via update-changes (Tim Wojtulewicz, Corelight)
+
 0.48-5 | 2022-01-27 14:51:56 -0700
 
   * Have `make dist` cleanup a few more wayward files before tarring (Tim Wojtulewicz, Corelight)

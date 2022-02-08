@@ -19,8 +19,6 @@ file_changes="CHANGES"              # The CHANGES file.
 file_version="VERSION"              # The VERSION file.
 file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
-release_tag="release"               # We mark the current release with this tag.
-beta_tag="beta"                     # We mark the current beta with this tag.
 new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
 show_authors=1                      # Include author names with commit.
 
@@ -227,12 +225,9 @@ function get_last_rev
 function check_release_tag
 {
     if [ "$release" != "" ]; then
-        git tag -d $release_tag 2>/dev/null
-        git tag -a $release_tag -m "Current stable release."
-        sleep 2 # Make sure git describe picks the next one.
         git tag -d $release 2>/dev/null
         git tag -a $release -m "Version tag"
-        echo "Tagged with new tag $release and moved tag 'release' to here."
+        echo "Tagged with new tag $release."
         echo
         echo "IMPORTANT: Don't forget to 'git push --tags'."
     fi
@@ -241,12 +236,9 @@ function check_release_tag
 function check_beta_tag
 {
     if [ "$beta" != "" ]; then
-        git tag -d $beta_tag 2>/dev/null
-        git tag -a $beta_tag -m "Current stable beta."
-        sleep 2 # Make sure git describe picks the next one.
         git tag -d $beta 2>/dev/null
         git tag -a $beta -m "Beta version tag"
-        echo "Tagged with new tag $beta and moved tag 'beta' to here."
+        echo "Tagged with new tag $beta."
         echo
         echo "IMPORTANT: Don't forget to 'git push --tags'."
     fi
