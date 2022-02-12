@@ -22,8 +22,11 @@ new_version_hook="new_version_hook" # Function that will be called with new vers
 new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
 show_authors=1                      # Include author names with commit.
 
-# The command line used to generate a revision's version string.
-git_describe="git describe --always" # {rev} will be added.
+# The command line used to generate a revision's version string, such as
+# v1.0.0-23-gabcdef. This relies on tags to work, which update-changes checks
+# for. By default this only finds annotated tags; to allow lightweight ones as
+# well, add --tags.
+git_describe="git describe --tags" # {rev} will be added.
 
 # The command line used to generate a revision's date. The revision will be
 # appended.  Not used with Zeek-style CHANGES file.
