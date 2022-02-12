@@ -162,62 +162,62 @@ function start_changes_entry
 
 function add_to_changes_entry
 {
-   rev=$1
-   dst=$2
-   msg=$3
+    rev=$1
+    dst=$2
+    msg=$3
 
-   author=""
+    author=""
 
-   if [ "$msg" == "" ]; then
-       if [ "$show_authors" == "1" ]; then
-	   author_email=`$git_author_email $rev`
-	   author=`$git_author $rev`
+    if [ "$msg" == "" ]; then
+        if [ "$show_authors" == "1" ]; then
+	    author_email=`$git_author_email $rev`
+	    author=`$git_author $rev`
 
-	   if [[ "$author_email" == *@corelight.com ]]; then
-               author=" ($author, Corelight)"
-	   else
-               author=" ($author)"
-	   fi
-       fi
+	    if [[ "$author_email" == *@corelight.com ]]; then
+                author=" ($author, Corelight)"
+	    else
+                author=" ($author)"
+	    fi
+        fi
 
-       msg=`$git_msg $rev`
-   fi
+        msg=`$git_msg $rev`
+    fi
 
-   if [ "$msg" == "" ]; then
-       return 1
-   fi
+    if [ "$msg" == "" ]; then
+        return 1
+    fi
 
-   if echo $msg | grep -q "^$new_commit_msg\$"; then
-       # Ignore our own automated commits.
-       return 1;
-   fi
+    if echo $msg | grep -q "^$new_commit_msg\$"; then
+        # Ignore our own automated commits.
+        return 1;
+    fi
 
    if echo $msg | grep -q '^\(.*:\ *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
        # Ignore merge commits.
        return 1;
    fi
 
-   echo >>$dst
+    echo >>$dst
 
-   if [ "$zeek_style" == "0" ]; then
-           bullet="  *"
-       else
-           bullet="-"
-   fi
+    if [ "$zeek_style" == "0" ]; then
+        bullet="  *"
+    else
+        bullet="-"
+    fi
 
-   echo -n "$msg" \
-       | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
-       | sed 's/[[:blank:]]*$//' >>$dst
+    echo -n "$msg" \
+        | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
+        | sed 's/[[:blank:]]*$//' >>$dst
 
-   return 0;
+    return 0;
 }
 
 function init_changes
 {
-   echo >>$file_changes
-   start_changes_entry `version HEAD` $file_changes
-   echo >>$file_changes
-   echo "  * Starting $file_changes." >>$file_changes
+    echo >>$file_changes
+    start_changes_entry `version HEAD` $file_changes
+    echo >>$file_changes
+    echo "  * Starting $file_changes." >>$file_changes
 }
 
 function get_last_rev
@@ -275,8 +275,8 @@ function check_beta_tag
 
 function check_submodules
 {
-   if git submodule status --recursive | grep ^+; then
-       cat <<EOF
+    if git submodule status --recursive | grep ^+; then
+        cat <<EOF
 
 The revision recorded for the module(s) above does not
 match the one currently checked out in the respective
@@ -287,8 +287,8 @@ Please either update or checkout the recorded revision(s).
 Aborting.
 EOF
 
-       exit 1
-   fi
+        exit 1
+    fi
 }
 
 function get_release_version {
