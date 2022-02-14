@@ -1,3 +1,13 @@
+0.48-15 | 2022-02-14 13:13:47 -0800
+
+  * Extensions to `update-changes`. (Christian Kreibich, Corelight)
+
+    - expand the CHANGES initialization to simplify bootstrapping
+
+    - make use of "git describe" more robust
+
+    - fix indentation, no other changes
+
 0.48-11 | 2022-02-14 12:51:20 +0100
 
   * Extensions to `update-changes`. (Robin Sommer, Corelight)

@@ -14,16 +14,32 @@
 #
 # If $1 is given, it's interpreted as a release version and a corresponding
 # tag is created.
-
+#
+# To start using update-changes in a new project, proceed as follows:
+#
+# (1) Run "update-changes -I". This will initialize the CHANGES file and, if
+#     needed, establish suitable git tags that update-changes requires in order
+#     to start enumerating commits after a release. You can also prepare the
+#     initial version number in the VERSION file if you prefer that approach.
+#
+# (2) If you're planning to use an .update-changes.cfg file, add it as well as
+#     any corresponding changes it requires. Continue regular development, and
+#     when ready, run update-changes to reflect the first actual changeset in
+#     the CHANGES file.
+#
 file_changes="CHANGES"              # The CHANGES file.
 file_version="VERSION"              # The VERSION file.
 file_config=".update-changes.cfg"   # This will be sourced if available.
 new_version_hook="new_version_hook" # Function that will be called with new version number.
 new_commit_msg="Updating CHANGES and VERSION." # Commit message when creating a new commit.
+init_commit_msg="Starting CHANGES." # Commit message when we initialize CHANGES
 show_authors=1                      # Include author names with commit.
 
-# The command line used to generate a revision's version string.
-git_describe="git describe --always" # {rev} will be added.
+# The command line used to generate a revision's version string, such as
+# v1.0.0-23-gabcdef. This relies on tags to work, which update-changes checks
+# for. By default this only finds annotated tags; to allow lightweight ones as
+# well, add --tags.
+git_describe="git describe --tags" # {rev} will be added.
 
 # The command line used to generate a revision's date. The revision will be
 # appended.  Not used with Zeek-style CHANGES file.
@@ -162,62 +178,98 @@ function start_changes_entry
 
 function add_to_changes_entry
 {
-   rev=$1
-   dst=$2
-   msg=$3
+    rev=$1
+    dst=$2
+    msg=$3
 
-   author=""
+    author=""
 
-   if [ "$msg" == "" ]; then
-       if [ "$show_authors" == "1" ]; then
-	   author_email=`$git_author_email $rev`
-	   author=`$git_author $rev`
+    if [ "$msg" == "" ]; then
+        if [ "$show_authors" == "1" ]; then
+	    author_email=`$git_author_email $rev`
+	    author=`$git_author $rev`
 
-	   if [[ "$author_email" == *@corelight.com ]]; then
-               author=" ($author, Corelight)"
-	   else
-               author=" ($author)"
-	   fi
-       fi
+	    if [[ "$author_email" == *@corelight.com ]]; then
+                author=" ($author, Corelight)"
+	    else
+                author=" ($author)"
+	    fi
+        fi
 
-       msg=`$git_msg $rev`
-   fi
+        msg=`$git_msg $rev`
+    fi
 
-   if [ "$msg" == "" ]; then
-       return 1
-   fi
+    if [ "$msg" == "" ]; then
+        return 1
+    fi
 
-   if echo $msg | grep -q "^$new_commit_msg\$"; then
-       # Ignore our own automated commits.
-       return 1;
-   fi
+    if echo $msg | grep -q "^$new_commit_msg\$"; then
+        # Ignore our own automated commits.
+        return 1;
+    fi
 
    if echo $msg | grep -q '^\(.*:\ *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
        # Ignore merge commits.
        return 1;
    fi
 
-   echo >>$dst
+    echo >>$dst
 
-   if [ "$zeek_style" == "0" ]; then
-           bullet="  *"
-       else
-           bullet="-"
-   fi
+    if [ "$zeek_style" == "0" ]; then
+        bullet="  *"
+    else
+        bullet="-"
+    fi
 
-   echo -n "$msg" \
-       | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
-       | sed 's/[[:blank:]]*$//' >>$dst
+    echo -n "$msg" \
+        | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
+        | sed 's/[[:blank:]]*$//' >>$dst
 
-   return 0;
+    return 0;
 }
 
 function init_changes
 {
-   echo >>$file_changes
-   start_changes_entry `version HEAD` $file_changes
-   echo >>$file_changes
-   echo "  * Starting $file_changes." >>$file_changes
+    for rev in `git rev-list HEAD`; do
+        version=`version $rev`
+        [ -n "$version" ] && break
+    done
+
+    git_version=$version
+
+    if [ "$version" == "" ] && [ -f $file_version ]; then
+        # git doesn't offer version info, but there's a VERSION file.
+        # Consider it if the user's okay with it.
+        version=`cat $file_version | head -1`
+        if [ -n "$version" ]; then
+            echo "This git repo doesn't yet offer suitable version tags."
+            read -p "Use '$version' from $file_version? Y/n " -n 1 -r
+            echo
+            if [ -n "$REPLY" ] && [[ $REPLY != [Yy] ]]; then
+                version=
+            fi
+        fi
+    fi
+
+    if [ "$version" == "" ]; then
+        read -p "No initial version available, please provide one (e.g. 0.1, 1.0.0): " -r version
+        if [[ "$version" == v* ]]; then
+            # We don't need a "v" prefix here, it only exists in the git tags.
+            version=${version:1}
+        fi
+    fi
+
+    echo >>$file_changes
+    start_changes_entry $version $file_changes
+    echo >>$file_changes
+    echo "  * Starting $file_changes." >>$file_changes
+
+    git add $file_changes
+    git commit -m "$init_commit_msg"
+
+    if [ -z "$git_version" ]; then
+        git tag "v$version"
+    fi
 }
 
 function get_last_rev
@@ -225,8 +277,7 @@ function get_last_rev
     version=`cat $file_changes | egrep '^[0-9a-zA-Z.-]+  *\|' | head -1 | awk '{print $1}'`
 
     if echo $version | grep -q -- '-'; then
-        # v1.0.4-14
-        # Find the revision with that number.
+        # version is now e.g. 1.0.4-14 -- find the revision with that number.
         for rev in `git rev-list HEAD`; do
             v=`version $rev`
 
@@ -275,8 +326,8 @@ function check_beta_tag
 
 function check_submodules
 {
-   if git submodule status --recursive | grep ^+; then
-       cat <<EOF
+    if git submodule status --recursive | grep ^+; then
+        cat <<EOF
 
 The revision recorded for the module(s) above does not
 match the one currently checked out in the respective
@@ -287,8 +338,8 @@ Please either update or checkout the recorded revision(s).
 Aborting.
 EOF
 
-       exit 1
-   fi
+        exit 1
+    fi
 }
 
 function get_release_version {
@@ -404,7 +455,7 @@ fi
 auto_version=`version HEAD`
 
 if [ "$auto_version" == "" ]; then
-    echo "Cannot determine version for HEAD did not return anything."
+    echo "Cannot determine version, checking HEAD did not return anything."
     exit 1
 fi
 
