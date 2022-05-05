@@ -1,3 +1,13 @@
+0.7.0-21 | 2022-05-05 12:07:42 -0700
+
+  * CI updates (Christian Kreibich, Corelight)
+
+    - add FreeBSD 14
+    - add Ubuntu 21.10
+    - remove OpenSUSE Leap 15.2 (EOL)
+    - add CentOS Stream 9
+    - remove Fedora 33 and CentOS 8
+
 0.7.0-15 | 2021-11-05 12:44:52 -0700
 
   * Add macOS Monterey and drop Catalina in CI (Christian Kreibich, Corelight)
