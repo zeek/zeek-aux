@@ -51,13 +51,13 @@ static const char copyright[] =
 /* Forwards */
 void gripe(const char *, const char *);
 void pgripe(const char *);
-u_short in_cksum(register u_short *, register int);
-int ones_complement_checksum(const void *, int, u_int32_t);
+uint16_t in_cksum(register uint16_t *, register int);
+int ones_complement_checksum(const void *, int, uint32_t);
 int tcp_checksum(const struct ip *, const struct tcphdr *, int);
-void send_pkt(int, struct in_addr, int, u_int32_t, struct in_addr,
-    int, u_int32_t, int, int, int, int, const char *);
-void terminate(int, const char *, int, u_int32_t, const char *,
-    int, u_int32_t, int, int, int, int, const char *);
+void send_pkt(int, struct in_addr, int, uint32_t, struct in_addr,
+    int, uint32_t, int, int, int, int, const char *);
+void terminate(int, const char *, int, uint32_t, const char *,
+    int, uint32_t, int, int, int, int, const char *);
 void usage(void);
 int main(int, char **);
 
@@ -79,12 +79,12 @@ void pgripe(const char *msg)
 /*
  * Checksum routine for Internet Protocol family headers (C Version)
  */
-u_short
-in_cksum(register u_short *addr, register int len)
+uint16_t
+in_cksum(register uint16_t *addr, register int len)
 {
 	register int nleft = len;
-	register u_short *w = addr;
-	register u_short answer;
+	register uint16_t *w = addr;
+	register uint16_t answer;
 	register int sum = 0;
 
 	/*
@@ -113,9 +113,9 @@ in_cksum(register u_short *addr, register int len)
 
 // - adapted from tcpdump
 // Returns the ones-complement checksum of a chunk of b short-aligned bytes.
-int ones_complement_checksum(const void *p, int b, u_int32_t sum)
+int ones_complement_checksum(const void *p, int b, uint32_t sum)
 {
-	const u_short *sp = (u_short *) p;	// better be aligned!
+	const uint16_t *sp = (uint16_t *) p;	// better be aligned!
 
 	b /= 2;	// convert to count of short's
 
@@ -132,7 +132,14 @@ int ones_complement_checksum(const void *p, int b, u_int32_t sum)
 int tcp_checksum(const struct ip *ip, const struct tcphdr *tp, int len)
 {
 	int tcp_len = tp->th_off * 4 + len;
-	u_int32_t sum, addl_pseudo;
+	uint32_t sum = 0;
+
+	// There's a weird bug in some versions of GCC where building with -O2 or
+	// higher will cause the initialization here to get optimized away, and
+	// lead to the compiler warning that this variable is used uninitialized.
+	// Using 'volatile' here short-circuits that optimization and fixes the
+	// warning.
+	volatile uint32_t addl_pseudo = 0;
 
 	if ( len % 2 == 1 )
 		// Add in pad byte.
@@ -151,8 +158,8 @@ int tcp_checksum(const struct ip *ip, const struct tcphdr *tp, int len)
 	return sum;
 }
 
-void send_pkt(int s, struct in_addr from, int from_port, u_int32_t from_seq,
-		struct in_addr to, int to_port, u_int32_t to_seq,
+void send_pkt(int s, struct in_addr from, int from_port, uint32_t from_seq,
+		struct in_addr to, int to_port, uint32_t to_seq,
 		int size, int redundancy, int delay, int flags,
 		const char *inject)
 {
@@ -187,7 +194,7 @@ void send_pkt(int s, struct in_addr from, int from_port, u_int32_t from_seq,
 	ip->ip_ttl = 255;
 	ip->ip_id = 0;
 
-	ip->ip_sum = in_cksum((u_short *) ip, sizeof(*ip));
+	ip->ip_sum = in_cksum((uint16_t *) ip, sizeof(*ip));
 
 	if (ip->ip_sum == 0)
 		ip->ip_sum = 0xffff;
@@ -236,8 +243,8 @@ void send_pkt(int s, struct in_addr from, int from_port, u_int32_t from_seq,
 	free(pkt);
 }
 
-void terminate(int s, const char *from_addr, int from_port, u_int32_t from_seq,
-		const char *to_addr, int to_port, u_int32_t to_seq,
+void terminate(int s, const char *from_addr, int from_port, uint32_t from_seq,
+		const char *to_addr, int to_port, uint32_t to_seq,
 		int num, int redundancy, int stride, int delay,
 		const char *inject)
 {
@@ -292,7 +299,7 @@ int main(int argc, char **argv)
 	const char *from_addr, *to_addr;
 	char inject[8192];
 	int from_port, to_port;
-	u_int32_t from_seq, to_seq;
+	uint32_t from_seq, to_seq;
 	int delay = 0.0;
 	int redundancy = 1;
 	int num = 1;
