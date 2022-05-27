@@ -132,7 +132,14 @@ int ones_complement_checksum(const void *p, int b, uint32_t sum)
 int tcp_checksum(const struct ip *ip, const struct tcphdr *tp, int len)
 {
 	int tcp_len = tp->th_off * 4 + len;
-	uint32_t sum, addl_pseudo;
+	uint32_t sum = 0;
+
+	// There's a weird bug in some versions of GCC where building with -O2 or
+	// higher will cause the initialization here to get optimized away, and
+	// lead to the compiler warning that this variable is used uninitialized.
+	// Using 'volatile' here short-circuits that optimization and fixes the
+	// warning.
+	volatile uint32_t addl_pseudo = 0;
 
 	if ( len % 2 == 1 )
 		// Add in pad byte.
