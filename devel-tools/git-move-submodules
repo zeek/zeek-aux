@@ -42,7 +42,7 @@ function update_module {
     if [ "$modules" != "" ]; then
         if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
             echo "+++ Commiting updates to $(basename $cwd)"
-            git commit -m 'Updating submodule(s). [nomail]' --only $modules
+            git commit -m 'Updating submodule(s) [nomail]' --only $modules
             paths_to_push+=($cwd)
         fi
     fi
