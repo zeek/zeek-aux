@@ -74,6 +74,12 @@ opensuse_tumbleweed_task:
     dockerfile: ci/opensuse-tumbleweed/Dockerfile
   << : *CI_TEMPLATE
 
+ubuntu22_task:
+  container:
+    # Ubuntu 22.04 EOL: April 2027
+    dockerfile: ci/ubuntu-22.04/Dockerfile
+  << : *CI_TEMPLATE
+
 ubuntu20_task:
   container:
     # Ubuntu 20.04 EOL: April 2025
