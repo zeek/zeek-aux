@@ -56,18 +56,6 @@ debian10_task:
     dockerfile: ci/debian-10/Dockerfile
   << : *CI_TEMPLATE
 
-debian9_task:
-  container:
-    # Debian 9 EOL: June 2022
-    dockerfile: ci/debian-9/Dockerfile
-  << : *CI_TEMPLATE
-
-debian9_32bit_task:
-  container:
-    # Debian 9 EOL: June 2022
-    dockerfile: ci/debian-9-32bit/Dockerfile
-  << : *CI_TEMPLATE
-
 opensuse_leap_15_3_task:
   container:
     # Opensuse Leap 15.3 EOL: TBD
