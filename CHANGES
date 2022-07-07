@@ -1,3 +1,16 @@
+0.7.0-29 | 2022-07-07 14:15:07 -0700
+
+  * CI updates (Christian Kreibich, Corelight)
+
+    - add FreeBSD 13.1 and fix broken link
+    - add Ubuntu 22.04
+    - add OpenSUSE Leap 15.4, OpenSUSE Tumbleweed
+    - remove Ubuntu 21.10, EOL 2022-07-14
+    - remove Debian 9, EOL 2022-06-30
+    - drop Fedora 34 (EOL 2022-06-07), add Fedora 36
+
+  * Make top-level Makefile consistent with other zeek subprojects (Tim Wojtulewicz, Corelight)
+
 0.7.0-21 | 2022-05-05 12:07:42 -0700
 
   * CI updates (Christian Kreibich, Corelight)
