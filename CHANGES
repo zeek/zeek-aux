@@ -1,3 +1,11 @@
+0.49-4 | 2022-10-06 14:14:07 -0700
+
+  * Update gen-ct-list.pl to support v3 format (Johanna Amann, Corelight)
+
+    Fixes #30
+
+  * Keep make dist from deleting all paths containing 'build' [skip ci] (Tim Wojtulewicz, Corelight)
+
 0.49 | 2022-06-01 09:36:08 -0700
 
   * Release 0.49.
