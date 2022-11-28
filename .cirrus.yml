@@ -23,7 +23,7 @@ fedora37_task:
 fedora36_task:
   container:
     # Fedora 36 EOL: Around May 2023
-    dockerfile: ci/fedora-34/Dockerfile
+    dockerfile: ci/fedora-36/Dockerfile
   << : *CI_TEMPLATE
 
 fedora35_task:
