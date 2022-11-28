@@ -142,10 +142,3 @@ freebsd12_task:
     image_family: freebsd-12-2
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
-
-freebsd11_task:
-  freebsd_instance:
-    # FreeBSD 11 EOL: September 30, 2021
-    image_family: freebsd-11-4
-  prepare_script: ./ci/freebsd/prepare.sh
-  << : *CI_TEMPLATE
