@@ -1,3 +1,13 @@
+0.7.0-35 | 2022-11-29 12:09:32 -0800
+
+  * CI updates (Christian Kreibich, Corelight)
+
+    - remove FreeBSD 11, EOL 
+    - actually run Fedora 36 ...
+    - add Fedora 37 (Christian Kreibich, Corelight)
+
+  * Add CodeQL workflow for GitHub code scanning (LGTM Migrator)
+
 0.7.0-29 | 2022-07-07 14:15:07 -0700
 
   * CI updates (Christian Kreibich, Corelight)

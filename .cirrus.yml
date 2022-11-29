@@ -14,10 +14,16 @@ ci_template: &CI_TEMPLATE
 # Linux EOL timelines: https://linuxlifecycle.com/
 # Fedora (~13 months): https://fedoraproject.org/wiki/Fedora_Release_Life_Cycle
 
+fedora37_task:
+  container:
+    # Fedora 37 EOL: Around Dec 2024
+    dockerfile: ci/fedora-37/Dockerfile
+  << : *CI_TEMPLATE
+
 fedora36_task:
   container:
     # Fedora 36 EOL: Around May 2023
-    dockerfile: ci/fedora-34/Dockerfile
+    dockerfile: ci/fedora-36/Dockerfile
   << : *CI_TEMPLATE
 
 fedora35_task:
@@ -134,12 +140,5 @@ freebsd12_task:
   freebsd_instance:
     # FreeBSD 12 EOL: June 30, 2024
     image_family: freebsd-12-2
-  prepare_script: ./ci/freebsd/prepare.sh
-  << : *CI_TEMPLATE
-
-freebsd11_task:
-  freebsd_instance:
-    # FreeBSD 11 EOL: September 30, 2021
-    image_family: freebsd-11-4
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
