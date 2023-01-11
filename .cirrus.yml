@@ -26,12 +26,6 @@ fedora36_task:
     dockerfile: ci/fedora-36/Dockerfile
   << : *CI_TEMPLATE
 
-fedora35_task:
-  container:
-    # Fedora 35 EOL: Around Dec 2022
-    dockerfile: ci/fedora-35/Dockerfile
-  << : *CI_TEMPLATE
-
 centos7_task:
   container:
     # CentOS 7 EOL: June 30, 2024
