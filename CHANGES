@@ -1,3 +1,9 @@
+0.7.0-38 | 2023-01-11 16:47:28 -0800
+
+  * CI: drop macOS Big Sur, add macOS Ventura (Christian Kreibich, Corelight)
+
+  * CI: remove Fedora 35, now EOL (Christian Kreibich, Corelight)
+
 0.7.0-35 | 2022-11-29 12:09:32 -0800
 
   * CI updates (Christian Kreibich, Corelight)
