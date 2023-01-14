@@ -259,13 +259,25 @@ function init_changes
         fi
     fi
 
-    echo >>$file_changes
+    # Subtle: if we're basing this CHANGES intro on a git tag, then we have a
+    # chicken-and-egg problem with correct numbering of the commit introducing
+    # CHANGES. It is itself going to be the _next_ commit. We could increment
+    # the git-derived version number arithmetically, but it's easier to just
+    # commit an empty CHANGES and then augment that below.
+    if [ -n "$git_version" ]; then
+        touch $file_changes
+        git add $file_changes
+        git commit -m "$init_commit_msg"
+        version=`version HEAD`
+        flags="--amend"
+    fi
+
     start_changes_entry $version $file_changes
     echo >>$file_changes
     echo "  * Starting $file_changes." >>$file_changes
 
     git add $file_changes
-    git commit -m "$init_commit_msg"
+    git commit $flags -m "$init_commit_msg"
 
     if [ -z "$git_version" ]; then
         git tag "v$version"
