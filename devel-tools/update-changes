@@ -67,7 +67,7 @@ function usage
     echo "    -p <rev>    Explicitly name the past revision to compare with."
     echo "    -R <tag>    Tag the current revision as a release. Update VERSION to use that."
     echo "    -B <tag>    Tag the current revision as a beta release. Update VERSION to use that."
-    echo "    -r          Tag the current revision as a release, using the next minor version as version tag."
+    echo "    -r          Tag the current revision as a release, using the next point version as version tag."
     echo "    -I          Initialize a new, initially empty CHANGES file."
     echo "    -c          Check whether CHANGES is up to date."
     echo "    -n          Do not amend the HEAD commit when feasible, create a new one."
@@ -356,13 +356,13 @@ EOF
 
 function get_release_version {
     # If $1 is provided, return that. Otherwise look for most recent release
-    # version in CHANGES and increase its minor version.
+    # version in CHANGES and increase its point version.
     test -n "$1" && echo "$1" && return
-    old=$(cat $file_changes | egrep '^[0-9]*\.[0-9]*\.[0-9](-dev\.[0-9]+)? ' | cut -d ' ' -f 1 | head -1)
+    old=$(cat $file_changes | egrep '^[0-9]+\.[0-9]+\.[0-9]+(-(dev\.)?[0-9]+)? ' | cut -d ' ' -f 1 | head -1)
     test -z "${old}" && echo "" && return
-    minor=$(echo ${old} | cut -d . -f 3)
-    minor=$((${minor} + 1))
-    new="$(echo ${old} | cut -d . -f 1-2).${minor}"
+    point=$(echo ${old} | cut -d - -f 1 | cut -d . -f 3)
+    point=$((${point} + 1))
+    new="$(echo ${old} | cut -d . -f 1-2).${point}"
     echo v${new}
 }
 
