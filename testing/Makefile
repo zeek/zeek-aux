@@ -1,18 +1,17 @@
-
-DIAG=diag.log
 BTEST=../../btest/btest
+DIAG=diag.log
 
 all: cleanup btest-verbose
 
 # Showing all tests.
 btest-verbose:
-	@$(BTEST) -j -f $(DIAG)
+	@test -x $(BTEST) && bt=$(BTEST) || bt=btest; $$bt -j -f $(DIAG)
 
 brief: cleanup btest-brief
 
 # Brief output showing only failed tests.
 btest-brief:
-	@$(BTEST) -j -b -f $(DIAG)
+	@test -x $(BTEST) && bt=$(BTEST) || bt=btest; $$bt -j -b -f $(DIAG)
 
 cleanup:
 	@rm -f $(DIAG)
