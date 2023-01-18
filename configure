@@ -29,7 +29,6 @@ Usage: $0 [OPTION]... [VAR=VALUE]...
     --with-openssl=PATH    path to OpenSSL install root
     --with-bind=PATH       path to BIND install root
     --with-pcap=PATH       path to libpcap install root
-    --with-flex=PATH       path to flex executable
 
   Influential Environment Variables (only on first invocation
   per build directory):
@@ -85,9 +84,6 @@ while [ $# -ne 0 ]; do
             ;;
         --with-pcap=*)
             append_cache_entry PCAP_ROOT_DIR PATH $optarg
-            ;;
-        --with-flex=*)
-            append_cache_entry FLEX_EXECUTABLE PATH $optarg
             ;;
         *)
             echo "Invalid option '$1'.  Try $0 --help to see available options."

@@ -7,7 +7,6 @@ include(cmake/CommonCMakeConfig.cmake)
 
 include(FindRequiredPackage)
 
-FindRequiredPackage(FLEX)
 FindRequiredPackage(PCAP)
 FindRequiredPackage(BIND)
 FindRequiredPackage(OpenSSL)
