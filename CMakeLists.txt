@@ -8,8 +8,6 @@ include(cmake/CommonCMakeConfig.cmake)
 include(FindRequiredPackage)
 
 FindRequiredPackage(PCAP)
-FindRequiredPackage(BIND)
-FindRequiredPackage(OpenSSL)
 
 if (MISSING_PREREQS)
     foreach (prereq ${MISSING_PREREQ_DESCS})
@@ -18,11 +16,7 @@ if (MISSING_PREREQS)
     message(FATAL_ERROR "Configuration aborted due to missing prerequisites")
 endif ()
 
-include_directories(BEFORE
-                    ${BIND_INCLUDE_DIR}
-                    ${PCAP_INCLUDE_DIR}
-                    ${OPENSSL_INCLUDE_DIR}
-                    )
+include_directories(BEFORE ${PCAP_INCLUDE_DIR})
 
 ########################################################################
 ## System Introspection
