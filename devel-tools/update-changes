@@ -60,6 +60,13 @@ git_author_email="git show -s --pretty=format:%aE"  # {rev} will be added.
 # The command line used to get a revision's message.
 git_msg=default_format_msg # {rev} will be added.
 
+# Portable access to ERE, see e.g. https://unix.stackexchange.com/a/131940
+if [ $(uname) == "Linux" ]; then
+    sed="sed -r"
+else
+    sed="sed -E"
+fi
+
 function usage
 {
     echo "usage: `basename $0` [options]"
@@ -87,7 +94,7 @@ function replace_version_in_script
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *VERSION *= *\\)\"\\([0-9.-]\\{1,\\}\\)\"#\1\"$version\"#g" >$file.tmp
+    cat $file | $sed "s#^([[:blank:]]*VERSION[[:blank:]]*=[[:blank:]]*)\"([0-9.-]+)\"#\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -100,7 +107,7 @@ function replace_version_in_rst
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9a-zA-Z.-]\\{1,\\}\\)#\1$version#g" >$file.tmp
+    cat $file | $sed "s#^([[:blank:]]*\.\.[[:blank:]]*\|version\|[[:blank:]]*replace::[[:blank:]]*)([0-9a-zA-Z.-]+)#\1$version#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -113,7 +120,7 @@ function replace_version_in_setup_py
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([[:blank:]]*version[[:blank:]]*=[[:blank:]]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
+    cat $file | $sed "s#^([[:blank:]]*version[[:blank:]]*=[[:blank:]]*)\"[0-9.-]+\"#\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -127,7 +134,7 @@ function replace_version_in_c_header
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([[:blank:]]*\\#define[[:blank:]]*[_A-Za-z0-9]*_VERSION[[:blank:]]*\\)\"[0-9.-]\\{1,\\}\"#\\1\"$version\"#g" >$file.tmp
+    cat $file | $sed "s#([[:blank:]]*\#define[[:blank:]]*[_A-Za-z0-9]*_VERSION[[:blank:]]*)\"[0-9.-]+\"#\1\"$version\"#g" >$file.tmp
     mv $file.tmp $file
     git add $file
 }
@@ -159,7 +166,7 @@ function default_format_msg {
 function version
 {
     rev=$1
-    $git_describe $rev --match "v*" 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g' | sed 's/-\([[:alnum:]]\{1,\}\)-\([0-9]\{1,\}\)$/-\1.\2/g'
+    $git_describe $rev --match "v*" 2>/dev/null | $sed 's/^v//g' | $sed 's/-g.*//g' | $sed 's/-([[:alnum:]]+)-([0-9]+)$/-\1.\2/g'
 }
 
 function start_changes_entry
@@ -223,7 +230,7 @@ function add_to_changes_entry
 
     echo -n "$msg" \
         | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
-        | sed 's/[[:blank:]]*$//' >>$dst
+        | $sed 's/[[:blank:]]*$//' >>$dst
 
     return 0;
 }
