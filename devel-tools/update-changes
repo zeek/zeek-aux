@@ -82,6 +82,14 @@ function usage
     exit 1
 }
 
+# Takes a version string as input and turns it into a Python-styled one. For
+# example, input "1.2-23" becomes "1.2.dev23". Other formats remain
+# unchanged. See: https://peps.python.org/pep-0440/#version-scheme
+function pythonic_version
+{
+    echo "$1" | $sed "s#-#.dev#"
+}
+
 ### Functions that can be used to replace version strings in other files.
 ### To use them, create a file $file_config and define a function
 ### "new_version_hook" in there that does whatever is necessary, like calling
@@ -113,14 +121,37 @@ function replace_version_in_rst
     git add $file
 }
 
-# Function that looks for lines of the form 'version="1.2-3"' in $1. It will
-# replace the version number with $2 and then git-adds the change.
+# Function that checks file $1 for lines starting with 'version =
+# "<version>"', where the version string can be of release form (e.g. "1.2.3")
+# or a development one, expressed as "1.2-23" or the Python-styled "1.2.dev23".
+# It will replace the version number with a Python-styled form of $2, then
+# git-add the change.
 function replace_version_in_setup_py
 {
     file=$1
-    version=$2
+    version=$(pythonic_version $2)
 
-    cat $file | $sed "s#^([[:blank:]]*version[[:blank:]]*=[[:blank:]]*)\"[0-9.-]+\"#\1\"$version\"#g" >$file.tmp
+    # The version string can be a sequence of digits and dots, optionally
+    # followed by either "-" or ".dev" plus at least one digit.
+    cat $file | $sed "s#^([[:blank:]]*version[[:blank:]]*=[[:blank:]]*)\"[0-9.]+((-|\.dev)[0-9]+)?\"#\1\"$version\"#g" >$file.tmp
+    cat $file.tmp >$file
+    rm -f $file.tmp
+    git add $file
+}
+
+# Function that checks file $1 for lines starting with '__version__ =
+# "<version>"', where the version string can be of release form (e.g. "1.2.3")
+# or a development one, expressed as "1.2-23" or the Python-styled "1.2.dev23".
+# It will replace the version number with a Python-styled form of $2, then
+# git-add the change.
+function replace_version_in_python_package
+{
+    file=$1
+    version=$(pythonic_version $2)
+
+    # The version string can be a sequence of digits and dots, optionally
+    # followed by either "-" or ".dev" plus at least one digit.
+    cat $file | $sed "s#^([[:blank:]]*__version__[[:blank:]]*=[[:blank:]]*)\"[0-9.]+((-|\.dev)[0-9]+)?\"#\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
