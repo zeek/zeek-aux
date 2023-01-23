@@ -1,3 +1,11 @@
+0.49-11 | 2023-01-23 09:12:11 +0000
+
+  * Remove the bro-cut symlink (Johanna Amann, Corelight)
+
+  * Add CodeQL workflow (Alvaro Muñoz)
+
+  * Added python script with LLDB utility commands for Zeek debugging (Tim Wojtulewicz, Corelight)
+
 0.49-4 | 2022-10-06 14:14:07 -0700
 
   * Update gen-ct-list.pl to support v3 format (Johanna Amann, Corelight)
