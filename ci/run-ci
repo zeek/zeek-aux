@@ -1,0 +1,61 @@
+#! /usr/bin/env bash
+
+set -o pipefail
+
+cmd=$1
+shift
+
+function usage {
+    cat <<EOF
+Usage: ${mame} <build|test>
+
+Stages
+
+    build                             Configure and build the code
+    test                              Run tests
+
+EOF
+
+    exit 1
+}
+
+function run_build {
+    mkdir build
+
+    (
+        cd build
+
+        if command -v cmake3 >/dev/null 2>&1; then
+            cmake3 ..
+        else
+            cmake ..
+        fi
+
+        make
+    )
+}
+
+function run_tests {
+    make test
+    local res=$?
+
+    (
+        cd testing && [[ -d .tmp ]] && tar -czf tmp.tar.gz .tmp
+    )
+
+    return $res
+}
+
+test -n "${cmd}" || usage
+
+case "${cmd}" in
+    build)
+        run_build $@
+        ;;
+    test)
+        run_tests $@
+        ;;
+    *)
+        usage
+        ;;
+esac

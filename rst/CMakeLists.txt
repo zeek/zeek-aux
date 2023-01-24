@@ -4,6 +4,4 @@ set(rst_SRCS
 
 add_executable(rst ${rst_SRCS})
 
-target_link_libraries(rst ${BIND_LIBRARY})
-
 AddAuxInstallTarget(rst)

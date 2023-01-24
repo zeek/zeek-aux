@@ -26,10 +26,7 @@ Usage: $0 [OPTION]... [VAR=VALUE]...
     --enable-debug         compile in debugging mode
 
   Required Packages in Non-Standard Locations:
-    --with-openssl=PATH    path to OpenSSL install root
-    --with-bind=PATH       path to BIND install root
     --with-pcap=PATH       path to libpcap install root
-    --with-flex=PATH       path to flex executable
 
   Influential Environment Variables (only on first invocation
   per build directory):
@@ -77,17 +74,8 @@ while [ $# -ne 0 ]; do
         --enable-debug)
             append_cache_entry ENABLE_DEBUG         BOOL   true
             ;;
-        --with-openssl=*)
-            append_cache_entry OPENSSL_ROOT_DIR PATH $optarg
-            ;;
-        --with-bind=*)
-            append_cache_entry BIND_ROOT_DIR PATH $optarg
-            ;;
         --with-pcap=*)
             append_cache_entry PCAP_ROOT_DIR PATH $optarg
-            ;;
-        --with-flex=*)
-            append_cache_entry FLEX_EXECUTABLE PATH $optarg
             ;;
         *)
             echo "Invalid option '$1'.  Try $0 --help to see available options."

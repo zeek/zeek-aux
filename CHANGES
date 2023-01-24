@@ -1,3 +1,21 @@
+0.49-20 | 2023-01-23 18:15:27 -0800
+
+  * Add Cirrus-based CI setup (Christian Kreibich, Corelight)
+
+  * Remove BIND and OpenSSL requirements, not actually used (Christian Kreibich, Corelight)
+
+  * Remove configure-time dependency on flex (Christian Kreibich, Corelight)
+
+  * Make testing Makefile fall back to in-PATH btest when not in-Zeek-tree (Christian Kreibich, Corelight)
+
+  * Remove empty setup.py and btest files, and unused .travis.yml (Christian Kreibich, Corelight)
+
+  * Add btests for update-changes (Christian Kreibich, Corelight)
+
+  * Fix to update-changes -r regex and wording (Christian Kreibich, Corelight)
+
+  * Minor update-changes bugfix when initializing CHANGES via git tags (Christian Kreibich, Corelight)
+
 0.49-11 | 2023-01-23 09:12:11 +0000
 
   * Remove the bro-cut symlink (Johanna Amann, Corelight)
