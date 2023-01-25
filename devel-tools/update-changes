@@ -60,6 +60,13 @@ git_author_email="git show -s --pretty=format:%aE"  # {rev} will be added.
 # The command line used to get a revision's message.
 git_msg=default_format_msg # {rev} will be added.
 
+# Portable access to ERE, see e.g. https://unix.stackexchange.com/a/131940
+if [ $(uname) == "Linux" ]; then
+    sed="sed -r"
+else
+    sed="sed -E"
+fi
+
 function usage
 {
     echo "usage: `basename $0` [options]"
@@ -75,6 +82,14 @@ function usage
     exit 1
 }
 
+# Takes a version string as input and turns it into a Python-styled one. For
+# example, input "1.2-23" becomes "1.2.dev23". Other formats remain
+# unchanged. See: https://peps.python.org/pep-0440/#version-scheme
+function pythonic_version
+{
+    echo "$1" | $sed "s#-#.dev#"
+}
+
 ### Functions that can be used to replace version strings in other files.
 ### To use them, create a file $file_config and define a function
 ### "new_version_hook" in there that does whatever is necessary, like calling
@@ -87,7 +102,7 @@ function replace_version_in_script
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *VERSION *= *\\)\"\\([0-9.-]\\{1,\\}\\)\"#\1\"$version\"#g" >$file.tmp
+    cat $file | $sed "s#^([[:blank:]]*VERSION[[:blank:]]*=[[:blank:]]*)\"([0-9.-]+)\"#\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -100,20 +115,43 @@ function replace_version_in_rst
     file=$1
     version=$2
 
-    cat $file | sed "s#^\\( *\.\. *|version| *replace:: *\\)\\([0-9a-zA-Z.-]\\{1,\\}\\)#\1$version#g" >$file.tmp
+    cat $file | $sed "s#^([[:blank:]]*\.\.[[:blank:]]*\|version\|[[:blank:]]*replace::[[:blank:]]*)([0-9a-zA-Z.-]+)#\1$version#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
 }
 
-# Function that looks for lines of the form 'version="1.2-3"' in $1. It will
-# replace the version number with $2 and then git-adds the change.
+# Function that checks file $1 for lines starting with 'version =
+# "<version>"', where the version string can be of release form (e.g. "1.2.3")
+# or a development one, expressed as "1.2-23" or the Python-styled "1.2.dev23".
+# It will replace the version number with a Python-styled form of $2, then
+# git-add the change.
 function replace_version_in_setup_py
 {
     file=$1
-    version=$2
+    version=$(pythonic_version $2)
 
-    cat $file | sed "s#\\([[:blank:]]*version[[:blank:]]*=[[:blank:]]*\\)\"\\([0-9.-]\\{1,\}\\)\"#\\1\"$version\"#g" >$file.tmp
+    # The version string can be a sequence of digits and dots, optionally
+    # followed by either "-" or ".dev" plus at least one digit.
+    cat $file | $sed "s#^([[:blank:]]*version[[:blank:]]*=[[:blank:]]*)\"[0-9.]+((-|\.dev)[0-9]+)?\"#\1\"$version\"#g" >$file.tmp
+    cat $file.tmp >$file
+    rm -f $file.tmp
+    git add $file
+}
+
+# Function that checks file $1 for lines starting with '__version__ =
+# "<version>"', where the version string can be of release form (e.g. "1.2.3")
+# or a development one, expressed as "1.2-23" or the Python-styled "1.2.dev23".
+# It will replace the version number with a Python-styled form of $2, then
+# git-add the change.
+function replace_version_in_python_package
+{
+    file=$1
+    version=$(pythonic_version $2)
+
+    # The version string can be a sequence of digits and dots, optionally
+    # followed by either "-" or ".dev" plus at least one digit.
+    cat $file | $sed "s#^([[:blank:]]*__version__[[:blank:]]*=[[:blank:]]*)\"[0-9.]+((-|\.dev)[0-9]+)?\"#\1\"$version\"#g" >$file.tmp
     cat $file.tmp >$file
     rm -f $file.tmp
     git add $file
@@ -127,7 +165,7 @@ function replace_version_in_c_header
     file=$1
     version=$2
 
-    cat $file | sed "s#\\([[:blank:]]*\\#define[[:blank:]]*[_A-Za-z0-9]*_VERSION[[:blank:]]*\\)\"[0-9.-]\\{1,\\}\"#\\1\"$version\"#g" >$file.tmp
+    cat $file | $sed "s#([[:blank:]]*\#define[[:blank:]]*[_A-Za-z0-9]*_VERSION[[:blank:]]*)\"[0-9.-]+\"#\1\"$version\"#g" >$file.tmp
     mv $file.tmp $file
     git add $file
 }
@@ -159,7 +197,7 @@ function default_format_msg {
 function version
 {
     rev=$1
-    $git_describe $rev --match "v*" 2>/dev/null | sed 's/^v//g' | sed 's/-g.*//g' | sed 's/-\([[:alnum:]]\{1,\}\)-\([0-9]\{1,\}\)$/-\1.\2/g'
+    $git_describe $rev --match "v*" 2>/dev/null | $sed 's/^v//g' | $sed 's/-g.*//g' | $sed 's/-([[:alnum:]]+)-([0-9]+)$/-\1.\2/g'
 }
 
 function start_changes_entry
@@ -223,7 +261,7 @@ function add_to_changes_entry
 
     echo -n "$msg" \
         | awk -v bullet="$bullet" -v author="$author" 'NR==1{printf "%s %s%s\n", bullet, $0, author; next }{printf "    %s\n", $0}' \
-        | sed 's/[[:blank:]]*$//' >>$dst
+        | $sed 's/[[:blank:]]*$//' >>$dst
 
     return 0;
 }
