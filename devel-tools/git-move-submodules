@@ -22,7 +22,7 @@ function update_module {
     # Note we don't use --recursive here, as we want to do a depth-first
     # search so that we update childrens first. Update this list of submodules
     # to include/exclude what should be updated.
-    for i in $(git submodule foreach -q 'echo $path' | grep -v '3rdparty\|highwayhash\|libkqueue\|rapidjson'); do
+    for i in $(git submodule foreach -q 'echo $path' | grep -v '3rdparty\|highwayhash\|libkqueue\|rapidjson\|caf'); do
         # See if repository has a branch of the given name. Otherwise leave it alone.
         (cd $i && git show-ref --verify --quiet refs/heads/$branch) || continue
 
