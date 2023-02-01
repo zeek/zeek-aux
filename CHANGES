@@ -1,3 +1,7 @@
+0.49-27 | 2023-02-01 14:40:19 -0700
+
+  * git-move-submodules: Skip CAF when updating submodules (Tim Wojtulewicz, Corelight)
+
 0.49-24 | 2023-01-25 12:46:40 -0800
 
   * Btests for update-change's version replacement logic (Christian Kreibich, Corelight)
