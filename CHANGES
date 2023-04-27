@@ -1,3 +1,9 @@
+0.50-5 | 2023-04-27 15:13:40 +0200
+
+  * Add missing -m and -M flags to zeek-cut.1 manpage (Christian Kreibich, Corelight)
+
+    Co-authored-by: Bill Stearns <bill@activecountermeasures.com>
+
 0.50-3 | 2023-02-17 09:45:40 -0700
 
   * Remove unsupported `--with-caf` configure option. (Benjamin Bannier, Corelight)
