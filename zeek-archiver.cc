@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
+#include <algorithm>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -23,7 +24,7 @@
 #include <vector>
 #include <set>
 
-constexpr auto ZEEK_ARCHIVER_VERSION = "v0.7.0-38";
+constexpr auto ZEEK_ARCHIVER_VERSION = "v0.7.0-40";
 
 struct Options {
 	std::string src_dir;
@@ -48,6 +49,7 @@ struct LogFile {
 	struct tm open;
 	struct tm close;
 	std::string ext;
+	std::string suffix;
 
 	std::string DestDir() const
 		{
@@ -78,7 +80,11 @@ struct LogFile {
 
 		std::string close = buf;
 
-		return name + "." + start + "-" + close + ext;
+		std::string r = name + "." + start + "-" + close;
+		if ( ! suffix.empty() )
+			r += "-" + suffix;
+
+		return r + ext;
 		}
 };
 
@@ -211,6 +217,17 @@ split_string(std::string_view input, std::string_view delim)
 
 	rval.emplace_back(input.substr(pos));
 	return rval;
+	}
+
+static std::string strip_string(std::string s)
+	{
+	auto notspace = [](unsigned char c)
+	{
+		return ! std::isspace(c);
+	};
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), notspace));
+	s.erase(std::find_if(s.rbegin(), s.rend(), notspace).base(), s.end());
+	return s;
 	}
 
 static void consume_option_value(const std::string& flag, std::string arg_value)
@@ -599,11 +616,25 @@ static int archive_logs()
 			continue;
 			}
 
-		// Default log file format looks like this (4 parts delimited by "__"):
+		// Default log file format either has 4 parts delimited by "__",
+		// as follows:
+		//
 		//     test__2020-07-16-09-43-10__2020-07-16-09-43-10__.log
+		//
+		// Or, 5 parts delimited by "__" where the part before the extension
+		// is a generic comma separated key=value construct:
+		//
+		//     test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix=logger-1,pid=4711__.log
+		//
+		// The comma character is reasonable to work with on a shell and assumed
+		// to not be of importance for metadata values. If this seems over-engineered,
+		// maybe, but adding a plain positional parameter with an implied meaning also
+		// adds a required parameter for any future extensions and we currently don't
+		// have a side-channel to propagate additional information.
+		//
 		auto parts = split_string(dp->d_name, options.delimiter);
 
-		if ( parts.size() != 4 )
+		if ( parts.size() != 4 && parts.size() != 5)
 			{
 			debug("Skipping archival of non-log: %s", dp->d_name);
 			continue;
@@ -635,7 +666,54 @@ static int archive_logs()
 		if ( res != parts[2].data() + parts[2].size() )
 			debug("Possible log with timestamp format mismatch: %s", dp->d_name);
 
-		lf.ext = parts[3];
+		if ( parts.size() == 4 )
+			lf.ext = parts[3];
+		else
+			{
+			lf.ext = parts[4];
+
+			bool metadata_error = false;
+
+			// split_string() returns a single entry for
+			// an empty string, avoid that scenario.
+			std::vector<std::string> metadata_parts;
+			if ( ! parts[3].empty() )
+				metadata_parts = split_string(parts[3], ",");
+
+			for (const auto& entry : metadata_parts)
+				{
+				auto key_value = split_string(entry, "=");
+				if ( key_value.size() != 2 )
+					{
+					metadata_error = true;
+					break;
+					}
+
+				auto key = strip_string(key_value[0]);
+				auto value = strip_string(key_value[1]);
+				if ( key.empty() || value.empty() )
+					{
+					metadata_error = true;
+					break;
+					}
+
+				// Only log_suffix is understood as metadata.
+				if ( key == "log_suffix" )
+					{
+					debug("Using log_suffix '%s'", value.data());
+					lf.suffix = value;
+					}
+				else
+					debug("Ignoring unknown metadata entry %s in %s", key.data(), dp->d_name);
+
+				}
+
+			if ( metadata_error )
+				{
+				debug("Skipping archival of log with bad metadata format: %s", dp->d_name);
+				continue;
+				}
+			}
 
 		log_files.emplace_back(std::move(lf));
 		}

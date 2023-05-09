@@ -1,3 +1,20 @@
+0.7.0-40 | 2023-05-09 12:59:42 +0200
+
+  * Add support for parsing log_suffix metadata from filenames (Arne Welzel, Corelight)
+
+    This is similar to the approach that we took for ZeekControl, tagging a
+    log_suffix to the archived file. With zeek-archiver, however, we can't
+    inject an environment variable that denotes the logger - there's only a
+    single zeek-archiver instance. Instead, the logger will encode that
+    information into filename:
+
+        test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix=logger-1__.log
+
+    Outside of somehow adding a side-channel, the filename is all we have to
+    propagate this information. I didn't like the idea of having the position
+    imply the meaning, so key=value it became. It currently only recognizes
+    the log_suffix metadata.
+
 0.7.0-38 | 2023-01-11 16:47:28 -0800
 
   * CI: drop macOS Big Sur, add macOS Ventura (Christian Kreibich, Corelight)

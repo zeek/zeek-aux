@@ -156,6 +156,93 @@ if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
 fi
 
 
+### Test Case
+new_test "Metadata part contains log_suffix=logger-test to be used as suffix"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix=logger-test__.log
+log_out=test.09\:43\:10-09\:43\:10-logger-test.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Metadata contains log_suffix=logger-test and pid=4711"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix=logger-test,pid=4711__.log
+log_out=test.09\:43\:10-09\:43\:10-logger-test.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Invalid metadata format causes skipping of archival (1)"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix,invalid=4711__.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ ! -f "$(queue_dir)/${log_in}" ]]; then
+    echo "-- Test ${testnum} failed - ${log_in} was removed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Invalid metadata format causes skipping of archival (2)"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10__log_suffix=logger-test,__.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ ! -f "$(queue_dir)/${log_in}" ]]; then
+    echo "-- Test ${testnum} failed - ${log_in} was removed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Invalid metadata format causes skipping of archival (3)"
+
+log_in="test__2020-07-16-09-43-10__2020-07-16-09-43-10__ __.log"
+
+echo hello > "$(queue_dir)/${log_in}"
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ ! -f "$(queue_dir)/${log_in}" ]]; then
+    echo "-- Test ${testnum} failed - ${log_in} was removed"
+    exit_code=1
+fi
+
+
+### Test Case
+new_test "Empty metadata is acceptable"
+
+log_in=test__2020-07-16-09-43-10__2020-07-16-09-43-10____.log
+log_out=test.09\:43\:10-09\:43\:10.log
+
+echo hello > $(queue_dir)/${log_in}
+${prog} -1 -v $(queue_dir) $(archive_dir)
+
+if [[ "$(gunzip <$(archive_date_dir)/${log_out}.gz)" != "hello" ]]; then
+    echo "-- Test ${testnum} failed"
+    exit_code=1
+fi
+
+
 ### Finalize
 if [[ ${exit_code} -eq 0 ]]; then
     echo "--- All ${testnum} tests passed ---"
