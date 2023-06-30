@@ -1,3 +1,16 @@
+0.50-13 | 2023-06-30 16:08:02 -0700
+
+  * CI: add diffutils on CentOS Stream images (Christian Kreibich, Corelight)
+
+  * Silence a warning in GNU grep 3.8+ about "\ " not needing the "\" (Christian Kreibich, Corelight)
+
+    See https://lists.gnu.org/archive/html/info-gnu/2022-09/msg00001.html
+
+  * Switch uses of "egrep" to "grep -E" (Christian Kreibich, Corelight)
+
+    GNU grep 3.8 has started to complain about this. See
+    https://lists.gnu.org/archive/html/info-gnu/2022-09/msg00001.html
+
 0.50-5 | 2023-04-27 15:13:40 +0200
 
   * Add missing -m and -M flags to zeek-cut.1 manpage (Christian Kreibich, Corelight)

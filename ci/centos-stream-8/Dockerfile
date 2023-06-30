@@ -6,6 +6,7 @@ RUN dnf config-manager --set-enabled powertools
 RUN dnf -y update && dnf -y install \
     git \
     cmake3 \
+    diffutils \
     gcc-c++ \
     libpcap-devel \
     make \
