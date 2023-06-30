@@ -246,7 +246,7 @@ function add_to_changes_entry
         return 1;
     fi
 
-   if echo $msg | grep -q '^\(.*:\ *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
+   if echo $msg | grep -q '^\(.*: *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
        # Ignore merge commits.
        return 1;
    fi
