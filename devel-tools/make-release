@@ -30,7 +30,7 @@ function release()
             tgz="`pwd`/$tgz"
         fi
 
-        version=`git tag --contains HEAD | egrep '^(release|beta)$'`
+        version=`git tag --contains HEAD | grep -E '^(release|beta)$'`
 
         if [ "$version" == "" ]; then
             version="git"

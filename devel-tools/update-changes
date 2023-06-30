@@ -324,7 +324,7 @@ function init_changes
 
 function get_last_rev
 {
-    version=`cat $file_changes | egrep '^[0-9a-zA-Z.-]+  *\|' | head -1 | awk '{print $1}'`
+    version=`cat $file_changes | grep -E '^[0-9a-zA-Z.-]+  *\|' | head -1 | awk '{print $1}'`
 
     if echo $version | grep -q -- '-'; then
         # version is now e.g. 1.0.4-14 -- find the revision with that number.
@@ -396,7 +396,7 @@ function get_release_version {
     # If $1 is provided, return that. Otherwise look for most recent release
     # version in CHANGES and increase its point version.
     test -n "$1" && echo "$1" && return
-    old=$(cat $file_changes | egrep '^[0-9]+\.[0-9]+\.[0-9]+(-(dev\.)?[0-9]+)? ' | cut -d ' ' -f 1 | head -1)
+    old=$(cat $file_changes | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-(dev\.)?[0-9]+)? ' | cut -d ' ' -f 1 | head -1)
     test -z "${old}" && echo "" && return
     point=$(echo ${old} | cut -d - -f 1 | cut -d . -f 3)
     point=$((${point} + 1))
@@ -476,7 +476,7 @@ else
 fi
 
 if [ "$release" != "" ]; then
-    if ! echo $release | egrep -q '^v[0-9]+\.[0-9]+'; then
+    if ! echo $release | grep -E -q '^v[0-9]+\.[0-9]+'; then
         echo "Release tag must be of the form vX.Y[.Z]"
         exit 1
     fi
@@ -485,7 +485,7 @@ if [ "$release" != "" ]; then
 fi
 
 if [ "$beta" != "" ]; then
-    if ! echo $beta | egrep -q '^v[0-9]+\.[0-9]+(\.[0-9]+)?-(beta|rc)'; then
+    if ! echo $beta | grep -E -q '^v[0-9]+\.[0-9]+(\.[0-9]+)?-(beta|rc)'; then
         echo "Release tag must be of the form vX.Y[.Z]-(beta|rc)*"
         exit 1
     fi
