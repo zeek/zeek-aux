@@ -14,6 +14,7 @@ RUN dnf -y install \
 
 RUN dnf -y update && dnf -y install \
     cmake3 \
+    diffutils \
     gcc-c++ \
     git \
     libpcap-devel \
