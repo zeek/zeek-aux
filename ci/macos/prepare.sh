@@ -6,7 +6,8 @@ set -e
 set -x
 
 brew update
-brew upgrade cmake openssl@1.1
+brew upgrade cmake
+brew install openssl@1.1
 
 sudo python3 -m pip install btest
 
