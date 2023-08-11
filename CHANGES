@@ -1,3 +1,9 @@
+0.50-18 | 2023-08-11 11:49:38 -0700
+
+  * CI: Fix installation of openssl on macOS builds (Tim Wojtulewicz, Corelight)
+
+  * Remove usage of cmake/FindRequiredPackage (Tim Wojtulewicz, Corelight)
+
 0.50-13 | 2023-06-30 16:08:02 -0700
 
   * CI: add diffutils on CentOS Stream images (Christian Kreibich, Corelight)
