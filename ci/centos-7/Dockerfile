@@ -1,5 +1,9 @@
 FROM centos:7
 
+# A version field to invalidate Cirrus's build cache when needed, as suggested in
+# https://github.com/cirruslabs/cirrus-ci-docs/issues/544#issuecomment-566066822
+ENV DOCKERFILE_VERSION 20230823
+
 RUN yum -y install \
     epel-release \
   && yum clean all && rm -rf /var/cache/yum

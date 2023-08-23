@@ -1,5 +1,9 @@
 FROM opensuse/leap:15.4
 
+# A version field to invalidate Cirrus's build cache when needed, as suggested in
+# https://github.com/cirruslabs/cirrus-ci-docs/issues/544#issuecomment-566066822
+ENV DOCKERFILE_VERSION 20230823
+
 RUN zypper refresh \
  && zypper in -y \
     cmake \
