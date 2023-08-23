@@ -67,6 +67,7 @@ opensuse_tumbleweed_task:
   container:
     # Opensuse Tumbleweed has no EOL
     dockerfile: ci/opensuse-tumbleweed/Dockerfile
+  prepare_script: ./ci/opensuse-tumbleweed/prepare.sh
   << : *CI_TEMPLATE
 
 ubuntu22_task:

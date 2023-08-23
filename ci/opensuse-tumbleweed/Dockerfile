@@ -2,6 +2,7 @@ FROM opensuse/tumbleweed
 
 RUN zypper refresh \
  && zypper in -y \
+    awk \
     cmake \
     diffutils \
     gcc-c++ \
@@ -15,4 +16,4 @@ RUN zypper refresh \
     which \
   && rm -rf /var/cache/zypp
 
-RUN pip install btest
+RUN pip3 install --break-system-packages btest
