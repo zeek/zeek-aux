@@ -9,11 +9,14 @@ RUN zypper refresh \
     gzip \
     libpcap-devel \
     make \
-    python3 \
-    python3-pip \
+    python39 \
+    python39-devel \
+    python39-pip \
     tar \
     which \
   && rm -rf /var/cache/zypp
+
+RUN update-alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.9 100
 
 RUN pip3 install btest
 

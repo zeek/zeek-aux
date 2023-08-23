@@ -10,9 +10,9 @@ RUN dnf -y update && dnf -y install \
     gcc-c++ \
     libpcap-devel \
     make \
-    python3 \
-    python3-devel \
-    python3-pip\
+    python38 \
+    python38-devel \
+    python38-pip \
   && dnf clean all && rm -rf /var/cache/dnf
 
 RUN pip3 install btest
