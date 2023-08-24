@@ -1,3 +1,17 @@
+0.50-24 | 2023-08-24 15:28:11 -0700
+
+  * CI: Add variable to Dockerfiles to force rebuilds (Tim Wojtulewicz, Corelight)
+
+    This makes the Dockerfiles consistent with other repositories that do the same.
+
+  * CI: make opensuse-tumbleweed a rolling canary build (Tim Wojtulewicz, Corelight)
+
+  * CI: Install python3.8 on older distros (Tim Wojtulewicz, Corelight)
+
+  * CI: add fedora-38, update to freebsd 13.2 (Tim Wojtulewicz, Corelight)
+
+  * CI: Remove EOL ubuntu18, fedora36, and opensuse-leap-15.3 builds (Tim Wojtulewicz, Corelight)
+
 0.50-18 | 2023-08-11 11:49:38 -0700
 
   * CI: Fix installation of openssl on macOS builds (Tim Wojtulewicz, Corelight)

@@ -1,7 +1,12 @@
 FROM opensuse/tumbleweed
 
+# A version field to invalidate Cirrus's build cache when needed, as suggested in
+# https://github.com/cirruslabs/cirrus-ci-docs/issues/544#issuecomment-566066822
+ENV DOCKERFILE_VERSION 20230823
+
 RUN zypper refresh \
  && zypper in -y \
+    awk \
     cmake \
     diffutils \
     gcc-c++ \
@@ -15,4 +20,4 @@ RUN zypper refresh \
     which \
   && rm -rf /var/cache/zypp
 
-RUN pip install btest
+RUN pip3 install --break-system-packages btest
