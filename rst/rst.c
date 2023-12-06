@@ -374,7 +374,8 @@ int main(int argc, char **argv)
 	if ( s < 0 )
 		pgripe("couldn't create raw socket");
 
-	setuid(getuid());
+	if ( setuid(getuid()) )
+		pgripe("couldn't lower privileges");
 
 	if ( setsockopt(s, 0, IP_HDRINCL, (char *) &on, sizeof(on)) < 0 )
 		pgripe("can't turn on IP_HDRINCL");
