@@ -1,3 +1,14 @@
+0.7.0-42 | 2023-12-14 19:57:51 -0800
+
+  * CI updates (Christian Kreibich, Corelight)
+
+    - Remove Fedora 35-37, add 38 & 39
+    - Remove Ubuntu 18
+    - Remove openSUSE Leap 15.3 and 15.4 (about to EOL), add 15.5
+    - Remove macOS Monterey, add Sonoma
+    - Add Debian 12
+    - Take FreeBSD 14 out of test-only mode, bump 13 to 13.2, drop 12
+
 0.7.0-40 | 2023-05-09 12:59:42 +0200
 
   * Add support for parsing log_suffix metadata from filenames (Arne Welzel, Corelight)

@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM debian:12
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles"
 
