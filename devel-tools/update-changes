@@ -606,6 +606,11 @@ fi
 
 echo
 echo Type Enter to edit new $file_changes, or CTRL-C to abort without any modifications.
+if ! command -v gawk; then
+    # Report missing gawk to the user. Won't have created GH- entries when missing.
+    echo "[Warning] gawk was not found, did not scan for GitHub issues"
+fi
+
 read
 
 # Run editor.
