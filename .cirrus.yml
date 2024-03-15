@@ -27,12 +27,6 @@ fedora38_task:
     dockerfile: ci/fedora-38/Dockerfile
   << : *CI_TEMPLATE
 
-centos7_task:
-  container:
-    # CentOS 7 EOL: June 30, 2024
-    dockerfile: ci/centos-7/Dockerfile
-  << : *CI_TEMPLATE
-
 centosstream9_task:
   container:
     # Stream 9 EOL: Around Dec 2027
@@ -55,12 +49,6 @@ debian11_task:
   container:
     # Debian 11 EOL: June 2026
     dockerfile: ci/debian-11/Dockerfile
-  << : *CI_TEMPLATE
-
-debian10_task:
-  container:
-    # Debian 10 EOL: June 2024
-    dockerfile: ci/debian-10/Dockerfile
   << : *CI_TEMPLATE
 
 opensuse_leap_15_5_task:
