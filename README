@@ -32,6 +32,12 @@ is monitoring. This program just reads a pcap
 (tcpdump) file and writes out the src MAC, dst MAC, src IP, dst
 IP for each packet seen in the file.
 
+zeek-archiver
+=============
+
+This is a modern replacement for Zeek's historical log-archival process. For
+details, please refer to its dedicated README in the zeek-archiver subdirectory.
+
 zeek-cut
 ========
 

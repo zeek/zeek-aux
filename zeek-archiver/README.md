@@ -4,7 +4,7 @@ A Zeek log archival service.
 
 This tool is derived from
 [bro-atomic-rotate](https://github.com/ncsa/bro-atomic-rotate)
-and intends to solve the same failings of Zeek's historical log-archival
+and intends to solve two failings of Zeek's historical log-archival
 process: robustness and atomicity.  It's rewritten with two further
 requirements in mind:
 
@@ -24,15 +24,7 @@ requirements in mind:
   either install that separately or disable/change the compression
   mechanism via the `--compression=` flag.
 
-## Build
-
-Just run `make`, which is short for:
-
-```
-$ mkdir -p build && cd build && cmake .. && make
-```
-
-## Install
+## Installation
 
 Since `zeek-archiver` is made for use with the Zeek Supervisor Framework,
 you should first install Zeek and configure your Supervised Cluster, based
