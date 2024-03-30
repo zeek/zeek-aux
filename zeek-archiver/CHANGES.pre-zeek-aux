@@ -1,3 +1,6 @@
+This file contains the CHANGES history of zeek-archiver from prior to its merge
+into this repo. Newer updates end up in the toplevel CHANGES file.
+
 0.7.0-42 | 2023-12-14 19:57:51 -0800
 
   * CI updates (Christian Kreibich, Corelight)
