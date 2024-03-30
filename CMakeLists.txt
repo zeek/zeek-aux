@@ -81,7 +81,6 @@ message(
     "\nCFLAGS:            ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${BuildType}}"
     "\nCXX:               ${CMAKE_CXX_COMPILER}"
     "\nCXXFLAGS:          ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BuildType}}"
-    "\nCPP:               ${CMAKE_CXX_COMPILER}"
     "\n"
     "\n================================================================\n"
 )
