@@ -1,3 +1,9 @@
+0.50-118 | 2024-04-19 11:37:15 -0700
+
+  * Migrate github.com/zeek/zeek-archiver into this repo (Christian Kreibich, Corelight)
+
+  See commit a84802bd for the git-level steps taken to preserve commit history.
+
 0.50-29 | 2023-12-14 19:58:52 -0800
 
   * CI updates (Christian Kreibich, Corelight)

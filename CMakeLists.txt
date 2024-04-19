@@ -49,6 +49,7 @@ if ( NOT ZEEK_MAN_INSTALL_PATH )
 endif ()
 
 add_subdirectory(adtrace)
+add_subdirectory(zeek-archiver)
 add_subdirectory(zeek-cut)
 add_subdirectory(rst)
 
@@ -71,6 +72,8 @@ endif ()
 message(
     "\n==================|  Zeek-Aux Build Summary  |=================="
     "\n"
+    "\nBuild type:        ${CMAKE_BUILD_TYPE}"
+    "\nBuild dir:         ${CMAKE_BINARY_DIR}"
     "\nInstall prefix:    ${CMAKE_INSTALL_PREFIX}"
     "\nDebug mode:        ${ENABLE_DEBUG}"
     "\n"
@@ -78,7 +81,6 @@ message(
     "\nCFLAGS:            ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${BuildType}}"
     "\nCXX:               ${CMAKE_CXX_COMPILER}"
     "\nCXXFLAGS:          ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BuildType}}"
-    "\nCPP:               ${CMAKE_CXX_COMPILER}"
     "\n"
     "\n================================================================\n"
 )
