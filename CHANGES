@@ -1,3 +1,7 @@
+0.50-120 | 2024-04-22 12:53:43 -0700
+
+  * Always install zeek-archiver, not optionally like adtrace and rst (Christian Kreibich, Corelight)
+
 0.50-118 | 2024-04-19 11:37:15 -0700
 
   * Migrate github.com/zeek/zeek-archiver into this repo (Christian Kreibich, Corelight)

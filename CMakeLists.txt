@@ -60,8 +60,6 @@ if (NOT (BINARY_PACKAGING_MODE OR
     add_dependencies(install-aux ${AUX_TARGETS})
 endif ()
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/zeek-cut/zeek-cut DESTINATION bin)
-
 ########################################################################
 ## Build Summary
 
