@@ -1,3 +1,7 @@
+0.50-122 | 2024-05-16 20:56:41 -0700
+
+  * CI: Add Ubuntu 24.04 build (Tim Wojtulewicz, Corelight)
+
 0.50-120 | 2024-04-22 12:53:43 -0700
 
   * Always install zeek-archiver, not optionally like adtrace and rst (Christian Kreibich, Corelight)
