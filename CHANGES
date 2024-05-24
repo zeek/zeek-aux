@@ -1,3 +1,7 @@
+0.50-124 | 2024-05-24 13:08:22 -0700
+
+  * Add github-manage, a helper script for bulk repo admin tasks (Christian Kreibich, Corelight)
+
 0.50-122 | 2024-05-16 20:56:41 -0700
 
   * CI: Add Ubuntu 24.04 build (Tim Wojtulewicz, Corelight)
