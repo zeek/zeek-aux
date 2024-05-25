@@ -33,12 +33,6 @@ centosstream9_task:
     dockerfile: ci/centos-stream-9/Dockerfile
   << : *CI_TEMPLATE
 
-centosstream8_task:
-  container:
-    # Stream 8 EOL: May 31, 2024
-    dockerfile: ci/centos-stream-8/Dockerfile
-  << : *CI_TEMPLATE
-
 debian12_task:
   container:
     # Debian 12 EOL: TBD
