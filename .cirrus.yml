@@ -57,6 +57,12 @@ opensuse_leap_15_5_task:
     dockerfile: ci/opensuse-leap-15.5/Dockerfile
   << : *CI_TEMPLATE
 
+opensuse_leap_15_6_task:
+  container:
+    # Opensuse Leap 15.6 EOL: ~Dec 2025
+    dockerfile: ci/opensuse-leap-15.6/Dockerfile
+  << : *CI_TEMPLATE
+
 opensuse_tumbleweed_task:
   container:
     # Opensuse Tumbleweed has no EOL
