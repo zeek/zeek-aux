@@ -246,8 +246,8 @@ function add_to_changes_entry
         return 1;
     fi
 
-   if echo $msg | grep -q '^\(.*: *\)\{0,1\}Merge remote-tracking branch'; then # allow GH-XXX prefix
-       # Ignore merge commits.
+    if [[ $(git show --no-patch --format='%P' "$rev" | wc -w) -gt 1 ]]; then
+       # Ignore merge commits, i.e., commits with more than one parent.
        return 1;
    fi
 
