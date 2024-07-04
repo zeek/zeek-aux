@@ -1,3 +1,13 @@
+0.50-134 | 2024-07-04 16:12:58 +0200
+
+  * CI: drop macos versions unsupported by Cirrus (Benjamin Bannier, Corelight)
+
+  * CI: fix installation of external packages on macos (Benjamin Bannier, Corelight)
+
+    Under macos the Python prefix is marked "externally managed" so `pip`
+    refuses to install additional packages into it. Switch the macos CI jobs
+    to use a venv instead.
+
 0.50-131 | 2024-07-04 10:01:59 +0200
 
   * Ignore merges of local branches in `update-changes` (Benjamin Bannier, Corelight)

@@ -82,17 +82,10 @@ ubuntu20_task:
     dockerfile: ci/ubuntu-20.04/Dockerfile
   << : *CI_TEMPLATE
 
-# Apple doesn't publish official long-term support timelines.
-# We aim to support both the current and previous macOS release.
+# Cirrus currently only supports running on Sonoma.
 macos_sonoma_task:
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-sonoma-base:latest
-  prepare_script: ./ci/macos/prepare.sh
-  << : *CI_TEMPLATE
-
-macos_ventura_task:
-  macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-base:latest
+    image: ghcr.io/cirruslabs/macos-runner:sonoma
   prepare_script: ./ci/macos/prepare.sh
   << : *CI_TEMPLATE
 

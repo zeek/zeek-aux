@@ -48,6 +48,11 @@ function run_tests {
 
 test -n "${cmd}" || usage
 
+if [ -e btest.venv ]; then
+    # shellcheck disable=SC1091
+    . btest.venv/bin/activate
+fi
+
 case "${cmd}" in
     build)
         run_build $@
