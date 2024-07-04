@@ -9,7 +9,12 @@ brew update
 brew upgrade cmake
 brew install openssl@1.1
 
-sudo python3 -m pip install btest
+# Install btest in a venv since under macos pip refuses to install into the
+# global prefix since it is explicitly "externally managed".
+python3 -mvenv ./btest.venv
+# shellcheck disable=SC1091
+. ./btest.venv/bin/activate
+pip install btest
 
 # Brew doesn't create the /opt/homebrew/opt/openssl symlink if you install
 # openssl@1.1, only with 3.0. Create the symlink if it doesn't exist.
