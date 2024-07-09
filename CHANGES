@@ -1,3 +1,7 @@
+0.50-137 | 2024-07-09 09:32:09 -0700
+
+  * Ignore some extra third-party submodules in git-move-submodules (Tim Wojtulewicz, Corelight)
+
 0.50-134 | 2024-07-04 16:12:58 +0200
 
   * CI: drop macos versions unsupported by Cirrus (Benjamin Bannier, Corelight)
