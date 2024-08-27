@@ -397,7 +397,7 @@ static void parse_options(int argc, char** argv)
 
 static bool make_dir(const char* dir)
 	{
-	if ( mkdir(dir, 0700) == 0 )
+	if ( mkdir(dir, 0775) == 0 )
 		return true;
 
 	auto mkdir_errno = errno;
@@ -540,7 +540,7 @@ static int run_compress_cmd(const char* src_file, const char* dst_file)
 		if ( src_fd != STDIN_FILENO )
 			close(src_fd);
 
-		int dst_fd = open(dst_file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+		int dst_fd = open(dst_file, O_CREAT | O_TRUNC | O_WRONLY, 0664);
 
 		if ( dst_fd < 0 )
 			{
