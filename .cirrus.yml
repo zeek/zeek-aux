@@ -93,13 +93,13 @@ macos_sonoma_task:
 freebsd14_task:
   freebsd_instance:
     # FreeBSD 14 EOL: Nov 30 2028
-    image_family: freebsd-14-0
+    image_family: freebsd-14-1
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
 
 freebsd13_task:
   freebsd_instance:
     # FreeBSD 13 EOL: January 31, 2026
-    image_family: freebsd-13-3
+    image_family: freebsd-13-4
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
