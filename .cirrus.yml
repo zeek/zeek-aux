@@ -64,6 +64,12 @@ opensuse_tumbleweed_task:
   prepare_script: ./ci/opensuse-tumbleweed/prepare.sh
   << : *CI_TEMPLATE
 
+ubuntu24_10_task:
+  container:
+    # Ubuntu 24.10 EOL: 2025-07-30
+    dockerfile: ci/ubuntu-24.10/Dockerfile
+  << : *CI_TEMPLATE
+
 ubuntu24_task:
   container:
     # Ubuntu 24.04 EOL: Jun 2029
