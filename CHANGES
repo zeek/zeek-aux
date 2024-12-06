@@ -1,3 +1,27 @@
+0.50-145 | 2024-12-06 00:03:40 -0800
+
+  * CI: bump to OpenSSL 3 in macOS Homebrew (Christian Kreibich, Corelight)
+
+  * CI: add Ubuntu 24.10 (Christian Kreibich, Corelight)
+
+  * CI: bump FreeBSD to 13.4 and 14.1, respectively (Christian Kreibich, Corelight)
+
+  * CI: drop Fedora 39, add 41 (Christian Kreibich, Corelight)
+
+  * GH-57: zeek-archiver: Respect umask setting (Arne Welzel, Corelight)
+
+    Rather than hard-coding 0700 and 0644, use 0775 and 0664 and assume
+    and rely on open() and mkdir() to pick up the environment's umask
+    value.
+
+    This may break someone relying on the strict permissions, but I'd argue
+    it's not worth a configuration option. And pointing them at umask may
+    be pragmatic enough.
+
+    Closes #57.
+
+  * Updating submodule(s) [nomail] (Tim Wojtulewicz, Corelight)
+
 0.50-137 | 2024-07-09 09:32:09 -0700
 
   * Ignore some extra third-party submodules in git-move-submodules (Tim Wojtulewicz, Corelight)

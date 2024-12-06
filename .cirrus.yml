@@ -15,16 +15,16 @@ ci_template: &CI_TEMPLATE
 # Linux EOL timelines: https://linuxlifecycle.com/
 # Fedora (~13 months): https://fedoraproject.org/wiki/Fedora_Release_Life_Cycle
 
+fedora41_task:
+  container:
+    # Fedora 41 EOL: Around Nov 2025
+    dockerfile: ci/fedora-41/Dockerfile
+  << : *CI_TEMPLATE
+
 fedora40_task:
   container:
     # Fedora 40 EOL: Around May 2025
     dockerfile: ci/fedora-40/Dockerfile
-  << : *CI_TEMPLATE
-
-fedora39_task:
-  container:
-    # Fedora 39 EOL: Around Nov 2024
-    dockerfile: ci/fedora-39/Dockerfile
   << : *CI_TEMPLATE
 
 centosstream9_task:
@@ -64,6 +64,12 @@ opensuse_tumbleweed_task:
   prepare_script: ./ci/opensuse-tumbleweed/prepare.sh
   << : *CI_TEMPLATE
 
+ubuntu24_10_task:
+  container:
+    # Ubuntu 24.10 EOL: 2025-07-30
+    dockerfile: ci/ubuntu-24.10/Dockerfile
+  << : *CI_TEMPLATE
+
 ubuntu24_task:
   container:
     # Ubuntu 24.04 EOL: Jun 2029
@@ -93,13 +99,13 @@ macos_sonoma_task:
 freebsd14_task:
   freebsd_instance:
     # FreeBSD 14 EOL: Nov 30 2028
-    image_family: freebsd-14-0
+    image_family: freebsd-14-1
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
 
 freebsd13_task:
   freebsd_instance:
     # FreeBSD 13 EOL: January 31, 2026
-    image_family: freebsd-13-3
+    image_family: freebsd-13-4
   prepare_script: ./ci/freebsd/prepare.sh
   << : *CI_TEMPLATE
