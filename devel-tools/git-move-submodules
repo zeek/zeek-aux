@@ -19,10 +19,24 @@ function update_module {
 
     cd $cwd
 
+    # These submodules should be ignored by the loop below.
+    local ignored_modules=(
+        "3rdparty"
+        "caf"
+        "cppzmq"
+        "filesystem"
+        "highwayhash"
+        "libkqueue"
+        "prometheus-cpp"
+        "rapidjson"
+        "vcpkg")
+
     # Note we don't use --recursive here, as we want to do a depth-first
-    # search so that we update childrens first. Update this list of submodules
-    # to include/exclude what should be updated.
-    for i in $(git submodule foreach -q 'echo $path' | grep -v '3rdparty\|highwayhash\|libkqueue\|rapidjson\|caf\|prometheus-cpp\|filesystem\|vcpkg\|cppzmq'); do
+    # search so that we update children first.
+    for i in $(git submodule foreach -q 'echo $path' | grep -v $(
+        IFS="|"
+        echo "${ignored_modules[*]}"
+    )); do
         # See if repository has a branch of the given name. Otherwise leave it alone.
         (cd $i && git show-ref --verify --quiet refs/heads/$branch) || continue
 
