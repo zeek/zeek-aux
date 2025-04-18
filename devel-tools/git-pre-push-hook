@@ -18,13 +18,13 @@ test -d testing/external || exit 0
 
 cd testing/external
 
-base=`pwd`
+base=$(pwd)
 abort=0
 
-for repo in `./scripts/find-git-repos`; do
-    cd ${base}/${repo} && \
-        git rev-list @{u}.. | grep -q . && \
-        echo "ERROR: testing/external/`basename $repo` has commits that are not pushed." && \
+for repo in $(./scripts/find-git-repos); do
+    cd ${base}/${repo} &&
+        git rev-list @{u}.. | grep -q . &&
+        echo "ERROR: testing/external/$(basename $repo) has commits that are not pushed." &&
         abort=1
 done
 

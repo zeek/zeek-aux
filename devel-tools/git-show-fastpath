@@ -4,7 +4,7 @@
 
 show="git show-ref -q origin/fastpath && git --no-pager log --format=oneline origin/fastpath ^master || exit 0"
 
-( echo "Entering <top-level>" && eval $show && git submodule foreach --recursive "$show" ) | awk '
+(echo "Entering <top-level>" && eval $show && git submodule foreach --recursive "$show") | awk '
 
 /Entering/ { current = $2; next }
 
