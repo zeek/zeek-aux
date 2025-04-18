@@ -6,7 +6,7 @@
 #
 # Needs gpg2.
 
-GPG=`which gpg2`
+GPG=$(which gpg2)
 KEY=F8CB8019
 
 if [ "$GPG" == "" ]; then
@@ -15,7 +15,7 @@ if [ "$GPG" == "" ]; then
 fi
 
 if [ "$#" != 1 ]; then
-    echo "usage: `basename $0` <file>"
+    echo "usage: $(basename $0) <file>"
     exit 1
 fi
 
@@ -27,5 +27,3 @@ fi
 FILE=$1
 
 $GPG --detach-sign -a -u $KEY --openpgp -o $FILE.asc $FILE
-
-

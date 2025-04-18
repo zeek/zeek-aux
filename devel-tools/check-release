@@ -6,7 +6,10 @@
 repo_status="$(cd $(dirname $0) && pwd)/repo-status"
 check_cmd="test -e CHANGES && $repo_status"
 
-printf '    %20s    %-10s %-8s %-8s %-7s %-5s %-15s %s\n'  "" "Branch" "CHANGES" "Pending" "Modif" "Sub" "VERSION" "Tags"
+printf '    %20s    %-10s %-8s %-8s %-7s %-5s %-15s %s\n' "" "Branch" "CHANGES" "Pending" "Modif" "Sub" "VERSION" "Tags"
 
-( eval $check_cmd; git submodule foreach -q --recursive "$check_cmd; true" ) \
-    | awk '/!/{print "-  ", $0; next;} {print "+  ", $0; next;}'
+(
+    eval $check_cmd
+    git submodule foreach -q --recursive "$check_cmd; true"
+) |
+    awk '/!/{print "-  ", $0; next;} {print "+  ", $0; next;}'

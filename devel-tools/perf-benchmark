@@ -56,7 +56,7 @@ Usage: $0 -z [zeek binary path] -d [data file path]
     glibc, libpcap, and openssl. Rebuilding those libraries with the
     -fno-omit-frame-pointer compiler flag may provide more accurate output.
     You can set libraries that get preloaded by setting the PRELOAD_LIBS
-    varaible in the script.
+    variable in the script.
 
     This script assumes that it is being run on a system with a large number
     of CPU cores. If being used on a smaller system, modify this script and
@@ -67,37 +67,37 @@ Usage: $0 -z [zeek binary path] -d [data file path]
     exit 1
 }
 
-while (( "$#" )); do
-  case "$1" in
-      -d|--data-file)
-	  DATA_FILE=$2
-	  shift 2
-	  ;;
-      -b|--build)
-	  ZEEK_BUILD=$2
-	  shift 2
-	  ;;
-      -m|--mode)
-	  MODE=$2
-	  shift 2
-	  ;;
-      -i|--interface)
-	  INTERFACE=$2
-	  shift 2
-	  ;;
-      -f|--flamegraph)
-	  FLAMEGRAPH_PATH=$2
-	  shift 2
-	  ;;
-      -o|--output)
-	  FLAMEGRAPH_PREFIX=$2
-	  shift 2
-	  ;;
-      -s|--seed)
-	  SEED_FILE=$2
-	  shift 2
-	  ;;
-  esac
+while ( ("$#")); do
+    case "$1" in
+        -d | --data-file)
+            DATA_FILE=$2
+            shift 2
+            ;;
+        -b | --build)
+            ZEEK_BUILD=$2
+            shift 2
+            ;;
+        -m | --mode)
+            MODE=$2
+            shift 2
+            ;;
+        -i | --interface)
+            INTERFACE=$2
+            shift 2
+            ;;
+        -f | --flamegraph)
+            FLAMEGRAPH_PATH=$2
+            shift 2
+            ;;
+        -o | --output)
+            FLAMEGRAPH_PREFIX=$2
+            shift 2
+            ;;
+        -s | --seed)
+            SEED_FILE=$2
+            shift 2
+            ;;
+    esac
 done
 
 if [ "${MODE}" != "intf" -a "${MODE}" != "file" -a "${MODE}" != "flamegraph" ]; then
@@ -150,7 +150,7 @@ if [ "${MODE}" = "intf" ]; then
 
     sleep 5
     ZEEK_PID=$(ps -ef | awk -v timepid="${TIME_PID}" '{ if ($3 == timepid) { print $2 } }')
-    renice -20 -p $ZEEK_PID > /dev/null
+    renice -20 -p $ZEEK_PID >/dev/null
     sleep 5
     echo "Zeek running on PID ${ZEEK_PID}"
 
@@ -184,7 +184,7 @@ elif [ "${MODE}" = "file" ]; then
     taskset --cpu-list $ZEEK_CPU time -f "%e %M" -o $TIME_FILE $ZEEK_BUILD $ZEEK_ARGS -r $DATA_FILE
     TIME_PID=$!
     ZEEK_PID=$(ps -ef | awk -v timepid="${TIME_PID}" '{ if ($3 == timepid) { print $2 } }')
-    renice -20 -p $ZEEK_PID > /dev/null
+    renice -20 -p $ZEEK_PID >/dev/null
     awk '{print "Time spent: " $1 " seconds\nMax memory usage: " $2 " bytes"}' $TIME_FILE
 
     rm $TIME_FILE
@@ -218,11 +218,11 @@ elif [ "${MODE}" = "flamegraph" ]; then
 
     echo
     echo "####### Collapsing perf stack data #######"
-    perf script -i $PERF_RECORD_FILE | ${FLAMEGRAPH_PATH}/stackcollapse-perf.pl > $PERF_COLLAPSED_FILE
+    perf script -i $PERF_RECORD_FILE | ${FLAMEGRAPH_PATH}/stackcollapse-perf.pl >$PERF_COLLAPSED_FILE
     echo "####### Building normal flamegraph, writing to ${FLAMEGRAPH_PREFIX}.svg #######"
-    cat $PERF_COLLAPSED_FILE | ${FLAMEGRAPH_PATH}/flamegraph.pl > "${FLAMEGRAPH_PREFIX}.svg"
+    cat $PERF_COLLAPSED_FILE | ${FLAMEGRAPH_PATH}/flamegraph.pl >"${FLAMEGRAPH_PREFIX}.svg"
     echo "####### Building reverse flamegraph, writing to ${FLAMEGRAPH_PREFIX}-reversed.svg #######"
-    cat $PERF_COLLAPSED_FILE | ${FLAMEGRAPH_PATH}/flamegraph.pl --reverse > "${FLAMEGRAPH_PREFIX}-reversed.svg"
+    cat $PERF_COLLAPSED_FILE | ${FLAMEGRAPH_PATH}/flamegraph.pl --reverse >"${FLAMEGRAPH_PREFIX}-reversed.svg"
 
     rm $PERF_RECORD_FILE
     rm $PERF_COLLAPSED_FILE

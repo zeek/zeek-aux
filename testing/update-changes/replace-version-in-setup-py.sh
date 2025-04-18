@@ -14,12 +14,12 @@ function new_version_hook() {
 git init
 
 cat >setup.py <<EOF
-  version = "0.1",  # short
-  version = "0.1-1",  # with dev update
-  version = "0.1.0",  # long
-  version = "0.1.0-10",  # long with dev update
-  version = "0.1.1.dev10",  # Python style
-  version = "0.0.1.nope"   # should not change, invalid suffix
+version = "0.1",  # short
+version = "0.1-1",  # with dev update
+version = "0.1.0",  # long
+version = "0.1.0-10",  # long with dev update
+version = "0.1.1.dev10",  # Python style
+version = "0.0.1.nope"   # should not change, invalid suffix
 EOF
 
 git add setup.py
@@ -28,7 +28,7 @@ git tag v1.0.0
 
 update-changes -I
 
-echo ... >>setup.py
+echo "print('Additional change')" >>setup.py
 git add setup.py
 git commit -m 'update'
 
