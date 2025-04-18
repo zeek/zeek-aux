@@ -14,11 +14,11 @@ function new_version_hook() {
 git init
 
 cat >__init__.py <<EOF
-  __version__ = "1.0",  # with comment
-  __version__ = "1.0.1-10",  # another comment
-  __version__ = "2.0.1.dev10",  # Python style
-  __version__ = "0.0.1.nope"   # should not change
-  version = "0.0.1"            # should not change
+__version__ = "1.0",  # with comment
+__version__ = "1.0.1-10",  # another comment
+__version__ = "2.0.1.dev10",  # Python style
+__version__ = "0.0.1.nope"  # should not change
+version = "0.0.1"            # should not change
 EOF
 
 git add __init__.py
@@ -27,7 +27,7 @@ git tag v1.0.0
 
 update-changes -I
 
-echo ... >>__init__.py
+echo "print('Additional change')" >>__init__.py
 git add __init__.py
 git commit -m 'update'
 
