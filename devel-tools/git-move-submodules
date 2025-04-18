@@ -22,11 +22,16 @@ function update_module {
     # These submodules should be ignored by the loop below.
     local ignored_modules=(
         "3rdparty"
+        "IXWebSocket"
+        "c-ares"
         "caf"
         "cppzmq"
+        "expected-lite"
         "filesystem"
         "highwayhash"
         "libkqueue"
+        "libunistd"
+        "out_ptr"
         "prometheus-cpp"
         "rapidjson"
         "vcpkg")
