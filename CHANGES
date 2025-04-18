@@ -1,3 +1,9 @@
+0.50-150 | 2025-04-18 12:37:16 -0700
+
+  * Fix gen-ct-list.pl to use LWP::UserAgent instead of a bare call to get() (Tim Wojtulewicz, Corelight)
+
+  * git-move-submodules: Ignore cppzmq (Tim Wojtulewicz, Corelight)
+
 0.50-145 | 2024-12-06 00:03:40 -0800
 
   * CI: bump to OpenSSL 3 in macOS Homebrew (Christian Kreibich, Corelight)
