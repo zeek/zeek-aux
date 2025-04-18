@@ -521,7 +521,7 @@ fi
 
 if [ "$quiet" != "1" ]; then
     echo "New version is $new_version."
-    echo "Listing revisions commited since $(version $last_rev) ($last_rev) ... "
+    echo "Listing revisions committed since $(version $last_rev) ($last_rev) ... "
     echo
 fi
 

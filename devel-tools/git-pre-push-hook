@@ -2,7 +2,7 @@
 #
 # A pre-push hook that makes sure all testing/external changes
 # have been pushed already. If not, it will abort. Note that
-# it will only check for unpushed commits, not for uncommited
+# it will only check for unpushed commits, not for uncommitted
 # changes.
 #
 # To install this, copy it into you Zeek tree's .git/hooks/pre-push.

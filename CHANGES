@@ -902,7 +902,7 @@
   * bro-cut extensions and fixes.  (Robin Sommer)
 
     - If no field names are given on the command line, we now pass through
-      all fields. Adresses #657.
+      all fields. Addresses #657.
 
     - Removing some GNUism from awk script. Addresses #653.
 
