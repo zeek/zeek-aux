@@ -7,3 +7,12 @@ repos:
   hooks:
     - id: shfmt
       args: ["-w", "-i", "4", "-ci"]
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.11.4
+  hooks:
+    - id: ruff
+      args: [--fix]
+      exclude: '^testing/Baseline'
+    - id: ruff-format
+      exclude: '^testing/Baseline'
