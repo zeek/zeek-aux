@@ -11,8 +11,8 @@ log_out=test.09:43:10-09:43:10.log
 echo hello > "$(queue_dir)/${log_in}"
 zeek-archiver -1 -v "$(queue_dir)" "$(archive_dir)"
 
-dir_perms=$(ls -ld $(archive_date_dir) | cut -d ' ' -f 1)
-file_perms=$(ls -l $(archive_date_dir)/${log_out}.gz | cut -d ' ' -f 1)
+dir_perms=$(ls -ld $(archive_date_dir) | cut -c -10)
+file_perms=$(ls -l $(archive_date_dir)/${log_out}.gz | cut -c -10)
 
 test "${dir_perms}" == "drwxrwxr-x"  || exit 1
 test "${file_perms}" == "-rw-rw-r--" || exit 1
@@ -29,8 +29,8 @@ log_out=test.09:43:10-09:43:10.log
 echo hello > "$(queue_dir)/${log_in}"
 zeek-archiver -1 -v "$(queue_dir)" "$(archive_dir)"
 
-dir_perms=$(ls -ld $(archive_date_dir) | cut -d ' ' -f 1)
-file_perms=$(ls -l $(archive_date_dir)/${log_out}.gz | cut -d ' ' -f 1)
+dir_perms=$(ls -ld $(archive_date_dir) | cut -c -10)
+file_perms=$(ls -l $(archive_date_dir)/${log_out}.gz | cut -c -10)
 
 test "${dir_perms}" == "drwx------" || exit 1
 test "${file_perms}" == "-rw-------"  || exit 1
