@@ -82,12 +82,6 @@ ubuntu22_task:
     dockerfile: ci/ubuntu-22.04/Dockerfile
   << : *CI_TEMPLATE
 
-ubuntu20_task:
-  container:
-    # Ubuntu 20.04 EOL: April 2025
-    dockerfile: ci/ubuntu-20.04/Dockerfile
-  << : *CI_TEMPLATE
-
 # Cirrus currently only supports running on Sonoma.
 macos_sonoma_task:
   macos_instance:
