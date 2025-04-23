@@ -26,6 +26,8 @@ puts ""
 
 puts "@load base/protocols/ssl"
 puts "module SSL;";
+puts "";
+puts "## @docs-omit-value"
 puts "redef root_certs += {";
 
 all_certs = []

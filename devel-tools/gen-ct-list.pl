@@ -43,6 +43,8 @@ say "#";
 say "";
 say '@load base/protocols/ssl';
 say "module SSL;";
+say "";
+say '## @docs-omit-value';
 say "redef ct_logs += {";
 
 for my $operator (@{$list->{operators}}) {
