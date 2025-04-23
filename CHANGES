@@ -1,3 +1,7 @@
+0.50-164 | 2025-04-23 08:27:01 -0700
+
+  * CI: No more Ubuntu 20.04 [skip ci] (Arne Welzel, Corelight)
+
 0.50-162 | 2025-04-22 17:22:34 -0700
 
   * Make zeek-archiver tests robust to filesystems with extended attributes (Christian Kreibich, Corelight)
