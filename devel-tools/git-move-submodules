@@ -38,7 +38,7 @@ function update_module {
 
     # Note we don't use --recursive here, as we want to do a depth-first
     # search so that we update children first.
-    for i in $(git submodule foreach -q 'echo $path' | grep -v $(
+    for i in $(git submodule foreach -q 'echo $path' | grep -vE $(
         IFS="|"
         echo "${ignored_modules[*]}"
     )); do
