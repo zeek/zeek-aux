@@ -1,3 +1,9 @@
+0.50-160 | 2025-04-22 17:19:37 -0700
+
+  * git-move-submodules: Add more submodules to be ignored (Tim Wojtulewicz, Corelight)
+
+  * git-move-submodules: Make ignored submodules an array for easier updates (Tim Wojtulewicz, Corelight)
+
 0.50-157 | 2025-04-22 17:18:02 -0700
 
   * CI: Update to FreeBSD 14.2 (Tim Wojtulewicz, Corelight)
