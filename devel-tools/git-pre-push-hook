@@ -2,7 +2,7 @@
 #
 # A pre-push hook that makes sure all testing/external changes
 # have been pushed already. If not, it will abort. Note that
-# it will only check for unpushed commits, not for uncommited
+# it will only check for unpushed commits, not for uncommitted
 # changes.
 #
 # To install this, copy it into you Zeek tree's .git/hooks/pre-push.
@@ -18,13 +18,13 @@ test -d testing/external || exit 0
 
 cd testing/external
 
-base=`pwd`
+base=$(pwd)
 abort=0
 
-for repo in `./scripts/find-git-repos`; do
-    cd ${base}/${repo} && \
-        git rev-list @{u}.. | grep -q . && \
-        echo "ERROR: testing/external/`basename $repo` has commits that are not pushed." && \
+for repo in $(./scripts/find-git-repos); do
+    cd ${base}/${repo} &&
+        git rev-list @{u}.. | grep -q . &&
+        echo "ERROR: testing/external/$(basename $repo) has commits that are not pushed." &&
         abort=1
 done
 

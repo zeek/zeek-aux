@@ -1,3 +1,17 @@
+0.50-157 | 2025-04-22 17:18:02 -0700
+
+  * CI: Update to FreeBSD 14.2 (Tim Wojtulewicz, Corelight)
+
+  * Add typos to pre-commit using zeek's configuration, with a few minor changes (Tim Wojtulewicz, Corelight)
+
+  * Add cmake-format to pre-commit using zeek's configuration (Tim Wojtulewicz, Corelight)
+
+  * Add ruff to pre-commit using zeek's configuration (Tim Wojtulewicz, Corelight)
+
+  * Make update-changes python btests output valid python (Tim Wojtulewicz, Corelight)
+
+  * Add pre-commit config, fix shfmt findings (Tim Wojtulewicz, Corelight)
+
 0.50-150 | 2025-04-18 12:37:16 -0700
 
   * Fix gen-ct-list.pl to use LWP::UserAgent instead of a bare call to get() (Tim Wojtulewicz, Corelight)
@@ -902,7 +916,7 @@
   * bro-cut extensions and fixes.  (Robin Sommer)
 
     - If no field names are given on the command line, we now pass through
-      all fields. Adresses #657.
+      all fields. Addresses #657.
 
     - Removing some GNUism from awk script. Addresses #653.
 

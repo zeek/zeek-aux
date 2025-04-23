@@ -1,6 +1,4 @@
-set(zeekcut_SRCS
-    zeek-cut.c
-)
+set(zeekcut_SRCS zeek-cut.c)
 
 add_executable(zeek-cut ${zeekcut_SRCS})
 
