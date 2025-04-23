@@ -1,3 +1,11 @@
+0.50-162 | 2025-04-22 17:22:34 -0700
+
+  * Make zeek-archiver tests robust to filesystems with extended attributes (Christian Kreibich, Corelight)
+
+    On such systems the permission string has an extra character, as in
+    "drwxr-xr-x.", which fails the string comparisons in the umask tests.
+    Cut off the result after 10 characters to ignore that column.
+
 0.50-160 | 2025-04-22 17:19:37 -0700
 
   * git-move-submodules: Add more submodules to be ignored (Tim Wojtulewicz, Corelight)
