@@ -160,9 +160,6 @@ else
         exit 1
     fi
 
-    # BRO_DIST is the canonical/historical name used by plugin CMake scripts
-    # ZEEK_DIST doesn't serve a function at the moment, but set/provided anyway
-    append_cache_entry BRO_DIST PATH $zeekdist
     append_cache_entry ZEEK_DIST PATH $zeekdist
     append_cache_entry CMAKE_MODULE_PATH PATH $zeekdist/cmake
 fi
