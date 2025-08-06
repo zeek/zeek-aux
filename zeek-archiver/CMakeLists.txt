@@ -1,3 +1,5 @@
+include(../cmake/RequireCXXStd.cmake)
+
 add_executable(zeek-archiver zeek-archiver.cc)
 
 set_target_properties(zeek-archiver PROPERTIES COMPILE_FLAGS
