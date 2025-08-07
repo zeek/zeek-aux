@@ -1,3 +1,7 @@
+0.50-174 | 2025-08-07 08:35:16 -0700
+
+  * Remove BRO_DIST from plugin skeleton configure script (Tim Wojtulewicz, Corelight)
+
 0.50-172 | 2025-08-06 14:05:45 -0700
 
   * Require C++20 for builds (Tim Wojtulewicz, Corelight)
