@@ -1,4 +1,4 @@
-# Test zeek-cut with time conversion options (-d/-u).
+# @TEST-DOC: Test zeek-cut with time conversion options (-d/-u).
 #
 
 # Test -d option.
@@ -9,11 +9,11 @@
 # @TEST-EXEC: cat $LOGS/conn.log | zeek-cut -u > utc
 # @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/diff-time-zone btest-diff utc
 
-# Test that -u can override -d. 
+# Test that -u can override -d.
 # @TEST-EXEC: cat $LOGS/conn.log | zeek-cut -d -u > both-1
 # @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/diff-time-zone btest-diff both-1
 
-# Test that -d can override -u. 
+# Test that -d can override -u.
 # @TEST-EXEC: cat $LOGS/conn.log | zeek-cut -u -d > both-2
 # @TEST-EXEC: btest-diff both-2
 

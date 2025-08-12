@@ -1,4 +1,4 @@
-# Use a customized timestamp in output logs.
+# @TEST-DOC: Use a customized timestamp in output logs.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

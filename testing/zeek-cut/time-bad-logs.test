@@ -1,4 +1,4 @@
-# Test zeek-cut time conversion with invalid log files.
+# @TEST-DOC: Test zeek-cut time conversion with invalid log files.
 #
 
 # The "#types" log header line is missing.

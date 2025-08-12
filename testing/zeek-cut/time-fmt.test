@@ -1,4 +1,4 @@
-# Test zeek-cut with time conversion options (-D/-U).
+# @TEST-DOC: Test zeek-cut with time conversion options (-D/-U).
 #
 
 # Test -D option.

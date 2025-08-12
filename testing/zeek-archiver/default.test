@@ -1,4 +1,4 @@
-# Default behavior: compress the log.
+# @TEST-DOC: Default behavior: compress the log.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

@@ -1,4 +1,4 @@
-# Detect pre-compressed logs.
+# @TEST-DOC: Detect pre-compressed logs.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"
