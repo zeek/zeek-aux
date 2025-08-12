@@ -1,3 +1,7 @@
+/* clang-format off */
+/* This has to come before some of the later headers on FreeBSD. */
+#include <sys/types.h>
+/* clang-format on */
 #include <arpa/inet.h>
 #include <net/ethernet.h>
 #include <netinet/in.h>
@@ -6,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "ethertype.h"
