@@ -30,6 +30,10 @@ static const char copyright[] =
 #define _BSD_SOURCE /* Deprecated, but still needed by older Linux. */
 #endif
 
+/* clang-format off */
+/* This has to come before some of the later headers on FreeBSD */
+#include <sys/types.h>
+/* clang-format on */
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -40,7 +44,6 @@ static const char copyright[] =
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "config.h"
