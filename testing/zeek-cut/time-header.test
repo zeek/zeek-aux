@@ -1,4 +1,4 @@
-# Test zeek-cut with both time conversion and show header options.
+# @TEST-DOC: Test zeek-cut with both time conversion and show header options.
 #
 
 # Time format string does not affect the header timestamps.

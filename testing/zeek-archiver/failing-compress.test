@@ -1,5 +1,4 @@
-# Verify the source file still exists and the destination wasn't created
-# (or removed) when the compression command fails.
+# @TEST-DOC: Verify the source file still exists and the destination wasn't created (or removed) when the compression command fails.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

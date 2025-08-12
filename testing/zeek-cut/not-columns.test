@@ -1,4 +1,4 @@
-# Test zeek-cut with the -n option.
+# @TEST-DOC: Test zeek-cut with the -n option.
 #
 
 # Show all columns but one.

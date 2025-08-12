@@ -1,4 +1,4 @@
-# Verify log name metadata behavior: check that suffixes get applied correctly.
+# @TEST-DOC: Verify log name metadata behavior: check that suffixes get applied correctly.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

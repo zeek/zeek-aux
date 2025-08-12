@@ -1,4 +1,4 @@
-# Verify that commands injected via filenames do not execute.
+# @TEST-DOC: Verify that commands injected via filenames do not execute.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

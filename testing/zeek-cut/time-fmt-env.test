@@ -1,4 +1,4 @@
-# Test zeek-cut with ZEEK_CUT_TIMEFMT environment variable.
+# @TEST-DOC: Test zeek-cut with ZEEK_CUT_TIMEFMT environment variable.
 #
 
 # Output local time with format from environment.

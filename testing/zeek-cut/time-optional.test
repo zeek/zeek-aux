@@ -1,5 +1,4 @@
-# Test zeek-cut with time conversion when a time field is optional and no value
-# is set.
+# @TEST-DOC: Test zeek-cut with time conversion when a time field is optional and no value is set.
 #
 
 # @TEST-EXEC: cat $LOGS/time-optional.log | zeek-cut -u > out 2>&1

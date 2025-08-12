@@ -1,4 +1,4 @@
-# Use a custom delimiter in the resulting logs.
+# @TEST-DOC: Use a custom delimiter in the resulting logs.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"
