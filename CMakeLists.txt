@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+
 project(ZeekAux C CXX)
+
 include(cmake/CommonCMakeConfig.cmake)
 include(cmake/RequireCXXStd.cmake)
 
 # ##############################################################################
 # Dependency Configuration
-
-find_package(PCAP REQUIRED)
-
-include_directories(BEFORE ${PCAP_INCLUDE_DIR})
 
 # ##############################################################################
 # System Introspection
