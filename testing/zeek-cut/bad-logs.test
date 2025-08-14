@@ -1,4 +1,4 @@
-# Test zeek-cut with invalid log files.
+# @TEST-DOC: Test zeek-cut with invalid log files.
 #
 
 # The "#separator" log header line is missing.

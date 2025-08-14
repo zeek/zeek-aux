@@ -1,4 +1,4 @@
-# Verify log name metadata behavior: check that additional pid metadata gets dropped.
+# @TEST-DOC: Verify log name metadata behavior: check that additional pid metadata gets dropped.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

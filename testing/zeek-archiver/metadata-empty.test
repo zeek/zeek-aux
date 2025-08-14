@@ -1,4 +1,4 @@
-# Verify log name metadata behavior: empty metadata is acceptable.
+# @TEST-DOC: Verify log name metadata behavior: empty metadata is acceptable.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"

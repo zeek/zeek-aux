@@ -1,5 +1,4 @@
-set(rst_SRCS rst.c)
-
-add_executable(rst ${rst_SRCS})
+add_executable(rst)
+target_sources(rst PRIVATE rst.c)
 
 addauxinstalltarget(rst)

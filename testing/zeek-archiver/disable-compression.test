@@ -1,4 +1,4 @@
-# Don't compress the logs.
+# @TEST-DOC: Don't compress the logs.
 # @TEST-EXEC: bash %INPUT
 
 . "$SCRIPTS/zeek-archiver-common.sh"
