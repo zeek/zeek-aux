@@ -1,3 +1,7 @@
+0.50-183 | 2025-09-04 20:29:50 +0200
+
+  * Remove duplicate ruff pre-commit setup (Benjamin Bannier, Corelight)
+
 0.50-181 | 2025-09-04 20:17:46 +0200
 
   * Add GH action running pre-commit hooks (Benjamin Bannier, Corelight)
