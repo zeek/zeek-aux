@@ -333,7 +333,8 @@ def cmd_repos_add_team(api, args):
         print_err(
             f"Team '{args.team}' is not valid for the '{GITHUB_ORG}' organization."
         )
-        print_err(f"Must be one of {', '.join(["'" + t.name + "'" for t in teams])}.")
+        team_names = ["'" + t.name + "'" for t in teams]
+        print_err(f"Must be one of {', '.join(team_names)}.")
         return False
 
     result = []
@@ -439,7 +440,8 @@ def main():
     repos_add_team_cmd_parser.add_argument(
         "--access-level",
         required=True,
-        help=f"The access level. One of {', '.join(["'" + level.name.lower() + "'" for level in AccessLevel])}.",
+        help="The access level",
+        choices=list(AccessLevel),
     )
 
     if "argcomplete" in sys.modules:
