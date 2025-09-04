@@ -1,3 +1,7 @@
+0.50-176 | 2025-09-04 10:57:40 -0700
+
+  * Add code for the Cirrus billing status slack bot (Tim Wojtulewicz, Corelight)
+
 0.50-174 | 2025-08-07 08:35:16 -0700
 
   * Remove BRO_DIST from plugin skeleton configure script (Tim Wojtulewicz, Corelight)
