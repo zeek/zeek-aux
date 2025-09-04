@@ -1,8 +1,4 @@
-target-version = "py39"
-
-# Skip anything in the auxil directory. This includes pysubnetree which
-# should be handled separately.
-exclude = ["auxil"]
+target-version = "py310"
 
 [lint]
 select = ["C4", "F", "I", "ISC", "UP"]

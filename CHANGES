@@ -1,3 +1,13 @@
+0.50-181 | 2025-09-04 20:17:46 +0200
+
+  * Add GH action running pre-commit hooks (Benjamin Bannier, Corelight)
+
+  * Bump minimum Python version to 3.10 (Benjamin Bannier, Corelight)
+
+  * Add pre-commit hooks for ruff-check and ruff-format (Benjamin Bannier, Corelight)
+
+  * Do not reuse outer quote character in f-strings. (Benjamin Bannier, Corelight)
+
 0.50-176 | 2025-09-04 10:57:40 -0700
 
   * Add code for the Cirrus billing status slack bot (Tim Wojtulewicz, Corelight)
