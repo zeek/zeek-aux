@@ -830,6 +830,8 @@ static int archive_logs()
 int main(int argc, char** argv)
 	{
 	signal(SIGTERM, signal_handler);
+	setlinebuf(stdout);
+	setlinebuf(stderr);
 	parse_options(argc, argv);
 
 	debug("Using src_dir: '%s'", options.src_dir.data());
