@@ -173,6 +173,8 @@ static void print_usage()
 	fprintf(stderr, "    -1                            | Archive current logs and exit w/o looping\n");
 	fprintf(stderr, "    -h|--help                     | Show this usage information\n");
 	fprintf(stderr, "    -v|--verbose                  | Print verbose/debug logs to stderr\n");
+	fprintf(stderr, "    -i|--interval                 | Set the poll interval in seconds (default: %d)\n",
+		Options().idle_poll_interval);
 	fprintf(stderr, "    -c|--compress <ext,cmd>       | File extension and compression command,\n"
 	                "                                    empty string means \"disable compression\"\n"
 	                "                                    (default: \"gz,gzip\")\n");
@@ -270,6 +272,15 @@ static void consume_option_value(const std::string& flag, std::string arg_value)
 		{
 		options.zip_file_extensions = split_string(arg_value, ",");
 		}
+	else if ( flag == "-i" || flag == "--interval" )
+		{
+		if ( arg_value.empty() )
+			usage_error("flag '%s' is missing a value", flag.data());
+
+		options.idle_poll_interval = std::atoi(arg_value.data());
+		if ( options.idle_poll_interval <= 0 )
+			usage_error("invalid '%s' value - must be a positive interval", flag.data());
+		}
 	}
 
 static void parse_options(int argc, char** argv)
@@ -279,6 +290,7 @@ static void parse_options(int argc, char** argv)
 	        "-1",
 	        "-h", "--help",
 	        "-v", "--verbose",
+	        "-i", "--interval",
 	        "-c", "--compress",
 	        "-d", "--delimiter",
 	        "-t", "--time-fmt",
