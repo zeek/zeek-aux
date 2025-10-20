@@ -1,4 +1,4 @@
-# Test zeek-cut without any command-line options.
+# @TEST-DOC: Test zeek-cut without any command-line options.
 #
 
 # @TEST-EXEC: cat $LOGS/conn.log | zeek-cut > no-opts

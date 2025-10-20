@@ -2,6 +2,24 @@
 # See https://pre-commit.com/hooks.html for more hooks
 #
 repos:
+- repo: local
+  hooks:
+  - id: btest-command-commented
+    name: Check that all BTest command lines are commented out
+    entry: '^\s*@TEST-'
+    language: pygrep
+    files: '^testing/.*$'
+
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v20.1.7
+  hooks:
+  - id: clang-format
+    types_or:
+      - "c"
+      - "c++"
+      - "json"
+    exclude: '^(plugin-support/skeleton/src/Plugin.*|testing/Baseline/update-changes.replace-version-in-c-header/header.h)'
+
 - repo: https://github.com/maxwinterstein/shfmt-py
   rev: v3.11.0.2
   hooks:

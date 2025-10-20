@@ -1,4 +1,4 @@
-# Test zeek-cut with -m and -M options.
+# @TEST-DOC: Test zeek-cut with -m and -M options.
 #
 
 # Show first header in minimal view for one log file.

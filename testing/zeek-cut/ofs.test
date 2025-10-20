@@ -1,4 +1,4 @@
-# Test zeek-cut with -F option.
+# @TEST-DOC: Test zeek-cut with -F option.
 #
 
 # Use a different field separator on two columns.

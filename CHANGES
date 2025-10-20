@@ -1,3 +1,25 @@
+0.50-192 | 2025-10-20 14:57:17 -0700
+
+  * adtrace/rst: Fix include ordering for FreeBSD (Tim Wojtulewicz, Corelight)
+
+  * adtrace: Remove some third-party headers (Tim Wojtulewicz, Corelight)
+
+  * Reformat all of the code with clang-format (Tim Wojtulewicz, Corelight)
+
+  * btests: Add missing comments on btest directives, add missing TEST-DOC annotations (Tim Wojtulewicz, Corelight)
+
+  * Clean up some CMakeLists.txt usage to be more modern (Tim Wojtulewicz, Corelight)
+
+  * zeek-archiver: Implement -i / --interval for setting the interval (Arne Welzel, Corelight)
+
+    The 30 second default is pretty large. I think inotify would be much
+    nicer anyhow, but lets do that for now.
+
+  * zeek-archiver: Set stdout, stderr to line buffered (Arne Welzel, Corelight)
+
+    Otherwise it takes a long time for verbose output to be produced when
+    running within systemd.
+
 0.50-183 | 2025-09-04 20:29:50 +0200
 
   * Remove duplicate ruff pre-commit setup (Benjamin Bannier, Corelight)

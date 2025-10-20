@@ -1,4 +1,4 @@
-# Test zeek-cut with column names, but no other options.
+# @TEST-DOC: Test zeek-cut with column names, but no other options.
 #
 
 # Select one column.
