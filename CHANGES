@@ -1,3 +1,7 @@
+0.50-194 | 2025-10-24 08:26:24 -0700
+
+  * Use linecache instead of linereader in lldb helper script (Tim Wojtulewicz, Corelight)
+
 0.50-192 | 2025-10-20 14:57:17 -0700
 
   * adtrace/rst: Fix include ordering for FreeBSD (Tim Wojtulewicz, Corelight)

@@ -1,7 +1,8 @@
+from linecache import getline
+
 import lldb
 from ansi.color import fg
 from ansi.color.fx import reset
-from linereader import getline
 
 # Cache script lines and files so that we don't have to load files repeatedly
 script_lines = {}
