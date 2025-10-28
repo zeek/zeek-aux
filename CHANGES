@@ -1,3 +1,7 @@
+0.50-199 | 2025-10-28 07:48:04 -0700
+
+  * Add script that defines 'btz' command for gdb (Tim Wojtulewicz, Corelight)
+
 0.50-197 | 2025-10-28 07:47:36 -0700
 
   * Replace gen-mozilla-ca-list.rb with python version (Tim Wojtulewicz, Corelight)
