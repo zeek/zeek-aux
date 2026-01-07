@@ -51,15 +51,15 @@ debian12_task:
     dockerfile: ci/debian-12/Dockerfile
   << : *CI_TEMPLATE
 
-opensuse_leap_15_5_task:
+opensuse_leap_16_0_task:
   container:
-    # Opensuse Leap 15.5 EOL: Around Dec 25
-    dockerfile: ci/opensuse-leap-15.5/Dockerfile
+    # Opensuse Leap 15.6 EOL: 31 October 2026
+    dockerfile: ci/opensuse-leap-16.0/Dockerfile
   << : *CI_TEMPLATE
 
 opensuse_leap_15_6_task:
   container:
-    # Opensuse Leap 15.6 EOL: ~Dec 2025
+    # Opensuse Leap 15.6 EOL: 30 April 2026
     dockerfile: ci/opensuse-leap-15.6/Dockerfile
   << : *CI_TEMPLATE
 
