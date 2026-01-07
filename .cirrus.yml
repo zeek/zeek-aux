@@ -15,6 +15,12 @@ ci_template: &CI_TEMPLATE
 # Linux EOL timelines: https://linuxlifecycle.com/
 # Fedora (~13 months): https://fedoraproject.org/wiki/Fedora_Release_Life_Cycle
 
+fedora43_task:
+  container:
+    # Fedora 43 EOL: Around Nov 2026
+    dockerfile: ci/fedora-43/Dockerfile
+  << : *CI_TEMPLATE
+
 fedora42_task:
   container:
     # Fedora 42 EOL: Around May 2026
