@@ -39,16 +39,16 @@ centosstream9_task:
     dockerfile: ci/centos-stream-9/Dockerfile
   << : *CI_TEMPLATE
 
-debian12_task:
+debian13_task:
   container:
-    # Debian 12 EOL: TBD
-    dockerfile: ci/debian-12/Dockerfile
+    # Debian 13 (trixie) EOL: TBD
+    dockerfile: ci/debian-13/Dockerfile
   << : *CI_TEMPLATE
 
-debian11_task:
+debian12_task:
   container:
-    # Debian 11 EOL: June 2026
-    dockerfile: ci/debian-11/Dockerfile
+    # Debian 12 (bookworm) EOL: TBD
+    dockerfile: ci/debian-12/Dockerfile
   << : *CI_TEMPLATE
 
 opensuse_leap_15_5_task:
