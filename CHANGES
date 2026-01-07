@@ -1,3 +1,16 @@
+0.50-204 | 2026-01-07 11:25:22 -0700
+
+  * Bump aiohttp from 3.12.15 to 3.13.3 in /devel-tools/cirrus-status (dependabot[bot])
+
+    ---
+    updated-dependencies:
+    - dependency-name: aiohttp
+      dependency-version: 3.13.3
+      dependency-type: direct:production
+    ...
+
+    Signed-off-by: dependabot[bot] <support@github.com>
+
 0.50-201 | 2025-10-28 09:16:11 -0700
 
   * Add script for refreshing the CT and CA list files from remote (Tim Wojtulewicz, Corelight)
