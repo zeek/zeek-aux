@@ -27,10 +27,10 @@ fedora42_task:
     dockerfile: ci/fedora-42/Dockerfile
   << : *CI_TEMPLATE
 
-fedora41_task:
+centosstream10_task:
   container:
-    # Fedora 41 EOL: Around Nov 2025
-    dockerfile: ci/fedora-41/Dockerfile
+    # Stream 10 EOL: 01 January 2030
+    dockerfile: ci/centos-stream-10/Dockerfile
   << : *CI_TEMPLATE
 
 centosstream9_task:
