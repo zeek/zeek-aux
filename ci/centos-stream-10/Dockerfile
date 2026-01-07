@@ -1,4 +1,4 @@
-FROM quay.io/centos/centos:stream9
+FROM quay.io/centos/centos:stream10
 
 # A version field to invalidate Cirrus's build cache when needed, as suggested in
 # https://github.com/cirruslabs/cirrus-ci-docs/issues/544#issuecomment-566066822
@@ -13,8 +13,7 @@ RUN dnf -y install 'dnf-command(config-manager)'
 # https://docs.fedoraproject.org/en-US/epel/
 RUN dnf config-manager --set-enabled crb
 RUN dnf -y install \
-    https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
-    https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-9.noarch.rpm
+    https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 
 RUN dnf -y update && dnf -y install \
     cmake3 \

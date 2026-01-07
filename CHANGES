@@ -1,3 +1,21 @@
+0.50-213 | 2026-01-07 14:42:13 -0700
+
+  * CI: Force all other CI docker images to rebuild (Tim Wojtulewicz, Corelight)
+
+  * CI: Drop macOS Sonoma, add macOS Sequoia and Tahoe (Tim Wojtulewicz, Corelight)
+
+  * CI: Drop Ubuntu 24.10, add Ubuntu 25.04 (Tim Wojtulewicz, Corelight)
+
+  * CI: Drop OpenSUSE Leap 15.5, add OpenSUSE Leap 16.0 (Tim Wojtulewicz, Corelight)
+
+  * CI: Drop debian 11, add debian 13 (Tim Wojtulewicz, Corelight)
+
+  * CI: Add centos stream 10 (Tim Wojtulewicz, Corelight)
+
+  * CI: Drop Fedora 41, add Fedora 43 (Tim Wojtulewicz, Corelight)
+
+  * CI: Bump FreeBSD to 14.3 and 13.5 (Tim Wojtulewicz, Corelight)
+
 0.50-204 | 2026-01-07 11:25:22 -0700
 
   * Bump aiohttp from 3.12.15 to 3.13.3 in /devel-tools/cirrus-status (dependabot[bot])
