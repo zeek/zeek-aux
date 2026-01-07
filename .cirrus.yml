@@ -88,10 +88,15 @@ ubuntu22_task:
     dockerfile: ci/ubuntu-22.04/Dockerfile
   << : *CI_TEMPLATE
 
-# Cirrus currently only supports running on Sonoma.
-macos_sonoma_task:
+macos_tahoe_task:
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-runner:sonoma
+    image: ghcr.io/cirruslabs/macos-runner:tahoe
+  prepare_script: ./ci/macos/prepare.sh
+  << : *CI_TEMPLATE
+
+macos_sequoia_task:
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-runner:sequoia
   prepare_script: ./ci/macos/prepare.sh
   << : *CI_TEMPLATE
 
