@@ -164,17 +164,16 @@ class Redirect:
 class HTTPClient:
     def __init__(self):
         self.delay_secs = 1.0
+        self.sess = requests.Session()
+        self.sess.headers.update({"Authorization": f"token {RTD_API_TOKEN}"})
 
     def request(
         self, method: str, path_suffix: str = "", jdict: dict[str, Any] | None = None
     ) -> requests.Response | None:
         url = f"https://app.readthedocs.org/api/v3/projects/{RTD_PROJECT_SLUG}/redirects/{path_suffix}"
-        headers = {"Authorization": f"token {RTD_API_TOKEN}"}
 
         try:
-            response = requests.request(
-                method.upper(), url, headers=headers, json=jdict
-            )
+            response = self.sess.request(method.upper(), url, json=jdict)
 
             if self.rate_limit(response):
                 # We got rate-limited and have waited; retry. This should
