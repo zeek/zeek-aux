@@ -563,20 +563,21 @@ def cmd_upload(args: argparse.Namespace) -> int:
     # list, take the numerical redirect identifiers, and delete these one by
     # one.
 
+    # The new redirects to establish on the site, parsed and in dict format:
     update: list[Redirect] = []
+    update_yaml: list[dict[str, Any]] = []
 
     try:
         with open(args.file) as hdl:
             ydict = yaml.safe_load(hdl)
             for rd_data in ydict:
                 update.append(Redirect.from_dict(rd_data))
+                update_yaml.append(rd_data)
     except (OSError, yaml.YAMLError) as err:
         msg(f"Error: could not load YAML data from {args.file}, {err}")
         return 1
 
     client = HTTPClient()
-
-    msg("Clearing out existing redirects...")
 
     resp = client.request("get", "?limit=100")
     if resp is None:
@@ -584,27 +585,50 @@ def cmd_upload(args: argparse.Namespace) -> int:
 
     try:
         jdict = resp.json()
-    except requests.JSONDecodeError as err:
-        msg(f"error: couldn't parse returned JSON data, {err}")
+        old_rd_data = jdict["results"]
+    except (requests.JSONDecodeError, KeyError) as err:
+        msg(f"Error: couldn't parse returned JSON data, {err}")
         return 1
 
-    for rd_data in jdict["results"]:
+    # A backup of the redirects on the site, prior to us making changes.
+    backup_old = "redirects-backup-old.yml"
+    backup_old_yaml: list[dict[str, Any]] = []
+
+    # The redirects as they result on the site after our changes.
+    backup_new = "redirects-backup-new.yml"
+    backup_new_yaml: list[dict[str, Any]] = []
+
+    # Store the old redirects in dict format, stripped of unneeded fields:
+    for rd_data in old_rd_data:
+        backup_old_yaml.append(Redirect.from_dict(rd_data).to_dict())
+
+    try:
+        with open(backup_old, "w") as hdl:
+            yaml.dump(backup_old_yaml, hdl, sort_keys=False)
+    except OSError as err:
+        msg(f"Error: could not back up current redirects to {backup_old}, {err}")
+        return 1
+
+    msg(f"Clearing out {len(old_rd_data)} redirects...")
+
+    for rd_data in old_rd_data:
         # "pk" (primary key?) identifies the specific redirect:
         rid = rd_data["pk"]
         msg("  - " + rd_data["from_url"])
         resp = client.request("delete", f"{rid}/")  # The trailing slash is important
         if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
             return 1
         if resp.status_code != 204:
             msg(
                 f"warning: unexpected status code for redirect deletion, {resp.status_code}"
             )
 
-    msg("Establishing new redirects...")
+    msg(f"Establishing {len(update)} new redirects...")
 
     # We set the ordering of the redirects explicitly to rule out implicit behavior.
     # (For example, needing to insert in reverse order?)
-    rd_counter = 0
+    rd_counter: int = 0
 
     for rd in update:
         jdict = rd.to_dict(full=True)  # We want type, enabled, etc
@@ -613,14 +637,71 @@ def cmd_upload(args: argparse.Namespace) -> int:
         msg("  + " + jdict["from_url"])
         resp = client.request("post", jdict=jdict)
         if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
             return 1
         # Status code should be 201 for successful creation
         # https://docs.readthedocs.com/platform/stable/api/v3.html#redirect-create
         if resp.status_code != 201:
-            msg(f"error: redirect creation failed, status code {resp.status_code}")
-            msg(f"offending redirect: {jdict}")
-            msg(f"response content: {resp.text}")
+            msg(f"Error: redirect creation failed, status code {resp.status_code}")
+            msg(f"  offending redirect: {jdict}")
+            msg(f"  response content: {resp.text}")
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
             return 1
+
+    if args.verify:
+        msg("Verifying new redirects...")
+
+        resp = client.request("get", "?limit=100")
+        if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
+            return 1
+
+        try:
+            jdict = resp.json()
+            new_rd_data = jdict["results"]
+        except (requests.JSONDecodeError, KeyError) as err:
+            msg(f"Error: couldn't parse returned JSON data, {err}")
+            msg(f"Verification failed; prior redirects backed up in {backup_old}")
+            return 1
+
+        # Same as for backup_old_yaml, keep the dict format, filtered:
+        for rd_data in new_rd_data:
+            backup_new_yaml.append(Redirect.from_dict(rd_data).to_dict())
+
+        try:
+            with open(backup_new, "w") as hdl:
+                yaml.dump(backup_new_yaml, hdl, sort_keys=False)
+        except OSError as err:
+            msg(f"Error: could not back up new redirects to {backup_new}, {err}")
+            msg(f"Verification failed; prior redirects backed up in {backup_old}")
+            return 1
+
+        if len(update_yaml) != len(backup_new_yaml):
+            msg(
+                f"Error: number of redirects changed (update has {len(update_yaml)}, site now has {len(backup_new_yaml)})"
+            )
+            msg(
+                f"Verification failed; review {backup_old}, {backup_new}, and {args.file}"
+            )
+            return 1
+
+        for up_dict, new_dict in zip(update_yaml, backup_new_yaml):
+            if up_dict != new_dict:
+                msg(
+                    f"Error: redirects differ ('{up_dict['from_url']}' / '{new_dict['from_url']}')"
+                )
+                msg(
+                    f"Verification failed; review {backup_old}, {backup_new}, and {args.file}"
+                )
+                return 1
+
+        msg("Verification successful")
+
+    for backup in (backup_old, backup_new):
+        try:
+            os.remove(backup)
+        except OSError:
+            pass
 
     return 0
 
@@ -716,6 +797,12 @@ def main() -> int:
         metavar="FILE",
         required=True,
         help="File to source redirects from, usually doc/redirects.yml in the Zeek source tree",
+    )
+
+    subp.add_argument(
+        "--verify",
+        action="store_true",
+        help="Download final redirects and verify them against requested uploads",
     )
 
     if "argcomplete" in sys.modules:
