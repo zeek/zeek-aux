@@ -1,3 +1,7 @@
+0.50-217 | 2026-02-18 18:01:09 -0800
+
+  * Add doc-redirects, a maintenance script for our RTD HTTP redirects (Christian Kreibich, Corelight)
+
 0.50-213 | 2026-01-07 14:42:13 -0700
 
   * CI: Force all other CI docker images to rebuild (Tim Wojtulewicz, Corelight)

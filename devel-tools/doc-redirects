@@ -1,0 +1,843 @@
+#! /usr/bin/env python3
+#
+# Optional support for argcomplete, see:
+# https://pypi.org/project/argcomplete/#global-completion
+# PYTHON_ARGCOMPLETE_OK
+"""This script helps manage HTTP redirects for our Readthedocs HTML documentation.
+
+It can do three things:
+
+- Download the current set of redirects for an RTD project into a YAML file:
+
+  $ doc-redirects download -f redirects.yml
+
+  If this output file exists, any introductory comments are preserved. It cannot
+  preserve comments in mid-redirect-list. If you have any comments on specific
+  redirects, put them in the "description" field instead, which actually gets
+  preserved via the API and is visible in the RTD web UI. Any others you will
+  have to manually re-introduce after the script updates the file.
+
+- Upload and replace active redirects of an RTD project from a YAML file:
+
+  $ doc-redirects upload -f redirects.yml
+
+  This first blows away existing redirects, then replaces them. (Maintaining
+  incremental changesets on top of the existing redirects is painful for a bunch
+  of nitty gritty reasons.) You may want to grab the existing redirects via
+  "doc-redirects download" prior to doing this, for backup.
+
+  You may hit rate-limiting in mid-update since the API tops out at around 60
+  requests per minute. The script detects this, backs off exponentially, and
+  retries. This means the script may take a minute or so to complete.
+
+- Identify potentially needed new redirects between two git revisions:
+
+  $ doc-redirects scan --zeekroot path/to/cloned/zeek --from master --to HEAD
+
+  This works as follows:
+
+  (1) The script identifies files renamed via git commits in the given revision
+      range.
+
+  (2) It then builds the HTML documentation for both ends of the revision range,
+      and diffs the list of files in the generated HTML trees.
+
+  (3) From this diff it identifies files that disappeared, i.e., candidates for
+      a new redirect. Many (though not all) of those files will directly relate
+      to git renamings. This match is imperfect because the generated
+      documentation consists of more files than the input .rst's, and not all
+      changes are due to git renames. For example, sometimes deletions are
+      followed by new files, or there simply are intentional deletions. The user
+      needs to resolve these.
+
+  (4) It prints a candidate list of redirects, in YAML, to stdout. This will
+      usually have TODOs for you to resolve, and the script does not currently
+      attempt to automate this. The idea is that you absorb this list into
+      redirects.yaml for a subsequent "doc-redirects.py upload".
+
+The invocations shown above are just examples. Refer to the --help output for
+what's required, defaults, etc.
+"""
+
+import argparse
+import contextlib
+import difflib
+import os.path
+import pathlib
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from typing import Any, TextIO
+
+try:
+    # Argcomplete provides command-line completion for users of argparse.
+    # We support it if available, but don't complain when it isn't.
+    import argcomplete
+except ImportError:
+    pass
+
+try:
+    import git  # type: ignore
+    import requests  # type: ignore
+    import yaml  # type: ignore
+except ImportError as err:
+    print(f"This requires the GitPython, requests, and PyYAML packages (error: {err})")
+    sys.exit(1)
+
+# Work on the main Zeek documentation by default. There's also the "zeek"
+# project, an older standby that's good for experimentation.  You can also
+# provide this on the command line via --rtd-project-slug.
+RTD_PROJECT_SLUG: str = os.getenv("RTD_PROJECT_SLUG", "zeek-docs")
+
+# The RTD API token. Provide via this environment variable, or a file given on
+# the command line via --rtd-api-token-file.
+RTD_API_TOKEN: str = os.getenv("RTD_API_TOKEN", "")
+
+
+def msg(content, file: TextIO = sys.stderr) -> None:
+    print(content, file=file)
+
+
+class Redirect:
+    def __init__(
+        self,
+        from_url: str,
+        to_url: str,
+        typ: str = "page",
+        enabled: bool = True,
+        http_status: int = 301,
+        description: str | None = None,
+    ):
+        self.from_url = from_url
+        self.to_url = to_url
+        self.typ = typ
+        self.enabled = enabled
+        self.http_status = http_status
+        self.description = description
+
+    def to_dict(self, full: bool = False) -> dict[str, Any]:
+        """Renders the redirect into a Python dict suitable for turning into
+        JSON or YAML. By default this omits some common values unless they have
+        unusual values, or "full" is true."""
+        res: dict[str, Any] = {
+            "from_url": self.from_url,
+            "to_url": self.to_url,
+        }
+
+        if full or self.typ != "page":
+            res["type"] = self.typ
+        if full or self.enabled != True:
+            res["enabled"] = self.enabled
+        if full or self.http_status != 301:
+            res["http_status"] = self.http_status
+
+        # The description remains optional regardless of "full"'s state: it
+        # serves no purpose as an empty string.
+        if self.description:
+            res["description"] = self.description
+
+        return res
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]):
+        """Instantiates a Redirect from the given dictionary data. The
+        dictionary should result from json.load()/yaml.load() or similars.
+        """
+        res = Redirect(data["from_url"], data["to_url"])
+
+        if "type" in data:
+            res.typ = data["type"]
+        if "enabled" in data:
+            res.enabled = data["enabled"]
+        if "http_status" in data:
+            res.http_status = data["http_status"]
+
+        # As above, we use this only when description is actually given:
+        if "description" in data and data["description"]:
+            res.description = data["description"]
+
+        return res
+
+
+class HTTPClient:
+    def __init__(self):
+        self.delay_secs = 1.0
+        self.sess = requests.Session()
+        self.sess.headers.update({"Authorization": f"token {RTD_API_TOKEN}"})
+
+    def request(
+        self, method: str, path_suffix: str = "", jdict: dict[str, Any] | None = None
+    ) -> requests.Response | None:
+        url = f"https://app.readthedocs.org/api/v3/projects/{RTD_PROJECT_SLUG}/redirects/{path_suffix}"
+
+        try:
+            response = self.sess.request(method.upper(), url, json=jdict)
+
+            if self.rate_limit(response):
+                # We got rate-limited and have waited; retry. This should
+                # probably abort at some point, but with exponential delay and
+                # us being stubborn, well ...
+                return self.request(method, path_suffix, jdict)
+
+            response.raise_for_status()
+            return response
+        except requests.HTTPError as http_err:
+            msg(f"Error: {method.upper()} on {url}, JSON data {jdict}: {http_err}")
+        except Exception as err:
+            msg(f"Error: unexpected HTTP I/O error, {err}")
+
+        return None
+
+    def rate_limit(self, response: requests.Response) -> bool:
+        """Rate-limit us if the response requests it. This uses exponential
+        backoff, and returns True when rate-limiting is in effect (and a request
+        should be retried); False otherwise."""
+
+        # The API claims to support 60 requests / minute with authentication:
+        # https://docs.readthedocs.com/platform/stable/api/v3.html#rate-limiting
+        #
+        # The HTTP status code for rate-limiting is 429 as usual, with a
+        # free-form response message indicating when one can resume:
+        #
+        # {"detail":"Request was throttled. Expected available in 38 seconds."}
+        #
+        # At times Cloudflare also seems to interfere, still with 429, but
+        # without the above message.  We don't parse and simply wait
+        # exponentially longer while we get rate-limited, and half the delays
+        # when we no longer are.
+
+        if response.status_code == 429:
+            self.delay_secs = self.delay_secs * 2.0
+            msg(f"Warning: API rate-limited, pausing for {self.delay_secs}s")
+            time.sleep(self.delay_secs)
+            return True
+
+        # We're not rate-limited, but phase out remaining delay passively while
+        # over 1.0, in case we hit it again right away.
+        self.delay_secs = max(1.0, self.delay_secs / 2.0)
+
+        return False
+
+
+def derive_zeekroot() -> str:
+    """Helper to identify Zeek repo clone toplevel in the absence of a
+    --zeekroot argument. If our cwd is in a Zeek-tree checkout, then this
+    returns the absolute path to its toplevel directory, otherwise the
+    empty string.
+    """
+    try:
+        repo = git.Repo(".", search_parent_directories=True)
+        toplevel = repo.git.rev_parse("--show-toplevel")
+        if toplevel:
+            return toplevel
+    except git.InvalidGitRepositoryError:
+        pass
+
+    return ""
+
+
+def establish_renamings(repo: git.Repo, args: argparse.Namespace) -> dict[str, str]:
+    msg(f"Retrieving file-moving commits from {args.from_ref} to {args.to_ref}...")
+
+    output: str = repo.git.log(
+        "--reverse",  # Show oldest commits first
+        "--diff-filter=R",  # Show only file renamings
+        "--name-status",  # Show renaming in form "<similarity>\t<from-name>\t<to-name>",
+        "--pretty=format:%H",  # Other than renamings, show only the hash
+        f"{args.from_ref}..{args.to_ref}",  # The range of commits we care about
+        "doc",  # We care only about documentation changes
+    )
+
+    # Map of new to old filenames. For iterative renamings, this always keeps
+    # the newest name as a key, and the original name (prior to any renamings)
+    # as the value.
+    renamings: dict[str, str] = {}
+
+    # The commit ref we're currently processing.
+    commit: str | None = None
+
+    for line in output.split("\n"):
+        line = line.strip()
+        if not line:
+            commit = None
+            continue
+
+        if commit is None:
+            commit = line
+            continue
+
+        if line.startswith("R"):
+            parts = line.split("\t")
+            name_from, name_to = parts[1], parts[2]
+            name_orig = name_from
+
+            # If the filename this commit is renaming from is already a renaming
+            # target (and thus a key in the map), then update it to the name this
+            # commit is changing it to:
+            if name_from in renamings:
+                name_orig = renamings[name_from]
+                del renamings[name_from]
+
+            if not name_to.startswith("doc/"):
+                msg(f"Weird: expected {name_to} to start with 'doc/'")
+            if not name_from.startswith("doc/"):
+                msg(f"Weird: expected {name_from} to start with 'doc/'")
+
+            # Strip the "doc/" prefixes since the HTML files won't have it either.
+            renamings[name_to.removeprefix("doc/")] = name_orig.removeprefix("doc/")
+            continue
+
+        msg(f"Weird: unexpected git log line '{line}'")
+
+    # Flip the key -> val direction in the renamings: make the original file
+    # name point to the final renamed one. Also strip the "doc/" prefix.
+    result: dict[str, str] = {}
+
+    for name_to, name_from in renamings.items():
+        result[name_from] = name_to
+
+    return result
+
+
+def build_docs(
+    args: argparse.Namespace, repo: git.Repo, name: str, ref: str
+) -> None | str:
+    """Clones the given Zeek repo into subdirectory "name" in the current working directory,
+    switches to the given ref, and builds the documentation in the doc subdirectory.
+    Returns the resulting HTML docs build directory, or None in case of errors.
+    """
+    clonedir = os.path.join(os.getcwd(), name)
+    if os.path.isdir(clonedir):
+        shutil.rmtree(clonedir)
+
+    msg(f"Cloning {args.zeekroot} into {clonedir}...")
+    clone = repo.clone(clonedir)
+
+    msg(f"Checking out {ref}...")
+    clone.git.checkout(ref)
+
+    msg("Building documentation...")
+    docdir = os.path.join(name, "doc")
+    res = subprocess.run("make", cwd=docdir, capture_output=True)
+
+    if res.returncode != 0:
+        with open(os.path.join(docdir, "docs-build.stdout.txt"), "wb") as hdl:
+            hdl.write(res.stdout)
+        with open(os.path.join(docdir, "docs-build.stderr.txt"), "wb") as hdl:
+            hdl.write(res.stderr)
+        msg(f"Docs build failed, details in {docdir}/docs-build.*.txt")
+        return None
+
+    # Make sure the build/html tree now exists:
+    builddir = os.path.join(docdir, "build", "html")
+    if not os.path.exists(builddir):
+        msg(f"Expected docs output directory {os.getcwd()}/{builddir} does not exist")
+        return None
+
+    return builddir
+
+
+def diff_docs(old_docs_dir: str, new_docs_dir: str) -> list[str]:
+    """Given the HTML build directories of old and new docs, this diffs the
+    sorted list of files and identifies files that got dropped.
+    """
+
+    def scan(docs_dir: pathlib.Path) -> list[str]:
+        msg(f"Scanning HTML build directory {docs_dir}...")
+        files: list[str] = []
+
+        # Ignore some generated files that people should not link to.
+        # If they do, these are arguably better handled via a catch-all.
+        skip_prefixes = [".doctrees/", "_downloads/", "_sources/"]
+
+        # The following is essentially "find | sort | grep -v ..."
+        for path in docs_dir.rglob("*"):
+            if not path.is_file():
+                continue
+            path = path.relative_to(docs_dir)  # Cut off the common prefix
+            if not any(path.is_relative_to(pfx) for pfx in skip_prefixes):
+                files.append(str(path))
+
+        return sorted(files)
+
+    old_files = scan(pathlib.Path(old_docs_dir))
+    new_files = scan(pathlib.Path(new_docs_dir))
+
+    removals: list[str] = []
+
+    for line in difflib.unified_diff(old_files, new_files):
+        # Identify removals, but skip the diff header itself
+        if line.startswith("-") and not line.startswith("---"):
+            removals.append(line[1:])
+
+    return removals
+
+
+def infer_redirects(renamings: dict[str, str], removals: list[str]) -> list[Redirect]:
+    """Given git-based file renamings and diff-based disappearances of files,
+    this produces suggested, possibly incomplete, redirects for the user to
+    review and complete.
+    """
+    html_renamings: dict[str, str] = {}
+
+    for key, val in renamings.items():
+        if key.endswith(".rst") and val.endswith(".rst"):
+            html_from = key[:-4] + ".html"
+            html_to = val[:-4] + ".html"
+            html_renamings[html_from] = html_to
+
+    res: list[Redirect] = []
+
+    for removal in removals:
+        if removal in html_renamings:
+            res.append(Redirect(removal, html_renamings[removal]))
+        else:
+            res.append(Redirect(removal, "TODO"))
+
+    return res
+
+
+def get_workdir_ctx(
+    args: argparse.Namespace,
+) -> tempfile.TemporaryDirectory | contextlib.nullcontext:
+    """Establishes a working directory and returns a context guard for it.
+
+    If args.workdir is given, this simply uses that directory and the context
+    guard does nothing. Otherwise this establishes a tempfile.TemporaryDirectory
+    for context, updates args.workdir to its name, and returns that context.
+    """
+    ctx: tempfile.TemporaryDirectory | contextlib.nullcontext
+
+    if args.workdir is None:
+        ctx = tempfile.TemporaryDirectory(prefix="zeek-doc-redirects-")
+        args.workdir = ctx.name
+    else:
+        ctx = contextlib.nullcontext(sys.stdout)
+
+    return ctx
+
+
+def cmd_scan(args: argparse.Namespace) -> int:
+    if not os.path.isdir(args.zeekroot):
+        args.zeekroot = derive_zeekroot()
+
+    if not os.path.isdir(args.zeekroot):
+        msg("Please cd into a Zeek repo clone or provide path via --zeekroot.")
+        return 1
+
+    try:
+        repo = git.Repo(args.zeekroot)
+    except git.GitError as err:
+        msg(f"Error: couldn't load git repository info from '{args.zeekroot}': {err}")
+        return 1
+
+    if args.from_ref is None:
+        try:
+            # Get name of remote's HEAD (e.g., 'origin/main' or 'origin/master')
+            remote_head = repo.remotes.origin.refs["HEAD"]
+        except AttributeError:
+            # Looks like there's no "origin" remote, give up.
+            msg("Error: couldn't figure out default branch, please provide via --from.")
+            return 1
+
+        # Get the name of the branch it points to (e.g., 'main' or 'master')
+        args.from_ref = remote_head.reference.name.split("/")[-1]
+
+    renamings = establish_renamings(repo, args)
+
+    ctx = get_workdir_ctx(args)
+
+    with ctx, contextlib.chdir(args.workdir):
+        reuse = False  # Whether we re-use pre-existing doc builds
+
+        old_dir: str | None
+        new_dir: str | None
+
+        if args.reuse_docbuilds:
+            old_dir = os.path.join(args.workdir, "old", "doc", "build", "html")
+            new_dir = os.path.join(args.workdir, "new", "doc", "build", "html")
+            if os.path.exists(old_dir) and os.path.exists(new_dir):
+                msg(f"Reusing docs builds in {args.workdir}{{old,new}}")
+                reuse = True
+
+        if not reuse:
+            old_dir = build_docs(args, repo, "old", args.from_ref)
+            if old_dir is None:
+                return 1
+
+            new_dir = build_docs(args, repo, "new", args.to_ref)
+            if new_dir is None:
+                return 1
+
+        removals = diff_docs(str(old_dir), str(new_dir))
+        if removals is None:
+            return 1
+
+        rds = infer_redirects(renamings, removals)
+
+    # Default to writing to stdout
+    ctx_guard: contextlib.nullcontext | TextIO
+    ctx_guard = contextlib.nullcontext(sys.stdout)
+
+    if args.file:
+        try:
+            ctx_guard = open(args.file, "w")
+        except OSError as err:
+            msg(f"Error: couldn't open {args.file} for writing, {err}")
+            return 1
+
+    with ctx_guard as hdl:
+        rds_data = [rd.to_dict() for rd in rds]
+        hdl.write(yaml.dump(rds_data))
+
+    return 0
+
+
+def cmd_download(args: argparse.Namespace) -> int:
+    client = HTTPClient()
+
+    # Given RTD's limit of ~100 redirects on the free tier, we don't do
+    # pagination right now and just bump up the limit query parameter
+    # sufficiently.
+    # https://docs.readthedocs.com/platform/stable/api/v3.html#pagination
+    resp = client.request("get", "?limit=100")
+    if resp is None:
+        return 1
+
+    try:
+        jdict = resp.json()
+    except requests.JSONDecodeError as err:
+        msg(f"Error: couldn't parse returned JSON data, {err}")
+        return 1
+
+    result: list[dict[str, Any]] = []
+
+    for rd_data in jdict["results"]:
+        result.append(Redirect.from_dict(rd_data).to_dict())
+
+    # Default to writing to stdout
+    ctx_guard: contextlib.nullcontext | TextIO
+    ctx_guard = contextlib.nullcontext(sys.stdout)
+
+    # If the destination file exists, any commentary preceding the YAML data. We
+    # preserve this in the newly written file.
+    preamble: list[str] = []
+
+    if args.file:
+        if os.path.exists(args.file):
+            try:
+                with open(args.file) as hdl:
+                    for line in hdl:
+                        if not line.strip() or line.strip().startswith("#"):
+                            preamble.append(line.rstrip())
+                        else:
+                            break
+            except OSError as err:
+                msg(f"Error: couldn't read existing {args.file}, {err}")
+        try:
+            ctx_guard = open(args.file, "w")
+        except OSError as err:
+            msg(f"Error: couldn't open {args.file} for writing, {err}")
+            return 1
+
+    with ctx_guard as hdl:
+        if preamble:
+            hdl.write("\n".join(preamble))
+            hdl.write("\n")
+        yaml.dump(result, hdl, sort_keys=False)
+
+    return 0
+
+
+def cmd_upload(args: argparse.Namespace) -> int:
+    # Ideally we'd upload only deltas on top of the existing set of redirects,
+    # but this is quite difficult since we'd implement a notion of diffing and
+    # redirect identity based on numerical identifiers that the API, plus
+    # management of ordering. It's easier, though somewhat more risky, to just
+    # blow the redirects away before re-establishing them. This seems fine as
+    # long as people remember to grab the existing ones to a file, for backup.
+    #
+    # There's no API to delete them all. We need to first retrieve the whole
+    # list, take the numerical redirect identifiers, and delete these one by
+    # one.
+
+    # The new redirects to establish on the site, parsed and in dict format:
+    update: list[Redirect] = []
+    update_yaml: list[dict[str, Any]] = []
+
+    try:
+        with open(args.file) as hdl:
+            ydict = yaml.safe_load(hdl)
+            for rd_data in ydict:
+                update.append(Redirect.from_dict(rd_data))
+                update_yaml.append(rd_data)
+    except (OSError, yaml.YAMLError) as err:
+        msg(f"Error: could not load YAML data from {args.file}, {err}")
+        return 1
+
+    client = HTTPClient()
+
+    resp = client.request("get", "?limit=100")
+    if resp is None:
+        return 1
+
+    try:
+        jdict = resp.json()
+        old_rd_data = jdict["results"]
+    except (requests.JSONDecodeError, KeyError) as err:
+        msg(f"Error: couldn't parse returned JSON data, {err}")
+        return 1
+
+    # A backup of the redirects on the site, prior to us making changes.
+    backup_old = "redirects-backup-old.yml"
+    backup_old_yaml: list[dict[str, Any]] = []
+
+    # The redirects as they result on the site after our changes.
+    backup_new = "redirects-backup-new.yml"
+    backup_new_yaml: list[dict[str, Any]] = []
+
+    # Store the old redirects in dict format, stripped of unneeded fields:
+    for rd_data in old_rd_data:
+        backup_old_yaml.append(Redirect.from_dict(rd_data).to_dict())
+
+    try:
+        with open(backup_old, "w") as hdl:
+            yaml.dump(backup_old_yaml, hdl, sort_keys=False)
+    except OSError as err:
+        msg(f"Error: could not back up current redirects to {backup_old}, {err}")
+        return 1
+
+    msg(f"Clearing out {len(old_rd_data)} redirects...")
+
+    for rd_data in old_rd_data:
+        # "pk" (primary key?) identifies the specific redirect:
+        rid = rd_data["pk"]
+        msg("  - " + rd_data["from_url"])
+        resp = client.request("delete", f"{rid}/")  # The trailing slash is important
+        if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
+            return 1
+        if resp.status_code != 204:
+            msg(
+                f"warning: unexpected status code for redirect deletion, {resp.status_code}"
+            )
+
+    msg(f"Establishing {len(update)} new redirects...")
+
+    # We set the ordering of the redirects explicitly to rule out implicit behavior.
+    # (For example, needing to insert in reverse order?)
+    rd_counter: int = 0
+
+    for rd in update:
+        jdict = rd.to_dict(full=True)  # We want type, enabled, etc
+        jdict["position"] = rd_counter
+        rd_counter += 1
+        msg("  + " + jdict["from_url"])
+        resp = client.request("post", jdict=jdict)
+        if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
+            return 1
+        # Status code should be 201 for successful creation
+        # https://docs.readthedocs.com/platform/stable/api/v3.html#redirect-create
+        if resp.status_code != 201:
+            msg(f"Error: redirect creation failed, status code {resp.status_code}")
+            msg(f"  offending redirect: {jdict}")
+            msg(f"  response content: {resp.text}")
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
+            return 1
+
+    if args.verify:
+        msg("Verifying new redirects...")
+
+        resp = client.request("get", "?limit=100")
+        if resp is None:
+            msg(f"Aborting; prior redirects backed up in {backup_old}")
+            return 1
+
+        try:
+            jdict = resp.json()
+            new_rd_data = jdict["results"]
+        except (requests.JSONDecodeError, KeyError) as err:
+            msg(f"Error: couldn't parse returned JSON data, {err}")
+            msg(f"Verification failed; prior redirects backed up in {backup_old}")
+            return 1
+
+        # Same as for backup_old_yaml, keep the dict format, filtered:
+        for rd_data in new_rd_data:
+            backup_new_yaml.append(Redirect.from_dict(rd_data).to_dict())
+
+        try:
+            with open(backup_new, "w") as hdl:
+                yaml.dump(backup_new_yaml, hdl, sort_keys=False)
+        except OSError as err:
+            msg(f"Error: could not back up new redirects to {backup_new}, {err}")
+            msg(f"Verification failed; prior redirects backed up in {backup_old}")
+            return 1
+
+        if len(update_yaml) != len(backup_new_yaml):
+            msg(
+                f"Error: number of redirects changed (update has {len(update_yaml)}, site now has {len(backup_new_yaml)})"
+            )
+            msg(
+                f"Verification failed; review {backup_old}, {backup_new}, and {args.file}"
+            )
+            return 1
+
+        for up_dict, new_dict in zip(update_yaml, backup_new_yaml):
+            if up_dict != new_dict:
+                msg(
+                    f"Error: redirects differ ('{up_dict['from_url']}' / '{new_dict['from_url']}')"
+                )
+                msg(
+                    f"Verification failed; review {backup_old}, {backup_new}, and {args.file}"
+                )
+                return 1
+
+        msg("Verification successful")
+
+    for backup in (backup_old, backup_new):
+        try:
+            os.remove(backup)
+        except OSError:
+            pass
+
+    return 0
+
+
+def main() -> int:
+    global RTD_API_TOKEN
+    global RTD_PROJECT_SLUG
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--workdir",
+        metavar="PATH",
+        help="Scratch space, defaults to transient temporary directory",
+    )
+
+    # The slug is the final path component of https://app.readthedocs.org/projects/<slug>/,
+    # so zeek-docs for our main documentation.
+    parser.add_argument(
+        "--rtd-project-slug",
+        metavar="SLUG",
+        default=RTD_PROJECT_SLUG,
+        help=f"RTD project to work on; defaults to '{RTD_PROJECT_SLUG}'",
+    )
+
+    parser.add_argument(
+        "--rtd-api-token-file",
+        metavar="FILE",
+        help="File to read RTD API token from. Overrides RTD_API_TOKEN environment variable",
+    )
+
+    subs = parser.add_subparsers(help="Available commands:", required=True)
+
+    subp = subs.add_parser("scan", help="Scan documentation for needed updates")
+    subp.set_defaults(run_cmd=cmd_scan)
+
+    subp.add_argument(
+        "--zeekroot",
+        metavar="PATH",
+        default="",
+        help="Path to local git clone of Zeek source tree",
+    )
+
+    subp.add_argument(
+        "--from",
+        dest="from_ref",
+        metavar="REF",
+        help="Start/oldest ref of change analysis; falls back to repo's default branch",
+    )
+
+    subp.add_argument(
+        "--to",
+        dest="to_ref",
+        metavar="REF",
+        default="HEAD",
+        help="End/newest ref of change analysis; defaults to 'HEAD'",
+    )
+
+    subp.add_argument(
+        "-f",
+        "--file",
+        metavar="FILE",
+        help="File to write candidate redirects to; defaults to standard output",
+    )
+
+    # Reuse existing doc builds. This requires --workdir since we can't
+    # otherwise have existing builds, and is mainly helpful during development,
+    # thus hidden.
+    subp.add_argument(
+        "--reuse-docbuilds",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+
+    subp = subs.add_parser(
+        "download", help="Download existing redirects into a YAML file"
+    )
+    subp.set_defaults(run_cmd=cmd_download)
+
+    subp.add_argument(
+        "-f",
+        "--file",
+        metavar="FILE",
+        help="File to write redirects to; defaults to standard output",
+    )
+
+    subp = subs.add_parser("upload", help="Upload redirects from a YAML file to RTD")
+    subp.set_defaults(run_cmd=cmd_upload)
+
+    subp.add_argument(
+        "-f",
+        "--file",
+        metavar="FILE",
+        required=True,
+        help="File to source redirects from, usually doc/redirects.yml in the Zeek source tree",
+    )
+
+    subp.add_argument(
+        "--verify",
+        action="store_true",
+        help="Download final redirects and verify them against requested uploads",
+    )
+
+    if "argcomplete" in sys.modules:
+        argcomplete.autocomplete(parser)
+
+    args = parser.parse_args()
+
+    if not args.run_cmd:
+        msg("error: please select a command to run")
+        return 1
+
+    # For commands interacting with RTD, verify we have an API token
+    # and use the provided project slug:
+    if args.run_cmd == cmd_download or args.run_cmd == cmd_upload:
+        if args.rtd_api_token_file:
+            try:
+                with open(args.rtd_api_token_file) as hdl:
+                    RTD_API_TOKEN = hdl.read().strip()
+            except OSError as err:
+                msg(
+                    f"Error: couldn't read RTD API token from {args.rtd_api_token_file}: {err}"
+                )
+                return 1
+
+        if not RTD_API_TOKEN:
+            msg(
+                "Error: please provide RTD API token via RTD_API_TOKEN environment variable or --rtd-api-token-file"
+            )
+            return 1
+
+        if args.rtd_project_slug:
+            RTD_PROJECT_SLUG = args.rtd_project_slug
+
+    return args.run_cmd(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
