@@ -1,3 +1,7 @@
+0.50-219 | 2026-03-02 17:22:38 -0700
+
+  * Remove zeek-cut, which is moving to the zeek repo (Tim Wojtulewicz, Corelight)
+
 0.50-217 | 2026-02-18 18:01:09 -0800
 
   * Add doc-redirects, a maintenance script for our RTD HTTP redirects (Christian Kreibich, Corelight)

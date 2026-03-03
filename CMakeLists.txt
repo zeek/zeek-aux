@@ -46,7 +46,6 @@ endif ()
 
 add_subdirectory(adtrace)
 add_subdirectory(zeek-archiver)
-add_subdirectory(zeek-cut)
 add_subdirectory(rst)
 
 if (NOT (BINARY_PACKAGING_MODE OR "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}"))
