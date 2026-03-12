@@ -113,6 +113,8 @@ class Redirect:
         http_status: int = 301,
         description: str | None = None,
     ):
+        # XXX This should URL-format the inputs.
+        # They may be local file system paths, so likely break things on Windows.
         self.from_url = from_url
         self.to_url = to_url
         self.typ = typ
@@ -378,6 +380,13 @@ def diff_docs(old_docs_dir: str, new_docs_dir: str) -> list[str]:
     return removals
 
 
+def make_absolute_path(path: str) -> str:
+    """Ensures that a given path starts with os.sep."""
+    if not path.startswith(os.sep):
+        return os.sep + path
+    return path
+
+
 def infer_redirects(renamings: dict[str, str], removals: list[str]) -> list[Redirect]:
     """Given git-based file renamings and diff-based disappearances of files,
     this produces suggested, possibly incomplete, redirects for the user to
@@ -394,10 +403,16 @@ def infer_redirects(renamings: dict[str, str], removals: list[str]) -> list[Redi
     res: list[Redirect] = []
 
     for removal in removals:
+        # RTD maintains page redirects as absolute paths, so ensure these here:
         if removal in html_renamings:
-            res.append(Redirect(removal, html_renamings[removal]))
+            res.append(
+                Redirect(
+                    make_absolute_path(removal),
+                    make_absolute_path(html_renamings[removal]),
+                )
+            )
         else:
-            res.append(Redirect(removal, "TODO"))
+            res.append(Redirect(make_absolute_path(removal), "TODO"))
 
     return res
 
