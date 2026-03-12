@@ -234,7 +234,13 @@ def derive_zeekroot() -> str:
     """
     try:
         repo = git.Repo(".", search_parent_directories=True)
-        toplevel = repo.git.rev_parse("--show-toplevel")
+        # If we run this out of the local directory (as "./doc-redirects ...")
+        # in a cloned Zeek tree, we're in a submodule. This reports the parent
+        # repo's root if so:
+        toplevel = repo.git.rev_parse("--show-superproject-working-tree")
+        # Fall back to just using the local repo, if any:
+        if not toplevel:
+            toplevel = repo.git.rev_parse("--show-toplevel")
         if toplevel:
             return toplevel
     except git.InvalidGitRepositoryError:
