@@ -55,6 +55,9 @@ It can do three things:
       attempt to automate this. The idea is that you absorb this list into
       redirects.yaml for a subsequent "doc-redirects.py upload".
 
+For the download and upload commands you need an RTD API token. Put it in a file
+for use with --rtd-api-token-file, or in the RTD_API_TOKEN environment variable.
+
 The invocations shown above are just examples. Refer to the --help output for
 what's required, defaults, etc.
 """
