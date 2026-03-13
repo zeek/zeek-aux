@@ -1,3 +1,11 @@
+0.50-223 | 2026-03-13 11:26:06 -0700
+
+  * doc-redirects: try a little harder to identify the toplevel Zeek repo dir (Christian Kreibich, Corelight)
+
+  * doc-redirects: in "scan" command, ensure inferred redirects are absolute (Christian Kreibich, Corelight)
+
+  * doc-redirects: clarify need for RTD API token (Christian Kreibich, Corelight)
+
 0.50-219 | 2026-03-02 17:22:38 -0700
 
   * Remove zeek-cut, which is moving to the zeek repo (Tim Wojtulewicz, Corelight)
