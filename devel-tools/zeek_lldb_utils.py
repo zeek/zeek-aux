@@ -33,6 +33,8 @@ def backtrace_zeek(debugger, command, exe_ctx, result, d):
             if loc_ptr and loc_ptr.GetType().GetName() == "zeek::detail::Location *":
                 if loc_ptr.GetValueAsUnsigned() != 0:
                     loc = frame.EvaluateExpression("*(this->location)")
+                    if loc.error.Fail():
+                        continue
                     fname = (
                         loc.GetChildMemberWithName("filename").GetSummary().strip('"')
                     )
