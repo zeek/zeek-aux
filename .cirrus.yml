@@ -64,10 +64,10 @@ opensuse_tumbleweed_task:
   prepare_script: ./ci/opensuse-tumbleweed/prepare.sh
   << : *CI_TEMPLATE
 
-ubuntu25_task:
+ubuntu26_task:
   container:
-    # Ubuntu 25.04 EOL: 2026-01-31
-    dockerfile: ci/ubuntu-25.04/Dockerfile
+    # Ubuntu 26.04 EOL: 2031-06-01
+    dockerfile: ci/ubuntu-26.04/Dockerfile
   << : *CI_TEMPLATE
 
 ubuntu24_task:
