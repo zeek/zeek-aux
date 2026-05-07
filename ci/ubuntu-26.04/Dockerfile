@@ -1,8 +1,8 @@
-FROM ubuntu:25.04
+FROM ubuntu:26.04
 
 # A version field to invalidate Cirrus's build cache when needed, as suggested in
 # https://github.com/cirruslabs/cirrus-ci-docs/issues/544#issuecomment-566066822
-ENV DOCKERFILE_VERSION 20260107
+ENV DOCKERFILE_VERSION 20260507
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles"
 

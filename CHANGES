@@ -1,3 +1,21 @@
+0.50-235 | 2026-05-07 16:57:10 -0700
+
+  * CI: bump FreeBSD to 15.0 and 14.3, respectively (Christian Kreibich, Corelight)
+
+  * CI: add Ubuntu 26.04, remove 25.04 (Christian Kreibich, Corelight)
+
+  * CI: drop openSUSE Leap 15.6, EOL'd April 30 (Christian Kreibich, Corelight)
+
+  * CI: Drop Fedora 42 (EOL May 13), add Fedora 44 (Christian Kreibich, Corelight)
+
+  * Handle an error case in zeek_lldb_utils.py more cleanly (Tim Wojtulewicz, Corelight)
+
+  * Updating submodule(s) [nomail] (Tim Wojtulewicz, Corelight)
+
+  * Updating submodule(s) [nomail] (Tim Wojtulewicz, Corelight)
+
+  * Build(deps): Bump aiohttp in /devel-tools/cirrus-status (dependabot[bot])
+
 0.50-223 | 2026-03-13 11:26:06 -0700
 
   * doc-redirects: try a little harder to identify the toplevel Zeek repo dir (Christian Kreibich, Corelight)
