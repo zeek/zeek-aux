@@ -315,8 +315,24 @@ function get_last_rev {
     version=$(cat $file_changes | grep -E '^[0-9a-zA-Z.-]+  *\|' | head -1 | awk '{print $1}')
 
     if echo $version | grep -q -- '-'; then
+        # Derive the tag that `git describe` used for this version. For
+        # example, 1.2.0-dev.12 is based on v1.2.0-dev, while 1.2.0-12 is
+        # based on v1.2.0.
+        base_version=$(echo "$version" | $sed -e 's/(-[[:alnum:]]+)\.[0-9]+$/\1/' -e 's/-[0-9]+$//')
+        base_tag="v$base_version"
+
+        if ! git rev-parse --verify --quiet "refs/tags/${base_tag}^{commit}" >/dev/null; then
+            echo "Cannot determine revision for version $version: missing base tag $base_tag." >&2
+            exit 1
+        fi
+
+        if ! git merge-base --is-ancestor "$base_tag" HEAD; then
+            echo "Cannot determine revision for version $version: base tag $base_tag is not an ancestor of HEAD." >&2
+            exit 1
+        fi
+
         # version is now e.g. 1.0.4-14 -- find the revision with that number.
-        for rev in $(git rev-list HEAD); do
+        for rev in $(git rev-list HEAD "^${base_tag}") $(git rev-list -n 1 "$base_tag"); do
             v=$(version $rev)
 
             if [ "$v" == "$version" ]; then
@@ -482,7 +498,9 @@ if [ "$beta" != "" ]; then
 fi
 
 if [ "$last_rev" == "" ]; then
-    last_rev=$(get_last_rev)
+    if ! last_rev=$(get_last_rev); then
+        exit 1
+    fi
 fi
 
 if [ "$last_rev" == "" ]; then
