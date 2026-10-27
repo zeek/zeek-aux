@@ -68,16 +68,33 @@ headers = {
 }
 
 url = "https://api.github.com/repos/zeek/zeek/security-advisories"
-req = requests.get(url, headers=headers)
-resp_json = req.json()
+all_items = []
+
+# Handle GitHub's pagination response headers
+current_url = url
+while current_url:
+    resp = requests.get(current_url, headers=headers)
+    resp.raise_for_status()
+
+    resp_data = resp.json()
+    if isinstance(resp_data, list):
+        all_items.extend(resp_data)
+    elif isinstance(resp_data, dict) and "items" in resp_data:
+        all_items.extend(resp_data["items"])
+
+    next_link = resp.links.get("next")
+    if next_link:
+        current_url = next_link["url"]
+    else:
+        current_url = None
 
 severity_order = ["critical", "high", "medium", "low"]
 severity_match = {value: index for index, value in enumerate(severity_order)}
-resp_json.sort(key=lambda x: severity_match[x["severity"]])
+all_items.sort(key=lambda x: severity_match[x["severity"]])
 
 output = ""
 with redirect_stdout(StringIO()) as f:
-    for sa in resp_json:
+    for sa in all_items:
         # Since we're generating patch notes, we want to ignore anything that's not in
         # a draft state.
         if sa.get("state", "") == "draft":
