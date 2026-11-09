@@ -1,3 +1,9 @@
+0.50-245 | 2026-11-09 16:19:07 -0700
+
+  * Use fixed version of cmake-format pre-commit (Tim Wojtulewicz, Corelight)
+
+  * Handle pagination in ghsa-patch-notes script (Tim Wojtulewicz, Corelight)
+
 0.50-242 | 2026-09-15 17:38:56 -0400
 
   * Make `update-changes` fail early with invalid base (Evan Typanski, Corelight)
