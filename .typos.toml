@@ -33,6 +33,7 @@ extend-ignore-re = [
     "-ot",
     "caf",
     "Big Sur",
+    "b2afe5af5a",
 
     # News stuff
     "SupressWeirds.*deprecated",
